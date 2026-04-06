@@ -301,6 +301,28 @@
     #toast.ok  { border-color: var(--green); color: var(--green); }
     #toast.err { border-color: var(--red);   color: var(--red);   }
 
+    /* ── PDF Upload ─────────────────────────────────────────── */
+    .quote-label-row {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 5px;
+    }
+    .pdf-upload-btn {
+      display: flex; align-items: center; gap: 5px;
+      background: var(--navyLL); border: 1px solid var(--border);
+      border-radius: 8px; padding: 5px 11px;
+      font-size: 11px; font-weight: 600; color: var(--dim);
+      cursor: pointer; transition: color .15s, border-color .15s;
+      white-space: nowrap;
+    }
+    .pdf-upload-btn:hover { color: var(--text); border-color: #475569; }
+    .pdf-upload-btn svg  { flex-shrink: 0; }
+    #pdf-status {
+      font-size: 12px; padding: 8px 11px; border-radius: 8px; margin-bottom: 8px;
+    }
+    #pdf-status.loading { background: rgba(59,130,246,.1); color: var(--accent); border: 1px solid rgba(59,130,246,.2); }
+    #pdf-status.ok  { background: rgba(16,185,129,.1);  color: var(--green); border: 1px solid rgba(16,185,129,.25); }
+    #pdf-status.err { background: rgba(239,68,68,.1);   color: var(--red);   border: 1px solid rgba(239,68,68,.25); }
+
     /* ── Quick Call Logger ──────────────────────────────────── */
     #qc-dropdown {
       display: none; position: absolute; left: 0; right: 0;
@@ -381,7 +403,7 @@
 <div class="tab" id="tab-quotes">
   <div class="page-body">
     <div class="page-title">Quote Analyzer</div>
-    <div class="page-sub">Paste a supplier quote, enter your target price, and Claude will analyze the margin, flag issues, and draft the Tracy email.</div>
+    <div class="page-sub">Paste a supplier quote or upload a PDF, enter your target price, and Claude will analyze the margin, flag issues, and draft the Tracy email.</div>
 
     <div class="form-row" style="margin-bottom:12px">
       <div class="fg" style="margin:0">
@@ -394,7 +416,15 @@
       </div>
     </div>
     <div class="fg">
-      <label class="fl">Supplier Quote — paste the full quote text</label>
+      <div class="quote-label-row">
+        <span class="fl" style="margin:0">Supplier Quote</span>
+        <label class="pdf-upload-btn" for="pdf-input">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+          Upload PDF
+        </label>
+        <input type="file" id="pdf-input" accept=".pdf,application/pdf" style="display:none" onchange="handlePDFUpload(this)">
+      </div>
+      <div id="pdf-status" style="display:none"></div>
       <textarea id="q-quote" rows="7" placeholder="Paste the supplier quote here…&#10;&#10;e.g. 3oz HDPE bottle, natural, 28/410 neck, MOQ 10,000 units, $0.38/unit FOB Ningbo, 45-day lead time…"></textarea>
     </div>
     <button class="wide-btn primary" id="analyze-btn" onclick="analyzeQuote()">
@@ -1195,6 +1225,64 @@ function deleteQuote(clientName, idx) {
   saveProjects(projects);
   renderProjects();
   toast('Quote deleted', 'ok');
+}
+
+// ── PDF Upload ────────────────────────────────────────────
+
+async function loadPDFJS() {
+  if (window.pdfjsLib) return;
+  await new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+    s.onload = resolve;
+    s.onerror = () => reject(new Error('Failed to load PDF.js'));
+    document.head.appendChild(s);
+  });
+  window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
+
+async function handlePDFUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  const statusEl = document.getElementById('pdf-status');
+  statusEl.style.display = '';
+  statusEl.className = 'loading';
+  statusEl.textContent = 'Extracting text from PDF…';
+
+  try {
+    await loadPDFJS();
+    const buf = await file.arrayBuffer();
+    const pdf = await window.pdfjsLib.getDocument({ data: buf }).promise;
+
+    let text = '';
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      // Join items; insert newline when y-position changes significantly
+      let lastY = null;
+      for (const item of content.items) {
+        if (lastY !== null && Math.abs(item.transform[5] - lastY) > 5) text += '\n';
+        text += item.str;
+        lastY = item.transform[5];
+      }
+      text += '\n';
+    }
+
+    text = text.replace(/\n{3,}/g, '\n\n').trim();
+    if (!text) throw new Error('No extractable text — PDF may be image-based (scanned)');
+
+    document.getElementById('q-quote').value = text;
+    statusEl.className = 'ok';
+    statusEl.textContent = `Text extracted from "${file.name}" (${pdf.numPages} page${pdf.numPages > 1 ? 's' : ''}) — review below, then click Analyze.`;
+    document.getElementById('q-quote').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  } catch (e) {
+    statusEl.className = 'err';
+    statusEl.textContent = 'PDF error: ' + e.message;
+  }
+
+  input.value = ''; // allow re-selecting same file
 }
 
 // ── Quick Call Logger ──────────────────────────────────────
