@@ -1,4 +1,4 @@
-const CACHE = 'sg-sales-v2';
+const CACHE = 'sg-sales-v3';
 const SHELL = ['./', './index.html', './manifest.json', './icon.svg'];
 
 self.addEventListener('install', e => {

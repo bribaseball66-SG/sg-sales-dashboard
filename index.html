@@ -377,7 +377,7 @@ async function loadData() {
     do {
       const q = new URLSearchParams({
         limit: 100,
-        properties: 'firstname,lastname,company,hs_lead_status,notes_last_contacted,createdate,city,state',
+        properties: 'firstname,lastname,company,hs_lead_status,notes_last_contacted,createdate,address,city,state,zip',
         ...(after ? { after } : {}),
       });
       const res = await hs('GET', '/crm/v3/objects/contacts?' + q);
@@ -545,7 +545,8 @@ function cardHtml(c, today, weekOut) {
     <div class="cm">
       <div>
         <span class="cn">${esc(name)}</span>
-        ${(p.city || p.state) ? `<span class="loc">${esc([p.city, p.state].filter(Boolean).join(', '))}</span>` : ''}
+        ${p.address ? `<span class="loc">${esc(p.address)}</span>` : ''}
+        ${(p.city || p.state || p.zip) ? `<span class="loc">${esc([p.city, [p.state, p.zip].filter(Boolean).join(' ')].filter(Boolean).join(', '))}</span>` : ''}
       </div>
       ${dateHtml}
     </div>
