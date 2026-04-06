@@ -148,7 +148,8 @@
     .b-def { background: rgba(148,163,184,.12); color: #94a3b8; }
 
     .cm { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-    .cn { font-size: 13px; color: var(--dim); }
+    .cn { font-size: 13px; color: var(--dim); display: block; }
+    .loc { font-size: 11px; color: #475569; display: block; margin-top: 1px; }
     .fd { font-size: 12px; font-weight: 600; }
     .fd.r { color: var(--red); }
     .fd.a { color: var(--amber); }
@@ -376,7 +377,7 @@ async function loadData() {
     do {
       const q = new URLSearchParams({
         limit: 100,
-        properties: 'firstname,lastname,company,hs_lead_status,notes_last_contacted,createdate',
+        properties: 'firstname,lastname,company,hs_lead_status,notes_last_contacted,createdate,city,state',
         ...(after ? { after } : {}),
       });
       const res = await hs('GET', '/crm/v3/objects/contacts?' + q);
@@ -542,7 +543,10 @@ function cardHtml(c, today, weekOut) {
       <span class="badge ${bClass}">${bLabel}</span>
     </div>
     <div class="cm">
-      <span class="cn">${esc(name)}</span>
+      <div>
+        <span class="cn">${esc(name)}</span>
+        ${(p.city || p.state) ? `<span class="loc">${esc([p.city, p.state].filter(Boolean).join(', '))}</span>` : ''}
+      </div>
       ${dateHtml}
     </div>
     <div class="np">${preview}</div>
