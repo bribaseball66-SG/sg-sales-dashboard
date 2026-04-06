@@ -821,7 +821,7 @@ async function loadNotes(id) {
     area.innerHTML = notes.length
       ? notes.map(n => `<div class="note-item"><div class="nd">${new Date(n.properties.hs_timestamp).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})}</div><div class="nb">${esc(n.properties.hs_note_body||'')}</div></div>`).join('')
       : '<div style="color:var(--dim);font-size:13px">No notes yet.</div>';
-  } catch { document.getElementById('notes-area')?.innerHTML = '<div style="color:var(--red);font-size:13px">Could not load notes.</div>'; }
+  } catch { const na = document.getElementById('notes-area'); if (na) na.innerHTML = '<div style="color:var(--red);font-size:13px">Could not load notes.</div>'; }
 }
 
 function closeSheet() {
