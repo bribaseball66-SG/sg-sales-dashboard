@@ -257,6 +257,16 @@
     }
     .card-del:hover  { color: var(--red); background: rgba(239,68,68,.1); }
     .card-del:active { color: var(--red); }
+    .card-email-btn {
+      display: flex; align-items: center; gap: 5px;
+      background: none; border: 1px solid var(--border); color: var(--dim);
+      border-radius: 7px; padding: 4px 10px; font-size: 11px; font-weight: 600;
+      cursor: pointer; font-family: inherit; transition: color .15s, border-color .15s;
+      margin-top: 9px; width: 100%;
+    }
+    .card-email-btn:hover  { color: var(--accent); border-color: var(--accent); }
+    .card-email-btn:active { opacity: .75; }
+    #draft-email-out { white-space: pre-wrap; font-size: 13px; line-height: 1.65; color: var(--text); word-break: break-word; }
 
     /* ── Sheets ──────────────────────────────────────────── */
     #overlay {
@@ -796,6 +806,10 @@ function cardHtml(c, today, weekOut) {
       ${dateHtml}
     </div>
     <div class="np">${preview}</div>
+    <button class="card-email-btn" onclick="event.stopPropagation();showDraftEmail('${c.id}')">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      Draft Email
+    </button>
   </div>`;
 }
 
@@ -895,6 +909,56 @@ async function deleteContact(id) {
   }
 }
 
+// ── Draft Email ───────────────────────────────────────────
+
+async function showDraftEmail(id) {
+  await openContact(id);
+  showForm('email');
+}
+
+async function doGenerateEmail() {
+  const ctx = document.getElementById('f-email-ctx')?.value.trim();
+  if (!ctx) { toast('Enter some context', 'err'); return; }
+
+  const c = S.contacts.find(x => x.id === activeId);
+  const name = [c?.properties.firstname, c?.properties.lastname].filter(Boolean).join(' ') || '';
+  const company = c?.properties.company || '';
+
+  const btn = document.getElementById('gen-email-btn');
+  btn.disabled = true;
+  btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 1s linear infinite"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Drafting…`;
+  document.getElementById('email-result').style.display = 'none';
+
+  try {
+    const prompt = `You are Brian Blakeslee, a packaging sales rep at Stephen Gould. Write a short follow-up email to ${name}${company ? ' at ' + company : ''}.
+
+Context: ${ctx}
+
+Rules:
+- 3-5 sentences max
+- No filler openers ("Hope this finds you well", "I wanted to reach out", etc.)
+- Direct and human — sounds like a real person, not a template
+- End with exactly: Brian Blakeslee | Stephen Gould
+- First line must be the subject formatted as: Subject: [subject]
+- Blank line between subject and body`;
+
+    const text = await callClaude([{ role: 'user', content: prompt }]);
+    document.getElementById('draft-email-out').textContent = text;
+    document.getElementById('email-result').style.display = '';
+    document.getElementById('email-result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  } catch(e) {
+    toast('Failed: ' + e.message, 'err');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Generate Email`;
+  }
+}
+
+function copyDraftEmail() {
+  const text = document.getElementById('draft-email-out')?.textContent || '';
+  navigator.clipboard.writeText(text).then(() => toast('Email copied ✓', 'ok')).catch(() => toast('Copy failed', 'err'));
+}
+
 // ── In-sheet forms ────────────────────────────────────────
 
 function showForm(type) {
@@ -921,6 +985,22 @@ function showForm(type) {
       <div class="fg"><label class="fl">Date</label><input type="date" id="f-date" value="${nextDate(7)}"></div>
       <div class="fg"><label class="fl">Task note (optional)</label><textarea id="f-notes" rows="3" placeholder="What to do on this date?"></textarea></div>
       <button class="btn btn-p btn-w" onclick="doFollowUp()">Set Follow-Up</button>`;
+  } else if (type === 'email') {
+    div.innerHTML = `<div class="slbl">Draft Follow-Up Email</div>
+      <div class="fg">
+        <label class="fl">Context — one sentence</label>
+        <textarea id="f-email-ctx" rows="2" placeholder="e.g. followed up on box pricing, waiting on samples"></textarea>
+      </div>
+      <button class="btn btn-p btn-w" id="gen-email-btn" onclick="doGenerateEmail()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Generate Email
+      </button>
+      <div id="email-result" style="display:none;margin-top:12px">
+        <div class="result-block">
+          <div class="rb-title">Draft <button class="copy-btn" onclick="copyDraftEmail()">Copy</button></div>
+          <div id="draft-email-out"></div>
+        </div>
+      </div>`;
   }
   body.appendChild(div);
   div.scrollIntoView({ behavior:'smooth', block:'nearest' });
