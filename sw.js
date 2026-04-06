@@ -1,4 +1,4 @@
-const CACHE = 'sg-sales-v1';
+const CACHE = 'sg-sales-v2';
 const SHELL = ['./', './index.html', './manifest.json', './icon.svg'];
 
 self.addEventListener('install', e => {
@@ -16,8 +16,8 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-  // Network-only for HubSpot API
-  if (e.request.url.includes('hubapi.com')) return;
+  // Network-only for API calls
+  if (e.request.url.includes('workers.dev') || e.request.url.includes('hubapi.com')) return;
   // Cache-first for app shell
   e.respondWith(caches.match(e.request).then(hit => hit || fetch(e.request)));
 });
