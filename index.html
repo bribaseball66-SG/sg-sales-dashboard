@@ -827,6 +827,7 @@ async function openContact(id) {
         <button class="btn btn-s" onclick="showForm('note')">📝 Add Note</button>
         <button class="btn btn-s" onclick="showForm('status')">🏷 Update Status</button>
         <button class="btn btn-s" onclick="showForm('followup')">📅 Set Follow-Up</button>
+        <button class="btn btn-w" style="background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.25)" onclick="deleteContact()">🗑 Delete Contact</button>
       </div>
       <div class="slbl">Recent Notes</div>
       <div id="notes-area"><div style="color:var(--dim);font-size:13px">Loading…</div></div>
@@ -858,6 +859,25 @@ function closeSheet() {
   document.getElementById('overlay').classList.remove('on');
   document.getElementById('sheet').classList.remove('on');
   activeId = null;
+}
+
+async function deleteContact() {
+  const id = activeId;
+  const c = S.contacts.find(x => x.id === id);
+  if (!c) return;
+  const name = [c.properties.firstname, c.properties.lastname].filter(Boolean).join(' ') || c.properties.company || 'this contact';
+  if (!confirm(`Permanently delete ${name} from HubSpot?\n\nThis cannot be undone.`)) return;
+  try {
+    await hs('DELETE', `/crm/v3/objects/contacts/${id}`);
+    S.contacts = S.contacts.filter(x => x.id !== id);
+    delete S.tasks[id];
+    closeSheet();
+    render();
+    updateStats();
+    toast(`${name} deleted`, 'ok');
+  } catch(e) {
+    toast('Delete failed: ' + e.message, 'err');
+  }
 }
 
 // ── In-sheet forms ────────────────────────────────────────
