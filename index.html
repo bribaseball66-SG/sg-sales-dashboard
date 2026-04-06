@@ -250,6 +250,13 @@
     .pq-margin { font-size: 12px; font-weight: 700; }
     .pq-del { background: none; border: none; color: #475569; cursor: pointer; padding: 4px; font-size: 16px; }
     .pq-del:active { color: var(--red); }
+    .card-del {
+      background: none; border: none; color: #475569; cursor: pointer;
+      padding: 4px; border-radius: 6px; display: flex; align-items: center;
+      transition: color .15s, background .15s;
+    }
+    .card-del:hover  { color: var(--red); background: rgba(239,68,68,.1); }
+    .card-del:active { color: var(--red); }
 
     /* ── Sheets ──────────────────────────────────────────── */
     #overlay {
@@ -771,7 +778,15 @@ function cardHtml(c, today, weekOut) {
   const preview = task?.subject ? esc(task.subject) : '<span style="color:#475569">Tap to view notes and log activity</span>';
 
   return `<div class="card ${cardClass}" onclick="openContact('${c.id}')">
-    <div class="ct"><div class="co">${esc(co)}</div><span class="badge ${bClass}">${bLabel}</span></div>
+    <div class="ct">
+      <div class="co">${esc(co)}</div>
+      <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+        <span class="badge ${bClass}">${bLabel}</span>
+        <button class="card-del" onclick="event.stopPropagation();deleteContact('${c.id}')" title="Delete contact">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </button>
+      </div>
+    </div>
     <div class="cm">
       <div>
         <span class="cn">${esc(name)}</span>
@@ -861,8 +876,8 @@ function closeSheet() {
   activeId = null;
 }
 
-async function deleteContact() {
-  const id = activeId;
+async function deleteContact(id) {
+  id = id || activeId;
   const c = S.contacts.find(x => x.id === id);
   if (!c) return;
   const name = [c.properties.firstname, c.properties.lastname].filter(Boolean).join(' ') || c.properties.company || 'this contact';
@@ -871,7 +886,7 @@ async function deleteContact() {
     await hs('DELETE', `/crm/v3/objects/contacts/${id}`);
     S.contacts = S.contacts.filter(x => x.id !== id);
     delete S.tasks[id];
-    closeSheet();
+    if (activeId === id) closeSheet();
     render();
     updateStats();
     toast(`${name} deleted`, 'ok');
