@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>SG Sales Dashboard</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="SG Sales">
+  <style>
+    :root {
+      --navy:    #0f172a;
+      --navyL:   #1e293b;
+      --navyLL:  #263347;
+      --blue:    #1d4ed8;
+      --accent:  #3b82f6;
+      --green:   #10b981;
+      --amber:   #f59e0b;
+      --red:     #ef4444;
+      --text:    #f1f5f9;
+      --dim:     #94a3b8;
+      --border:  #334155;
+      --st: env(safe-area-inset-top);
+      --sb: env(safe-area-inset-bottom);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif;
+      background: var(--navy);
+      color: var(--text);
+      min-height: 100%;
+      -webkit-font-smoothing: antialiased;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    /* ── Setup screen ─────────────────────────────────── */
+    #setup {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100dvh;
+      padding: 40px 28px calc(40px + var(--sb));
+      text-align: center;
+    }
+    #setup.on { display: flex; }
+    .setup-logo { font-size: 34px; font-weight: 900; letter-spacing: -1px; }
+    .setup-sub {
+      font-size: 12px; letter-spacing: 1.2px; text-transform: uppercase;
+      color: var(--dim); margin: 4px 0 28px;
+    }
+    .setup-desc {
+      font-size: 14px; color: var(--dim); line-height: 1.7;
+      max-width: 340px; margin-bottom: 28px;
+    }
+    .setup-desc a { color: var(--accent); text-decoration: none; }
+    #token-input {
+      width: 100%; max-width: 400px;
+      background: var(--navyL); border: 1px solid var(--border); border-radius: 12px;
+      padding: 14px 16px; color: var(--text); font-size: 14px; font-family: inherit;
+      outline: none; margin-bottom: 12px;
+    }
+    #token-input:focus { border-color: var(--accent); }
+    #connect-btn {
+      width: 100%; max-width: 400px;
+      padding: 14px; background: var(--blue); color: #fff; border: none;
+      border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer;
+      transition: opacity .15s;
+    }
+    #connect-btn:active { opacity: .8; }
+
+    /* ── App shell ────────────────────────────────────── */
+    #app { display: none; }
+    #app.on { display: block; }
+
+    /* Header */
+    #hdr {
+      background: var(--navy);
+      padding: calc(14px + var(--st)) 16px 14px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+      border-bottom: 1px solid var(--border);
+    }
+    .logo { display: flex; align-items: center; gap: 11px; }
+    .logo-mark {
+      width: 36px; height: 36px; border-radius: 9px;
+      background: var(--blue); display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 15px; color: #fff; letter-spacing: -.5px;
+      flex-shrink: 0;
+    }
+    .logo-name { font-size: 17px; font-weight: 800; letter-spacing: -.3px; }
+    .logo-tag {
+      font-size: 10px; text-transform: uppercase; letter-spacing: 1px;
+      color: var(--dim); margin-top: 1px;
+    }
+    #hdr-right { display: flex; align-items: center; gap: 6px; }
+    .icon-btn {
+      background: none; border: none; color: var(--dim); cursor: pointer;
+      padding: 8px; border-radius: 8px; display: flex; align-items: center;
+      justify-content: center; transition: color .2s;
+    }
+    .icon-btn:hover { color: var(--text); }
+    .icon-btn.spin svg { animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Toolbar */
+    #toolbar {
+      background: var(--navy); padding: 10px 16px;
+      position: sticky; top: 65px; z-index: 99;
+      border-bottom: 1px solid var(--border);
+    }
+    .search-wrap { position: relative; margin-bottom: 10px; }
+    .search-wrap .ico {
+      position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+      pointer-events: none; color: var(--dim);
+    }
+    #search {
+      width: 100%; background: var(--navyL); border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px 14px 10px 36px;
+      color: var(--text); font-size: 15px; outline: none; transition: border-color .2s;
+    }
+    #search:focus { border-color: var(--accent); }
+    #search::placeholder { color: var(--dim); }
+    #chips {
+      display: flex; gap: 7px; overflow-x: auto; scrollbar-width: none;
+    }
+    #chips::-webkit-scrollbar { display: none; }
+    .chip {
+      background: var(--navyL); border: 1px solid var(--border); color: var(--dim);
+      border-radius: 20px; padding: 5px 13px; font-size: 12px; font-weight: 600;
+      cursor: pointer; white-space: nowrap; transition: all .15s; flex-shrink: 0;
+    }
+    .chip.on { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+    /* Stats bar */
+    #stats {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      border-bottom: 1px solid var(--border);
+    }
+    .stat {
+      padding: 10px 8px; text-align: center;
+      border-right: 1px solid var(--border);
+    }
+    .stat:last-child { border-right: none; }
+    .sn { font-size: 20px; font-weight: 800; }
+    .sl { font-size: 9px; text-transform: uppercase; letter-spacing: .6px; color: var(--dim); margin-top: 1px; }
+    .sn.r { color: var(--red); }
+    .sn.a { color: var(--amber); }
+    .sn.g { color: var(--green); }
+
+    /* List */
+    #list {
+      padding: 12px 14px calc(24px + var(--sb));
+      display: flex; flex-direction: column; gap: 8px;
+      max-width: 760px; margin: 0 auto;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--navyL); border: 1px solid var(--border);
+      border-radius: 13px; padding: 14px 15px; cursor: pointer;
+      transition: border-color .15s, transform .1s; position: relative;
+      border-left-width: 3px;
+    }
+    .card:active { transform: scale(.99); }
+    .card:hover  { border-color: #475569; }
+    .card.overdue  { border-left-color: var(--red); }
+    .card.soon     { border-left-color: var(--amber); }
+    .card.engaged  { border-left-color: var(--green); }
+    .card.neutral  { border-left-color: var(--border); }
+
+    .ct { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 3px; }
+    .co { font-size: 15px; font-weight: 700; flex: 1; margin-right: 10px; }
+    .badge {
+      font-size: 11px; font-weight: 700; padding: 3px 9px;
+      border-radius: 12px; white-space: nowrap; flex-shrink: 0;
+    }
+    .b-eng { background: rgba(16,185,129,.15); color: #10b981; }
+    .b-act { background: rgba(59,130,246,.15); color: #60a5fa; }
+    .b-opn { background: rgba(245,158,11,.15); color: #f59e0b; }
+    .b-def { background: rgba(148,163,184,.12); color: #94a3b8; }
+
+    .cm { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .cn { font-size: 13px; color: var(--dim); }
+    .fd { font-size: 12px; font-weight: 600; }
+    .fd.r { color: var(--red); }
+    .fd.a { color: var(--amber); }
+    .fd.ok { color: var(--dim); }
+    .fd.none { color: #475569; }
+    .np { font-size: 12px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* Skeleton */
+    .skel { background: linear-gradient(90deg,#1e293b 25%,#263347 50%,#1e293b 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 6px; }
+    @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+
+    /* Empty */
+    .empty { text-align: center; padding: 64px 32px; color: var(--dim); }
+    .empty svg { margin-bottom: 14px; opacity: .35; }
+    .empty p { font-size: 15px; }
+
+    /* ── Sheet overlay ─────────────────────────────────── */
+    #overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.55); z-index: 200; backdrop-filter: blur(3px);
+    }
+    #overlay.on { display: block; }
+    #sheet {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--navyL); border-radius: 22px 22px 0 0;
+      max-height: 92dvh; overflow-y: auto; z-index: 201;
+      transform: translateY(100%);
+      transition: transform .3s cubic-bezier(.32,.72,0,1);
+      padding-bottom: calc(20px + var(--sb));
+    }
+    #sheet.on { transform: translateY(0); }
+    .sh-pull {
+      width: 38px; height: 4px; background: var(--border);
+      border-radius: 2px; margin: 12px auto 0;
+    }
+    .sh-hdr {
+      padding: 14px 20px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sh-co { font-size: 19px; font-weight: 800; margin-bottom: 3px; }
+    .sh-nm { font-size: 14px; color: var(--dim); display: flex; align-items: center; justify-content: space-between; }
+    .sh-task { font-size: 12px; color: var(--dim); margin-top: 5px; }
+    .sh-body { padding: 16px 20px; }
+
+    /* Section label */
+    .slbl {
+      font-size: 10px; text-transform: uppercase; letter-spacing: .8px;
+      color: var(--dim); font-weight: 700; margin-bottom: 8px;
+    }
+
+    /* Action grid */
+    .acts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
+    .btn {
+      padding: 12px 8px; border-radius: 11px; border: none; cursor: pointer;
+      font-size: 13px; font-weight: 700; display: flex; align-items: center;
+      justify-content: center; gap: 6px; transition: opacity .15s; font-family: inherit;
+    }
+    .btn:active { opacity: .75; }
+    .btn-p  { background: var(--blue); color: #fff; }
+    .btn-s  { background: #2d3f55; color: var(--text); }
+    .btn-w  { grid-column: 1/-1; }
+
+    /* Status chooser */
+    .status-row { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 14px; }
+    .sopt {
+      padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border);
+      background: var(--navy); color: var(--dim); cursor: pointer;
+      font-size: 13px; font-weight: 600; transition: all .15s; font-family: inherit;
+    }
+    .sopt.on { border-color: var(--blue); background: rgba(29,78,216,.2); color: var(--accent); }
+
+    /* Form elements */
+    textarea, input[type=date] {
+      width: 100%; background: var(--navy); border: 1px solid var(--border);
+      border-radius: 10px; color: var(--text); font-size: 14px; font-family: inherit;
+      padding: 11px 13px; outline: none; transition: border-color .2s;
+    }
+    textarea { resize: none; line-height: 1.5; }
+    textarea:focus, input[type=date]:focus { border-color: var(--accent); }
+    input[type=date] { color-scheme: dark; }
+    .fg { margin-bottom: 12px; }
+    .fl { font-size: 12px; color: var(--dim); margin-bottom: 5px; display: block; }
+
+    /* Notes */
+    .note-item {
+      background: var(--navy); border-left: 2px solid var(--border);
+      border-radius: 8px; padding: 10px 12px; margin-bottom: 8px;
+    }
+    .nd { font-size: 11px; color: var(--dim); margin-bottom: 4px; }
+    .nb { font-size: 13px; color: var(--text); line-height: 1.55; white-space: pre-wrap; word-break: break-word; }
+
+    /* Divider in sheet */
+    .sh-div { border-top: 1px solid var(--border); margin: 16px 0; padding-top: 16px; }
+
+    /* Toast */
+    #toast {
+      position: fixed; bottom: calc(18px + var(--sb)); left: 50%;
+      transform: translateX(-50%) translateY(60px);
+      background: var(--navyL); border: 1px solid var(--border);
+      border-radius: 24px; padding: 10px 22px; font-size: 14px; font-weight: 600;
+      z-index: 400; white-space: nowrap; pointer-events: none;
+      transition: transform .3s cubic-bezier(.32,.72,0,1);
+      box-shadow: 0 8px 32px rgba(0,0,0,.4);
+    }
+    #toast.on  { transform: translateX(-50%) translateY(0); }
+    #toast.ok  { border-color: var(--green); color: var(--green); }
+    #toast.err { border-color: var(--red);   color: var(--red);   }
+
+    @media (min-width: 600px) {
+      #list { padding-left: 20px; padding-right: 20px; }
+      #sheet { max-width: 540px; left: 50%; right: auto; transform: translateX(-50%) translateY(100%); border-radius: 22px 22px 0 0; }
+      #sheet.on { transform: translateX(-50%) translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Setup ──────────────────────────────────────────── -->
+<div id="setup">
+  <div class="logo-mark" style="width:56px;height:56px;font-size:22px;margin-bottom:14px">SG</div>
+  <div class="setup-logo">Stephen Gould</div>
+  <div class="setup-sub">Sales Dashboard</div>
+  <p class="setup-desc">
+    Enter your HubSpot Private App token to connect your CRM.
+    The token is stored on this device only — never in the source code.
+  </p>
+  <input id="token-input" type="password" placeholder="pat-na2-xxxxxxxx-xxxx-…" autocomplete="off" autocorrect="off" spellcheck="false">
+  <button id="connect-btn" onclick="saveToken()">Connect to HubSpot →</button>
+</div>
+
+<!-- ── App ────────────────────────────────────────────── -->
+<div id="app">
+  <div id="hdr">
+    <div class="logo">
+      <div class="logo-mark">SG</div>
+      <div>
+        <div class="logo-name">Stephen Gould</div>
+        <div class="logo-tag">Sales Dashboard</div>
+      </div>
+    </div>
+    <div id="hdr-right">
+      <button class="icon-btn" id="refresh-btn" onclick="loadData()" title="Refresh">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+        </svg>
+      </button>
+      <button class="icon-btn" onclick="resetToken()" title="Disconnect">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="toolbar">
+    <div class="search-wrap">
+      <svg class="ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input id="search" type="search" placeholder="Search contacts or companies…" oninput="render()" autocorrect="off" autocapitalize="none">
+    </div>
+    <div id="chips">
+      <div class="chip on" data-f="all"      onclick="setFilter(this)">All</div>
+      <div class="chip"    data-f="overdue"  onclick="setFilter(this)">⚠ Overdue</div>
+      <div class="chip"    data-f="engaged"  onclick="setFilter(this)">Engaged</div>
+      <div class="chip"    data-f="active"   onclick="setFilter(this)">Active</div>
+      <div class="chip"    data-f="followup" onclick="setFilter(this)">Follow Up</div>
+      <div class="chip"    data-f="notask"   onclick="setFilter(this)">No Task</div>
+    </div>
+  </div>
+
+  <div id="stats">
+    <div class="stat"><div class="sn r" id="s-overdue">—</div><div class="sl">Overdue</div></div>
+    <div class="stat"><div class="sn a" id="s-soon">—</div><div class="sl">This Week</div></div>
+    <div class="stat"><div class="sn g" id="s-engaged">—</div><div class="sl">Engaged</div></div>
+    <div class="stat"><div class="sn"   id="s-total">—</div><div class="sl">Total</div></div>
+  </div>
+
+  <div id="list"></div>
+</div>
+
+<!-- ── Bottom sheet ────────────────────────────────────── -->
+<div id="overlay" onclick="closeSheet()"></div>
+<div id="sheet">
+  <div class="sh-pull"></div>
+  <div id="sheet-inner"></div>
+</div>
+
+<!-- ── Toast ──────────────────────────────────────────── -->
+<div id="toast"></div>
+
+<script>
+'use strict';
+
+const BASE = 'https://api.hubapi.com';
+let TOKEN = '';
+let S = { contacts: [], tasks: {}, filter: 'all', loading: false };
+let activeId = null;
+
+// ── Bootstrap ─────────────────────────────────────────
+
+function boot() {
+  TOKEN = localStorage.getItem('hs_token') || '';
+  if (!TOKEN) { show('setup'); return; }
+  show('app');
+  loadData();
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+}
+
+function show(id) {
+  document.getElementById('setup').classList.toggle('on', id === 'setup');
+  document.getElementById('app').classList.toggle('on', id === 'app');
+}
+
+function saveToken() {
+  const v = document.getElementById('token-input').value.trim();
+  if (!v.startsWith('pat-')) { toast('Token should start with pat-', 'err'); return; }
+  localStorage.setItem('hs_token', v);
+  TOKEN = v;
+  show('app');
+  loadData();
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+}
+
+function resetToken() {
+  if (!confirm('Disconnect from HubSpot?')) return;
+  localStorage.removeItem('hs_token');
+  location.reload();
+}
+
+// ── API ───────────────────────────────────────────────
+
+async function hs(method, path, body) {
+  const r = await fetch(BASE + path, {
+    method,
+    headers: { Authorization: 'Bearer ' + TOKEN, 'Content-Type': 'application/json' },
+    body: body != null ? JSON.stringify(body) : undefined,
+  });
+  if (r.status === 204) return null;
+  const json = await r.json();
+  if (!r.ok) {
+    if (r.status === 401) { localStorage.removeItem('hs_token'); location.reload(); }
+    throw new Error(json.message || r.status);
+  }
+  return json;
+}
+
+function chunk(arr, n) {
+  const out = [];
+  for (let i = 0; i < arr.length; i += n) out.push(arr.slice(i, i + n));
+  return out;
+}
+
+// ── Data loading ──────────────────────────────────────
+
+async function loadData() {
+  if (S.loading) return;
+  S.loading = true;
+  const btn = document.getElementById('refresh-btn');
+  btn.classList.add('spin');
+  renderSkeleton();
+
+  try {
+    // 1. Fetch all contacts (paginated)
+    const all = [];
+    let after = null;
+    do {
+      const q = new URLSearchParams({
+        limit: 100,
+        properties: 'firstname,lastname,company,hs_lead_status,notes_last_contacted,createdate',
+        ...(after ? { after } : {}),
+      });
+      const res = await hs('GET', '/crm/v3/objects/contacts?' + q);
+      all.push(...(res.results || []));
+      after = res.paging?.next?.after || null;
+    } while (after);
+
+    // 2. Batch-load task associations (chunks of 100)
+    const taskAssoc = {}; // contactId → [taskId, …]
+    if (all.length) {
+      for (const ch of chunk(all.map(c => ({ id: c.id })), 100)) {
+        const res = await hs('POST', '/crm/v4/associations/contacts/tasks/batch/read', { inputs: ch });
+        for (const row of (res.results || []))
+          if (row.to?.length) taskAssoc[row.from.id] = row.to.map(t => String(t.toObjectId));
+      }
+    }
+
+    // 3. Batch-load task details
+    const allIds = [...new Set(Object.values(taskAssoc).flat())];
+    const taskMap = {};
+    if (allIds.length) {
+      for (const ch of chunk(allIds, 100)) {
+        const res = await hs('POST', '/crm/v3/objects/tasks/batch/read', {
+          properties: ['hs_task_subject', 'hs_timestamp', 'hs_task_status'],
+          inputs: ch.map(id => ({ id })),
+        });
+        for (const t of (res.results || [])) taskMap[t.id] = t.properties;
+      }
+    }
+
+    // 4. Pick the most-relevant task per contact
+    // (most-overdue if any overdue, otherwise earliest upcoming)
+    const now = Date.now();
+    S.tasks = {};
+    for (const [cId, ids] of Object.entries(taskAssoc)) {
+      const active = ids
+        .map(id => taskMap[id])
+        .filter(t => t && t.hs_task_status !== 'COMPLETED' && t.hs_timestamp)
+        .map(t => ({ ms: parseInt(t.hs_timestamp), subject: t.hs_task_subject || '' }))
+        .sort((a, b) => a.ms - b.ms);
+      if (!active.length) continue;
+      const overdue = active.filter(t => t.ms < now);
+      S.tasks[cId] = overdue.length ? overdue[overdue.length - 1] : active[0];
+    }
+
+    S.contacts = all;
+    render();
+    updateStats();
+  } catch (e) {
+    toast('Load failed: ' + e.message, 'err');
+    document.getElementById('list').innerHTML = `<div class="empty"><p>Could not load contacts.<br>${esc(e.message)}</p></div>`;
+  } finally {
+    S.loading = false;
+    btn.classList.remove('spin');
+  }
+}
+
+// ── Render ────────────────────────────────────────────
+
+function render() {
+  const q = (document.getElementById('search')?.value || '').toLowerCase();
+  const f = S.filter;
+  const now = new Date(); now.setHours(0,0,0,0);
+  const weekOut = new Date(now); weekOut.setDate(weekOut.getDate() + 7);
+
+  let rows = S.contacts.filter(c => {
+    const p = c.properties;
+    const name = (p.firstname||'') + ' ' + (p.lastname||'');
+    if (q && !name.toLowerCase().includes(q) && !(p.company||'').toLowerCase().includes(q)) return false;
+    const st = (p.hs_lead_status||'').toUpperCase();
+    const task = S.tasks[c.id];
+    if (f === 'overdue')  return task && task.ms < now;
+    if (f === 'engaged')  return st === 'CONNECTED';
+    if (f === 'active')   return st === 'IN_PROGRESS';
+    if (f === 'followup') return st === 'OPEN' || st === 'ATTEMPTED_TO_CONTACT';
+    if (f === 'notask')   return !task;
+    return true;
+  });
+
+  // Sort: overdue first (most overdue at top), then upcoming by date, then no-task by company
+  rows.sort((a, b) => {
+    const ta = S.tasks[a.id], tb = S.tasks[b.id];
+    const ao = ta && ta.ms < now, bo = tb && tb.ms < now;
+    if (ao && !bo) return -1;
+    if (!ao && bo) return 1;
+    if (ao && bo)  return ta.ms - tb.ms;  // most overdue first
+    if (ta && tb)  return ta.ms - tb.ms;
+    if (ta) return -1;
+    if (tb) return  1;
+    return (a.properties.company||'').localeCompare(b.properties.company||'');
+  });
+
+  const list = document.getElementById('list');
+  if (!rows.length) {
+    list.innerHTML = `<div class="empty">
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <p>No contacts match</p></div>`;
+    return;
+  }
+
+  list.innerHTML = rows.map(c => cardHtml(c, now, weekOut)).join('');
+  updateStats();
+}
+
+function renderSkeleton() {
+  document.getElementById('list').innerHTML = Array(7).fill(0).map(() => `
+    <div class="card neutral" style="pointer-events:none">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <div class="skel" style="height:16px;width:55%"></div>
+        <div class="skel" style="height:16px;width:18%"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <div class="skel" style="height:13px;width:35%"></div>
+        <div class="skel" style="height:13px;width:22%"></div>
+      </div>
+      <div class="skel" style="height:12px;width:75%"></div>
+    </div>`).join('');
+}
+
+const BADGE = {
+  CONNECTED:           ['b-eng', 'Engaged'],
+  IN_PROGRESS:         ['b-act', 'Active'],
+  OPEN:                ['b-opn', 'Follow Up'],
+  ATTEMPTED_TO_CONTACT:['b-opn', 'Attempted'],
+  OPEN_DEAL:           ['b-act', 'Open Deal'],
+  BAD_TIMING:          ['b-def', 'Bad Timing'],
+  NEW:                 ['b-def', 'New'],
+};
+
+function cardHtml(c, today, weekOut) {
+  const p    = c.properties;
+  const name = [p.firstname, p.lastname].filter(Boolean).join(' ') || '—';
+  const co   = p.company || 'Unknown Company';
+  const st   = (p.hs_lead_status||'').toUpperCase();
+  const [bClass, bLabel] = BADGE[st] || ['b-def', st || 'No Status'];
+  const task = S.tasks[c.id];
+
+  let dateHtml = '<span class="fd none">No task</span>';
+  let cardClass = 'neutral';
+
+  if (task) {
+    const d = new Date(task.ms);
+    const over = task.ms < today;
+    const soon = !over && task.ms <= weekOut;
+    const daysAgo = Math.round((today - task.ms) / 86400000);
+    const label = over
+      ? (daysAgo <= 0 ? 'Today' : daysAgo + 'd overdue')
+      : (d.toDateString() === today.toDateString() ? 'Today'
+          : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+    dateHtml = `<span class="fd ${over ? 'r' : soon ? 'a' : 'ok'}">${over ? '⚠ ' : ''}${label}</span>`;
+    cardClass = over ? 'overdue' : soon ? 'soon' : (st === 'CONNECTED' ? 'engaged' : 'neutral');
+  } else if (st === 'CONNECTED') {
+    cardClass = 'engaged';
+  }
+
+  const preview = task?.subject
+    ? esc(task.subject)
+    : '<span style="color:#475569">Tap to view notes and log activity</span>';
+
+  return `<div class="card ${cardClass}" onclick="openContact('${c.id}')">
+    <div class="ct">
+      <div class="co">${esc(co)}</div>
+      <span class="badge ${bClass}">${bLabel}</span>
+    </div>
+    <div class="cm">
+      <span class="cn">${esc(name)}</span>
+      ${dateHtml}
+    </div>
+    <div class="np">${preview}</div>
+  </div>`;
+}
+
+function updateStats() {
+  const now = new Date(); now.setHours(0,0,0,0);
+  const week = new Date(now); week.setDate(week.getDate() + 7);
+  const c = S.contacts;
+  document.getElementById('s-overdue').textContent = c.filter(x => S.tasks[x.id]?.ms < now).length;
+  document.getElementById('s-soon').textContent    = c.filter(x => { const t=S.tasks[x.id]; return t && t.ms >= now && t.ms <= week; }).length;
+  document.getElementById('s-engaged').textContent = c.filter(x => (x.properties.hs_lead_status||'').toUpperCase()==='CONNECTED').length;
+  document.getElementById('s-total').textContent   = c.length;
+}
+
+function setFilter(el) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  S.filter = el.dataset.f;
+  render();
+}
+
+// ── Contact sheet ─────────────────────────────────────
+
+async function openContact(id) {
+  activeId = id;
+  const c = S.contacts.find(x => x.id === id);
+  if (!c) return;
+  const p   = c.properties;
+  const name = [p.firstname, p.lastname].filter(Boolean).join(' ') || '—';
+  const st   = (p.hs_lead_status||'').toUpperCase();
+  const [bClass, bLabel] = BADGE[st] || ['b-def', st || 'No Status'];
+  const task  = S.tasks[id];
+  const taskStr = task
+    ? new Date(task.ms).toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' })
+    : null;
+
+  document.getElementById('sheet-inner').innerHTML = `
+    <div class="sh-hdr">
+      <div class="sh-co">${esc(p.company||'—')}</div>
+      <div class="sh-nm"><span>${esc(name)}</span><span class="badge ${bClass}">${bLabel}</span></div>
+      ${taskStr ? `<div class="sh-task">📅 Follow-up: ${taskStr}</div>` : ''}
+    </div>
+    <div class="sh-body">
+      <div class="slbl">Actions</div>
+      <div class="acts">
+        <button class="btn btn-p" onclick="showForm('call')">📞 Log Call</button>
+        <button class="btn btn-s" onclick="showForm('note')">📝 Add Note</button>
+        <button class="btn btn-s" onclick="showForm('status')">🏷 Update Status</button>
+        <button class="btn btn-s" onclick="showForm('followup')">📅 Set Follow-Up</button>
+      </div>
+      <div class="slbl">Recent Notes</div>
+      <div id="notes-area"><div style="color:var(--dim);font-size:13px">Loading…</div></div>
+    </div>`;
+
+  document.getElementById('overlay').classList.add('on');
+  document.getElementById('sheet').classList.add('on');
+  document.body.style.overflow = 'hidden';
+
+  loadNotes(id);
+}
+
+async function loadNotes(id) {
+  try {
+    const assoc = await hs('GET', `/crm/v3/objects/contacts/${id}/associations/notes`);
+    const ids   = (assoc.results||[]).map(n => n.id).slice(0, 10);
+    const area  = document.getElementById('notes-area');
+    if (!area) return;
+
+    if (!ids.length) {
+      area.innerHTML = '<div style="color:var(--dim);font-size:13px">No notes yet.</div>';
+      return;
+    }
+    const res = await hs('POST', '/crm/v3/objects/notes/batch/read', {
+      properties: ['hs_note_body','hs_timestamp'],
+      inputs: ids.map(i => ({ id: i })),
+    });
+    const notes = (res.results||[])
+      .sort((a,b) => new Date(b.properties.hs_timestamp) - new Date(a.properties.hs_timestamp))
+      .slice(0, 6);
+
+    area.innerHTML = notes.length
+      ? notes.map(n => `
+          <div class="note-item">
+            <div class="nd">${new Date(n.properties.hs_timestamp).toLocaleDateString('en-US',{
+              month:'short', day:'numeric', year:'numeric', hour:'numeric', minute:'2-digit'
+            })}</div>
+            <div class="nb">${esc(n.properties.hs_note_body||'')}</div>
+          </div>`).join('')
+      : '<div style="color:var(--dim);font-size:13px">No notes yet.</div>';
+  } catch (e) {
+    const area = document.getElementById('notes-area');
+    if (area) area.innerHTML = `<div style="color:var(--red);font-size:13px">Could not load notes.</div>`;
+  }
+}
+
+function closeSheet() {
+  document.getElementById('overlay').classList.remove('on');
+  document.getElementById('sheet').classList.remove('on');
+  document.body.style.overflow = '';
+  activeId = null;
+}
+
+// ── In-sheet forms ────────────────────────────────────
+
+function showForm(type) {
+  const body = document.querySelector('#sheet .sh-body');
+  document.querySelectorAll('.sh-div').forEach(el => el.remove());
+  const div = document.createElement('div');
+  div.className = 'sh-div';
+
+  if (type === 'call') {
+    div.innerHTML = `
+      <div class="slbl">Log Call</div>
+      <div class="fg"><label class="fl">Call notes</label>
+        <textarea id="f-notes" rows="4" placeholder="What did you discuss?"></textarea></div>
+      <div class="fg"><label class="fl">Update status</label>
+        <div class="status-row" id="f-status">${statusOpts()}</div></div>
+      <div class="fg"><label class="fl">Set follow-up date</label>
+        <input type="date" id="f-date" value="${nextDate(7)}"></div>
+      <button class="btn btn-p btn-w" onclick="doLogCall()">Save Call</button>`;
+
+  } else if (type === 'note') {
+    div.innerHTML = `
+      <div class="slbl">Add Note</div>
+      <div class="fg"><textarea id="f-notes" rows="5" placeholder="Enter note…"></textarea></div>
+      <button class="btn btn-p btn-w" onclick="doNote()">Save Note</button>`;
+
+  } else if (type === 'status') {
+    div.innerHTML = `
+      <div class="slbl">Update Status</div>
+      <div class="status-row" id="f-status">${statusOpts()}</div>
+      <button class="btn btn-p btn-w" onclick="doStatus()">Update Status</button>`;
+
+  } else if (type === 'followup') {
+    div.innerHTML = `
+      <div class="slbl">Set Follow-Up</div>
+      <div class="fg"><label class="fl">Date</label>
+        <input type="date" id="f-date" value="${nextDate(7)}"></div>
+      <div class="fg"><label class="fl">Task note (optional)</label>
+        <textarea id="f-notes" rows="3" placeholder="What to do on this date?"></textarea></div>
+      <button class="btn btn-p btn-w" onclick="doFollowUp()">Set Follow-Up</button>`;
+  }
+
+  body.appendChild(div);
+  div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  div.querySelectorAll('.sopt').forEach(el => el.addEventListener('click', function() {
+    div.querySelectorAll('.sopt').forEach(x => x.classList.remove('on'));
+    this.classList.add('on');
+  }));
+}
+
+function statusOpts() {
+  const c = S.contacts.find(x => x.id === activeId);
+  const cur = (c?.properties.hs_lead_status||'').toUpperCase();
+  return [
+    ['IN_PROGRESS','Active'],['CONNECTED','Engaged'],['OPEN','Follow Up'],
+    ['ATTEMPTED_TO_CONTACT','Attempted'],['OPEN_DEAL','Open Deal'],['BAD_TIMING','Bad Timing'],
+  ].map(([v,l]) => `<button class="sopt${v===cur?' on':''}" data-v="${v}">${l}</button>`).join('');
+}
+
+function selStatus() {
+  return document.querySelector('#f-status .sopt.on')?.dataset.v || null;
+}
+
+function nextDate(days) {
+  const d = new Date(); d.setDate(d.getDate() + days);
+  return d.toISOString().slice(0,10);
+}
+
+// ── Submit actions ────────────────────────────────────
+
+async function doLogCall() {
+  const notes  = document.getElementById('f-notes')?.value.trim();
+  const status = selStatus();
+  const dateV  = document.getElementById('f-date')?.value;
+  if (!notes) { toast('Enter call notes', 'err'); return; }
+
+  try {
+    const call = await hs('POST', '/crm/v3/objects/calls', {
+      properties: { hs_call_title:'Call logged', hs_call_status:'COMPLETED',
+                    hs_call_body: notes, hs_timestamp: Date.now() },
+    });
+    await hs('PUT', `/crm/v4/objects/calls/${call.id}/associations/default/contacts/${activeId}`, null);
+
+    if (status) {
+      await hs('PATCH', `/crm/v3/objects/contacts/${activeId}`, { properties:{ hs_lead_status: status }});
+      const c = S.contacts.find(x => x.id === activeId);
+      if (c) c.properties.hs_lead_status = status;
+    }
+
+    if (dateV) await createTask(dateV);
+
+    toast('Call logged ✓', 'ok');
+    closeSheet();
+    render();
+  } catch(e) { toast('Error: ' + e.message, 'err'); }
+}
+
+async function doNote() {
+  const text = document.getElementById('f-notes')?.value.trim();
+  if (!text) { toast('Enter a note', 'err'); return; }
+  try {
+    const note = await hs('POST', '/crm/v3/objects/notes', {
+      properties: { hs_note_body: text, hs_timestamp: Date.now() },
+    });
+    await hs('PUT', `/crm/v4/objects/notes/${note.id}/associations/default/contacts/${activeId}`, null);
+    toast('Note saved ✓', 'ok');
+    closeSheet();
+  } catch(e) { toast('Error: ' + e.message, 'err'); }
+}
+
+async function doStatus() {
+  const status = selStatus();
+  if (!status) { toast('Select a status', 'err'); return; }
+  try {
+    await hs('PATCH', `/crm/v3/objects/contacts/${activeId}`, { properties:{ hs_lead_status: status }});
+    const c = S.contacts.find(x => x.id === activeId);
+    if (c) c.properties.hs_lead_status = status;
+    toast('Status updated ✓', 'ok');
+    closeSheet();
+    render();
+  } catch(e) { toast('Error: ' + e.message, 'err'); }
+}
+
+async function doFollowUp() {
+  const dateV = document.getElementById('f-date')?.value;
+  if (!dateV) { toast('Pick a date', 'err'); return; }
+  try {
+    await createTask(dateV, document.getElementById('f-notes')?.value.trim());
+    toast('Follow-up set ✓', 'ok');
+    closeSheet();
+    render();
+  } catch(e) { toast('Error: ' + e.message, 'err'); }
+}
+
+async function createTask(dateStr, subject) {
+  const c = S.contacts.find(x => x.id === activeId);
+  const name = [c?.properties.firstname, c?.properties.lastname].filter(Boolean).join(' ');
+  const co   = c?.properties.company || '';
+  const ms   = new Date(dateStr + 'T00:00:00').getTime();
+  const sub  = subject || `Follow up with ${name} at ${co}`;
+  const task = await hs('POST', '/crm/v3/objects/tasks', {
+    properties: { hs_task_subject:sub, hs_task_status:'NOT_STARTED', hs_task_type:'CALL', hs_timestamp:ms },
+  });
+  await hs('PUT', `/crm/v4/objects/tasks/${task.id}/associations/default/contacts/${activeId}`, null);
+  S.tasks[activeId] = { ms, subject: sub };
+}
+
+// ── Utilities ─────────────────────────────────────────
+
+function toast(msg, type='') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'on' + (type ? ' ' + type : '');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('on'), 3200);
+}
+
+function esc(s) {
+  return String(s||'')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+boot();
+</script>
+</body>
+</html>
