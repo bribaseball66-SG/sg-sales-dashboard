@@ -1,8 +1,8 @@
-const CACHE = 'sg-sales-v3';
-const SHELL = ['./', './index.html', './manifest.json', './icon.svg'];
+const CACHE = 'sg-sales-v4';
+const STATIC = ['./manifest.json', './icon.svg', './sw.js'];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)));
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(STATIC)));
   self.skipWaiting();
 });
 
@@ -16,8 +16,20 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-  // Network-only for API calls
+  // Pass through API calls
   if (e.request.url.includes('workers.dev') || e.request.url.includes('hubapi.com')) return;
-  // Cache-first for app shell
+
+  // Network-first for HTML — always get the latest index.html, fall back to cache offline
+  if (e.request.destination === 'document' || e.request.url.endsWith('/') || e.request.url.endsWith('/index.html')) {
+    e.respondWith(
+      fetch(e.request).then(r => {
+        caches.open(CACHE).then(c => c.put(e.request, r.clone()));
+        return r;
+      }).catch(() => caches.match(e.request))
+    );
+    return;
+  }
+
+  // Cache-first for other static assets (icons, manifest)
   e.respondWith(caches.match(e.request).then(hit => hit || fetch(e.request)));
 });

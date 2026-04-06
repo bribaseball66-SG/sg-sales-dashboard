@@ -335,7 +335,10 @@ let activeId = null;
 function boot() {
   document.getElementById('app').classList.add('on');
   loadData();
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+    navigator.serviceWorker.addEventListener('controllerchange', () => location.reload());
+  }
 }
 
 // ── API ───────────────────────────────────────────────
