@@ -318,6 +318,63 @@
     #toast.ok  { border-color: var(--green); color: var(--green); }
     #toast.err { border-color: var(--red);   color: var(--red);   }
 
+    /* ── Quote mode toggle ──────────────────────────────────── */
+    .mode-toggle {
+      display: flex; background: var(--navyLL); border-radius: 10px;
+      padding: 3px; gap: 3px; margin-bottom: 18px;
+    }
+    .mtog {
+      flex: 1; padding: 8px 6px; border: none; border-radius: 8px;
+      font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit;
+      color: var(--dim); background: none; transition: all .15s;
+    }
+    .mtog.on { background: var(--blue); color: #fff; }
+
+    /* ── Compare layout ─────────────────────────────────────── */
+    .compare-cols {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;
+    }
+    @media (max-width: 480px) { .compare-cols { grid-template-columns: 1fr; } }
+    .cmp-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 11px; font-weight: 800; letter-spacing: .4px;
+      padding: 3px 9px; border-radius: 6px;
+    }
+    .badge-a { background: rgba(59,130,246,.15); color: #60a5fa; }
+    .badge-b { background: rgba(139,92,246,.15);  color: #a78bfa; }
+
+    /* ── Comparison result table ────────────────────────────── */
+    .cmp-table { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 20px 0 14px; }
+    .cmp-thead {
+      display: grid; grid-template-columns: 1.6fr 1fr 1fr;
+      background: var(--navyLL); padding: 10px 14px;
+      font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .7px; color: var(--dim);
+    }
+    .cmp-thead .th-a { color: #60a5fa; }
+    .cmp-thead .th-b { color: #a78bfa; }
+    .cmp-row {
+      display: grid; grid-template-columns: 1.6fr 1fr 1fr;
+      padding: 10px 14px; border-top: 1px solid var(--border);
+      align-items: center; font-size: 13px;
+    }
+    .cmp-row:nth-child(odd) { background: rgba(255,255,255,.02); }
+    .cmp-metric { font-size: 11px; font-weight: 700; color: var(--dim); text-transform: uppercase; letter-spacing: .5px; }
+    .cmp-val    { font-weight: 600; line-height: 1.3; }
+    .cmp-val.win-a { color: #60a5fa; }
+    .cmp-val.win-b { color: #a78bfa; }
+    .cmp-val.win-mark::after { content: ' ✓'; font-size: 11px; }
+
+    /* ── Recommendation block ───────────────────────────────── */
+    .rec-block {
+      background: var(--navyLL); border-radius: 12px; padding: 16px;
+      margin-bottom: 14px; border-left: 3px solid var(--accent);
+    }
+    .rec-winner { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; color: var(--accent); margin-bottom: 8px; }
+    .rec-text   { font-size: 13px; line-height: 1.65; color: var(--text); }
+    .rec-caveats { margin-top: 10px; }
+    .rec-caveat  { font-size: 12px; color: var(--amber); padding: 2px 0; }
+    .rec-caveat::before { content: '⚠ '; }
+
     /* ── PDF Upload ─────────────────────────────────────────── */
     .quote-label-row {
       display: flex; align-items: center; justify-content: space-between;
@@ -420,8 +477,14 @@
 <div class="tab" id="tab-quotes">
   <div class="page-body">
     <div class="page-title">Quote Analyzer</div>
-    <div class="page-sub">Paste a supplier quote or upload a PDF, enter your target price, and Claude will analyze the margin, flag issues, and draft the Tracy email.</div>
 
+    <!-- Mode toggle -->
+    <div class="mode-toggle">
+      <button class="mtog on" id="mtog-single"  onclick="setQuoteMode('single')">Single Quote</button>
+      <button class="mtog"    id="mtog-compare" onclick="setQuoteMode('compare')">Compare Two Quotes</button>
+    </div>
+
+    <!-- Shared: client + target price -->
     <div class="form-row" style="margin-bottom:12px">
       <div class="fg" style="margin:0">
         <label class="fl">Client Name</label>
@@ -432,65 +495,109 @@
         <input type="number" id="q-price" placeholder="0.65" step="0.01" min="0">
       </div>
     </div>
-    <div class="fg">
-      <div class="quote-label-row">
-        <span class="fl" style="margin:0">Supplier Quote</span>
-        <label class="pdf-upload-btn" for="pdf-input">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-          Upload PDF / DOCX
-        </label>
-        <input type="file" id="pdf-input" accept=".pdf,application/pdf,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display:none" onchange="handleDocUpload(this)">
-      </div>
-      <div id="pdf-status" style="display:none"></div>
-      <textarea id="q-quote" rows="7" placeholder="Paste the supplier quote here…&#10;&#10;e.g. 3oz HDPE bottle, natural, 28/410 neck, MOQ 10,000 units, $0.38/unit FOB Ningbo, 45-day lead time…"></textarea>
-    </div>
-    <button class="wide-btn primary" id="analyze-btn" onclick="analyzeQuote()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      Analyze Quote
-    </button>
 
+    <!-- ── Single mode ── -->
+    <div id="qmode-single">
+      <div class="page-sub" style="margin-bottom:14px">Paste a supplier quote or upload a PDF/DOCX, enter your target price, and Claude will analyze the margin, flag issues, and draft the Tracy email.</div>
+      <div class="fg">
+        <div class="quote-label-row">
+          <span class="fl" style="margin:0">Supplier Quote</span>
+          <label class="pdf-upload-btn" for="pdf-input-a">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+            Upload PDF / DOCX
+          </label>
+          <input type="file" id="pdf-input-a" accept=".pdf,application/pdf,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display:none" onchange="handleDocUpload(this,'q-quote','pdf-status-a')">
+        </div>
+        <div id="pdf-status-a" style="display:none"></div>
+        <textarea id="q-quote" rows="7" placeholder="Paste the supplier quote here…&#10;&#10;e.g. 3oz HDPE bottle, natural, 28/410 neck, MOQ 10,000 units, $0.38/unit FOB Ningbo, 45-day lead time…"></textarea>
+      </div>
+      <button class="wide-btn primary" id="analyze-btn" onclick="analyzeQuote()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        Analyze Quote
+      </button>
+    </div>
+
+    <!-- ── Compare mode ── -->
+    <div id="qmode-compare" style="display:none">
+      <div class="page-sub" style="margin-bottom:14px">Paste or upload two supplier quotes and Claude will compare them side by side and recommend the winner.</div>
+      <div class="compare-cols">
+        <!-- Quote A -->
+        <div class="fg" style="margin:0">
+          <div class="quote-label-row">
+            <span class="cmp-badge badge-a">Quote A</span>
+            <label class="pdf-upload-btn" for="pdf-input-cmp-a">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+              Upload
+            </label>
+            <input type="file" id="pdf-input-cmp-a" accept=".pdf,application/pdf,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display:none" onchange="handleDocUpload(this,'q-quote-a','pdf-status-cmp-a')">
+          </div>
+          <div id="pdf-status-cmp-a" style="display:none"></div>
+          <textarea id="q-quote-a" rows="8" placeholder="Paste Quote A here…"></textarea>
+        </div>
+        <!-- Quote B -->
+        <div class="fg" style="margin:0">
+          <div class="quote-label-row">
+            <span class="cmp-badge badge-b">Quote B</span>
+            <label class="pdf-upload-btn" for="pdf-input-cmp-b">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+              Upload
+            </label>
+            <input type="file" id="pdf-input-cmp-b" accept=".pdf,application/pdf,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display:none" onchange="handleDocUpload(this,'q-quote-b','pdf-status-cmp-b')">
+          </div>
+          <div id="pdf-status-cmp-b" style="display:none"></div>
+          <textarea id="q-quote-b" rows="8" placeholder="Paste Quote B here…"></textarea>
+        </div>
+      </div>
+      <button class="wide-btn primary" id="compare-btn" onclick="compareQuotes()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="8" height="18" rx="1"/><rect x="14" y="3" width="8" height="18" rx="1"/></svg>
+        Compare Quotes
+      </button>
+    </div>
+
+    <!-- ── Single result ── -->
     <div id="quote-result" style="display:none">
       <hr class="divider">
-
       <div class="result-grid">
-        <div class="rcard">
-          <div class="rl">Supplier Price</div>
-          <div class="rv b" id="r-supplier">—</div>
-          <div class="rs">per unit</div>
-        </div>
-        <div class="rcard">
-          <div class="rl">Est. Landed Cost</div>
-          <div class="rv" id="r-landed" style="font-size:16px;margin-top:4px">—</div>
-        </div>
-        <div class="rcard">
-          <div class="rl">Your Sell Price</div>
-          <div class="rv b" id="r-sell">—</div>
-          <div class="rs">per unit</div>
-        </div>
-        <div class="rcard">
-          <div class="rl">Margin</div>
-          <div class="rv" id="r-margin">—</div>
-          <div class="rs" id="r-health"></div>
-        </div>
+        <div class="rcard"><div class="rl">Supplier Price</div><div class="rv b" id="r-supplier">—</div><div class="rs">per unit</div></div>
+        <div class="rcard"><div class="rl">Est. Landed Cost</div><div class="rv" id="r-landed" style="font-size:16px;margin-top:4px">—</div></div>
+        <div class="rcard"><div class="rl">Your Sell Price</div><div class="rv b" id="r-sell">—</div><div class="rs">per unit</div></div>
+        <div class="rcard"><div class="rl">Margin</div><div class="rv" id="r-margin">—</div><div class="rs" id="r-health"></div></div>
       </div>
-
-      <div id="r-missing-block" style="display:none" class="result-block" style="border-color:rgba(245,158,11,.3)">
+      <div id="r-missing-block" style="display:none" class="result-block">
         <div class="rb-title">⚠ Missing Info</div>
         <div id="r-missing-list"></div>
       </div>
-
       <div class="result-block">
-        <div class="rb-title">
-          Tracy Email
-          <button class="copy-btn" onclick="copyEmail()">Copy</button>
-        </div>
+        <div class="rb-title">Tracy Email <button class="copy-btn" onclick="copyEmail()">Copy</button></div>
         <div class="email-text" id="r-email"></div>
       </div>
-
-      <button class="wide-btn success" onclick="saveToProject()">
-        💾 Save to Projects
-      </button>
+      <button class="wide-btn success" onclick="saveToProject()">💾 Save to Projects</button>
     </div>
+
+    <!-- ── Compare result ── -->
+    <div id="compare-result" style="display:none">
+      <hr class="divider">
+      <div class="cmp-table">
+        <div class="cmp-thead">
+          <div></div>
+          <div class="th-a" id="cr-head-a">Quote A</div>
+          <div class="th-b" id="cr-head-b">Quote B</div>
+        </div>
+        <div class="cmp-row"><div class="cmp-metric">Unit Price</div><div class="cmp-val" id="cr-price-a">—</div><div class="cmp-val" id="cr-price-b">—</div></div>
+        <div class="cmp-row"><div class="cmp-metric">MOQ</div><div class="cmp-val" id="cr-moq-a">—</div><div class="cmp-val" id="cr-moq-b">—</div></div>
+        <div class="cmp-row"><div class="cmp-metric">Lead Time</div><div class="cmp-val" id="cr-lead-a">—</div><div class="cmp-val" id="cr-lead-b">—</div></div>
+        <div class="cmp-row"><div class="cmp-metric">Payment Terms</div><div class="cmp-val" id="cr-pay-a">—</div><div class="cmp-val" id="cr-pay-b">—</div></div>
+        <div class="cmp-row"><div class="cmp-metric">Shipping Terms</div><div class="cmp-val" id="cr-ship-a">—</div><div class="cmp-val" id="cr-ship-b">—</div></div>
+        <div class="cmp-row"><div class="cmp-metric">Est. Landed Cost</div><div class="cmp-val" id="cr-landed-a">—</div><div class="cmp-val" id="cr-landed-b">—</div></div>
+        <div class="cmp-row"><div class="cmp-metric">Margin vs Target</div><div class="cmp-val" id="cr-margin-a">—</div><div class="cmp-val" id="cr-margin-b">—</div></div>
+      </div>
+      <div class="rec-block">
+        <div class="rec-winner" id="cr-winner-label">—</div>
+        <div class="rec-text" id="cr-rec"></div>
+        <div class="rec-caveats" id="cr-caveats"></div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -1392,11 +1499,11 @@ async function extractDOCX(buf) {
   return { text: result.value.replace(/\n{3,}/g, '\n\n').trim() };
 }
 
-async function handleDocUpload(input) {
+async function handleDocUpload(input, textareaId, statusId) {
   const file = input.files[0];
   if (!file) return;
 
-  const statusEl = document.getElementById('pdf-status');
+  const statusEl = document.getElementById(statusId);
   statusEl.style.display = '';
   statusEl.className = 'loading';
   const ext = file.name.split('.').pop().toLowerCase();
@@ -1409,24 +1516,179 @@ async function handleDocUpload(input) {
     if (ext === 'pdf') {
       ({ text, pages } = await extractPDF(buf));
       if (!text) throw new Error('No extractable text — PDF may be image-based (scanned)');
-      statusEl.textContent = `Text extracted from "${file.name}" (${pages} page${pages > 1 ? 's' : ''}) — review below, then click Analyze.`;
+      statusEl.textContent = `Extracted from "${file.name}" (${pages} page${pages > 1 ? 's' : ''}) — review below.`;
     } else if (ext === 'docx') {
       ({ text } = await extractDOCX(buf));
       if (!text) throw new Error('No text found in DOCX');
-      statusEl.textContent = `Text extracted from "${file.name}" — review below, then click Analyze.`;
+      statusEl.textContent = `Extracted from "${file.name}" — review below.`;
     } else {
       throw new Error('Unsupported file type — use PDF or DOCX');
     }
 
-    document.getElementById('q-quote').value = text;
+    document.getElementById(textareaId).value = text;
     statusEl.className = 'ok';
-    document.getElementById('q-quote').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    document.getElementById(textareaId).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   } catch (e) {
     statusEl.className = 'err';
     statusEl.textContent = 'Upload error: ' + e.message;
   }
 
   input.value = '';
+}
+
+// ── Quote mode toggle ─────────────────────────────────────
+
+function setQuoteMode(mode) {
+  const isCmp = mode === 'compare';
+  document.getElementById('mtog-single') .classList.toggle('on', !isCmp);
+  document.getElementById('mtog-compare').classList.toggle('on',  isCmp);
+  document.getElementById('qmode-single') .style.display = isCmp ? 'none' : '';
+  document.getElementById('qmode-compare').style.display = isCmp ? '' : 'none';
+  document.getElementById('quote-result')  .style.display = 'none';
+  document.getElementById('compare-result').style.display = 'none';
+}
+
+// ── Quote Comparison ──────────────────────────────────────
+
+async function compareQuotes() {
+  const clientName  = document.getElementById('q-client').value.trim();
+  const targetPrice = document.getElementById('q-price').value.trim();
+  const quoteA      = document.getElementById('q-quote-a').value.trim();
+  const quoteB      = document.getElementById('q-quote-b').value.trim();
+
+  if (!clientName)  { toast('Enter a client name', 'err'); return; }
+  if (!targetPrice) { toast('Enter your target price', 'err'); return; }
+  if (!quoteA)      { toast('Paste or upload Quote A', 'err'); return; }
+  if (!quoteB)      { toast('Paste or upload Quote B', 'err'); return; }
+
+  const btn = document.getElementById('compare-btn');
+  btn.disabled = true;
+  btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 1s linear infinite"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Comparing…`;
+  document.getElementById('compare-result').style.display = 'none';
+
+  try {
+    const prompt = `You are an expert packaging procurement analyst at Stephen Gould. Compare these two supplier quotes and return ONLY valid JSON — no markdown, no explanation.
+
+QUOTE A:
+${quoteA}
+
+QUOTE B:
+${quoteB}
+
+CLIENT: ${clientName}
+SALES REP TARGET SELL PRICE: $${targetPrice}/unit
+
+Return exactly this JSON structure:
+{
+  "quoteA": {
+    "supplier": "supplier name or 'Unknown'",
+    "unitPrice": 0.38,
+    "unitPriceDisplay": "$0.38",
+    "moq": 10000,
+    "moqDisplay": "10,000 units",
+    "leadTimeDisplay": "45 days",
+    "leadTimeDays": 45,
+    "paymentTerms": "Net 30",
+    "shippingTerms": "FOB Ningbo",
+    "estLandedCost": 0.49,
+    "estLandedCostDisplay": "~$0.49/unit"
+  },
+  "quoteB": {
+    "supplier": "supplier name or 'Unknown'",
+    "unitPrice": 0.41,
+    "unitPriceDisplay": "$0.41",
+    "moq": 5000,
+    "moqDisplay": "5,000 units",
+    "leadTimeDisplay": "60 days",
+    "leadTimeDays": 60,
+    "paymentTerms": "50% upfront, 50% on shipment",
+    "shippingTerms": "DDP",
+    "estLandedCost": 0.41,
+    "estLandedCostDisplay": "$0.41/unit (DDP)"
+  },
+  "winner": {
+    "unitPrice": "A",
+    "moq": "B",
+    "leadTime": "A",
+    "paymentTerms": "A",
+    "shippingTerms": "B",
+    "landedCost": "A",
+    "overall": "A"
+  },
+  "recommendation": "2-3 sentence plain-English recommendation. Direct, no fluff. State clearly which quote wins and the 1-2 key reasons why.",
+  "caveats": ["any important caveats — missing data, risks, or things to verify before deciding"]
+}
+
+Winner values must be exactly "A", "B", or "tie". For moq winner, lower MOQ is better (more flexible). For leadTime winner, shorter is better. For paymentTerms winner, better terms for the buyer is better. For shippingTerms, DDP is generally better than FOB (removes customs risk). For landedCost winner, lower landed cost wins.`;
+
+    const raw = await callClaude([{ role: 'user', content: prompt }]);
+    const jsonStr = raw.startsWith('{') ? raw : (raw.match(/\{[\s\S]*\}/) || [])[0];
+    if (!jsonStr) throw new Error('Unexpected response from Claude');
+    const data = JSON.parse(jsonStr);
+    renderCompareResult(data, parseFloat(targetPrice));
+  } catch(e) {
+    toast('Comparison failed: ' + e.message, 'err');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="8" height="18" rx="1"/><rect x="14" y="3" width="8" height="18" rx="1"/></svg> Compare Quotes`;
+  }
+}
+
+function calcMarginDisplay(landedCost, targetPrice) {
+  if (!landedCost || !targetPrice || targetPrice <= 0) return '—';
+  const margin = ((targetPrice - landedCost) / targetPrice) * 100;
+  const health = margin >= 35 ? '✓ Strong' : margin >= 25 ? '~ Acceptable' : margin >= 15 ? '⚠ Thin' : '⚠ Low';
+  const color  = margin >= 35 ? 'g' : margin >= 25 ? 'a' : 'r';
+  return { text: `${margin.toFixed(1)}% — ${health}`, color };
+}
+
+function renderCompareResult(data, targetPrice) {
+  const { quoteA, quoteB, winner, recommendation, caveats } = data;
+  const ow = winner.overall; // "A" or "B"
+
+  // Header labels with supplier name
+  document.getElementById('cr-head-a').textContent = quoteA.supplier && quoteA.supplier !== 'Unknown' ? `Quote A — ${quoteA.supplier}` : 'Quote A';
+  document.getElementById('cr-head-b').textContent = quoteB.supplier && quoteB.supplier !== 'Unknown' ? `Quote B — ${quoteB.supplier}` : 'Quote B';
+
+  function setCell(idA, idB, valA, valB, winKey) {
+    const w = winner[winKey];
+    const elA = document.getElementById(idA);
+    const elB = document.getElementById(idB);
+    elA.textContent = valA || '—';
+    elB.textContent = valB || '—';
+    elA.className = 'cmp-val' + (w === 'A' ? ' win-a win-mark' : '');
+    elB.className = 'cmp-val' + (w === 'B' ? ' win-b win-mark' : '');
+  }
+
+  setCell('cr-price-a',  'cr-price-b',  quoteA.unitPriceDisplay,      quoteB.unitPriceDisplay,      'unitPrice');
+  setCell('cr-moq-a',    'cr-moq-b',    quoteA.moqDisplay,             quoteB.moqDisplay,             'moq');
+  setCell('cr-lead-a',   'cr-lead-b',   quoteA.leadTimeDisplay,        quoteB.leadTimeDisplay,        'leadTime');
+  setCell('cr-pay-a',    'cr-pay-b',    quoteA.paymentTerms,           quoteB.paymentTerms,           'paymentTerms');
+  setCell('cr-ship-a',   'cr-ship-b',   quoteA.shippingTerms,          quoteB.shippingTerms,          'shippingTerms');
+  setCell('cr-landed-a', 'cr-landed-b', quoteA.estLandedCostDisplay,   quoteB.estLandedCostDisplay,   'landedCost');
+
+  // Margin rows (calculated, not from Claude)
+  const mA = calcMarginDisplay(quoteA.estLandedCost, targetPrice);
+  const mB = calcMarginDisplay(quoteB.estLandedCost, targetPrice);
+  const elMA = document.getElementById('cr-margin-a');
+  const elMB = document.getElementById('cr-margin-b');
+  elMA.textContent = typeof mA === 'object' ? mA.text : mA;
+  elMB.textContent = typeof mB === 'object' ? mB.text : mB;
+  elMA.className = 'cmp-val' + (typeof mA === 'object' ? ` rv ${mA.color}` : '');
+  elMB.className = 'cmp-val' + (typeof mB === 'object' ? ` rv ${mB.color}` : '');
+
+  // Recommendation
+  const winLabel = ow === 'A'
+    ? `Winner: Quote A${quoteA.supplier && quoteA.supplier !== 'Unknown' ? ' — ' + quoteA.supplier : ''}`
+    : `Winner: Quote B${quoteB.supplier && quoteB.supplier !== 'Unknown' ? ' — ' + quoteB.supplier : ''}`;
+  document.getElementById('cr-winner-label').textContent = winLabel;
+  document.getElementById('cr-winner-label').style.color = ow === 'A' ? '#60a5fa' : '#a78bfa';
+  document.getElementById('cr-rec').textContent = recommendation || '';
+  const caveatsEl = document.getElementById('cr-caveats');
+  caveatsEl.innerHTML = (caveats || []).map(c => `<div class="rec-caveat">${esc(c)}</div>`).join('');
+
+  document.getElementById('compare-result').style.display = '';
+  document.getElementById('compare-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 // ── Quick Call Logger ──────────────────────────────────────
