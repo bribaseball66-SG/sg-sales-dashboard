@@ -797,7 +797,7 @@ async function loadData() {
       const active = ids
         .map(id => taskMap[id])
         .filter(t => t && t.hs_task_status !== 'COMPLETED' && t.hs_timestamp)
-        .map(t => ({ ms: parseInt(t.hs_timestamp), subject: t.hs_task_subject || '' }))
+        .map(t => ({ ms: new Date(t.hs_timestamp).getTime(), subject: t.hs_task_subject || '' }))
         .sort((a, b) => a.ms - b.ms);
       if (!active.length) continue;
       const overdue = active.filter(t => t.ms < now);
