@@ -845,11 +845,11 @@ async function hs(method, path, body) {
   return json;
 }
 
-async function callClaude(messages, model = 'claude-opus-4-6') {
+async function callClaude(messages, model = 'claude-opus-4-6', maxTokens = 2048) {
   const r = await fetch(BASE + '/ai/messages', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model, max_tokens: 2048, messages }),
+    body: JSON.stringify({ model, max_tokens: maxTokens, messages }),
   });
   const json = await r.json();
   if (!r.ok) throw new Error(json.error?.message || r.status);
@@ -2003,7 +2003,7 @@ Return ONLY a JSON array of 15 objects — no markdown, no explanation:
 Scoring: High = large or fast-growing brand, clear high-volume packaging needs. Medium = solid mid-size prospect. Low = smaller but worth a cold call.`;
 
   try {
-    const raw = await callClaude([{ role: 'user', content: prompt }], 'claude-opus-4-6');
+    const raw = await callClaude([{ role: 'user', content: prompt }], 'claude-opus-4-6', 4096);
     const jsonStr = raw.startsWith('[') ? raw : (raw.match(/\[[\s\S]*\]/) || [])[0];
     if (!jsonStr) throw new Error('Unexpected response from Claude');
     prospectsState.all = JSON.parse(jsonStr).map(p => ({ ...p, _region: targetRegion }));
