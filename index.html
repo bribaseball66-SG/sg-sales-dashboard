@@ -2150,6 +2150,7 @@ function renderProspects() {
       <div class="pros-meta">
         <span class="pros-industry">${esc(IND_LABEL[p.industry] || p.industry)}</span>
         <span class="pros-location">${esc(p.location)}</span>
+        ${p.employees ? `<span class="pros-location">${esc(p.employees)} emp.</span>` : ''}
       </div>
       <div class="pros-why">${esc(p.whyCallThem)}</div>
       ${p.packagingNeed ? `<div class="pros-need">Packaging: ${esc(p.packagingNeed)}</div>` : ''}
