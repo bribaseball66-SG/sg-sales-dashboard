@@ -1952,41 +1952,78 @@ function getMergedProspects() {
 }
 
 function setProsFilter(type, el) {
-  const sel = type === 'ind'    ? '#pros-industry-chips .chip'
-            : type === 'region' ? '#pros-region-chips .chip'
-            :                     '#pros-score-chips .chip';
-  document.querySelectorAll(sel).forEach(c => c.classList.remove('on'));
-  el.classList.add('on');
-  if (type === 'ind')    prospectsState.indFilter    = el.dataset.ind;
-  if (type === 'region') prospectsState.regionFilter = el.dataset.region;
-  if (type === 'score')  prospectsState.scoreFilter  = el.dataset.score;
+  const cid   = type === 'ind' ? 'pros-industry-chips' : type === 'region' ? 'pros-region-chips' : 'pros-score-chips';
+  const attr  = type === 'ind' ? 'ind' : type === 'region' ? 'region' : 'score';
+  const wasOn = el.classList.contains('on');
+
+  document.querySelectorAll('#' + cid + ' .chip').forEach(c => c.classList.remove('on'));
+
+  // Tap active (non-All) chip again → reset to All
+  if (wasOn && el.dataset[attr] !== 'all') {
+    document.querySelector('#' + cid + ' [data-' + attr + '="all"]').classList.add('on');
+    if (type === 'ind')    prospectsState.indFilter    = 'all';
+    if (type === 'region') prospectsState.regionFilter = 'all';
+    if (type === 'score')  prospectsState.scoreFilter  = 'all';
+  } else {
+    el.classList.add('on');
+    if (type === 'ind')    prospectsState.indFilter    = el.dataset.ind;
+    if (type === 'region') prospectsState.regionFilter = el.dataset.region;
+    if (type === 'score')  prospectsState.scoreFilter  = el.dataset.score;
+  }
   renderProspects();
 }
 
 async function loadProspects(force) {
   if (prospectsState.generated && !force) { renderProspects(); return; }
   if (prospectsState.loading) return;
-  await generateProspects();
+  await generateProspects(false);
 }
 
-async function generateProspects() {
+function loadMoreProspects() { generateProspects(true); }
+
+function repairJsonArray(str) {
+  if (!str) return null;
+  const lastClose = str.lastIndexOf('}');
+  if (lastClose === -1) return null;
+  const arrStart = str.indexOf('[');
+  if (arrStart === -1) return null;
+  const candidate = str.slice(arrStart, lastClose + 1) + ']';
+  return candidate.length > 4 ? candidate : null;
+}
+
+async function generateProspects(append = false) {
+  if (prospectsState.loading) return;
   prospectsState.loading = true;
   const list = document.getElementById('prospects-list');
-  list.innerHTML = `<div class="empty" style="padding-top:40px">
-    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="animation:spin 1.5s linear infinite"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-    <p style="margin-top:14px;font-size:15px">Finding Michigan prospects…</p>
-  </div>`;
+
+  if (!append) {
+    prospectsState.all = [];
+    prospectsState.added = new Set();
+    list.innerHTML = `<div class="empty" style="padding-top:40px">
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="animation:spin 1.5s linear infinite"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      <p style="margin-top:14px;font-size:15px">Finding Michigan prospects…</p>
+    </div>`;
+  } else {
+    const btn = document.getElementById('load-more-btn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Loading…'; }
+  }
 
   const randomRegions = ['Metro Detroit','Grand Rapids','Lansing','Ann Arbor','Kalamazoo','Flint','Traverse City','Muskegon','Holland','Saginaw'];
-  const targetRegion = prospectsState.regionFilter !== 'all'
-    ? prospectsState.regionFilter
-    : randomRegions[Math.floor(Math.random() * randomRegions.length)];
+  const targetRegion = append
+    ? (prospectsState.batchRegion || randomRegions[0])
+    : (prospectsState.regionFilter !== 'all'
+        ? prospectsState.regionFilter
+        : randomRegions[Math.floor(Math.random() * randomRegions.length)]);
+  if (!append) prospectsState.batchRegion = targetRegion;
 
-  const prompt = `You are a B2B sales intelligence agent for Stephen Gould, a global custom packaging company. Generate 15 real or realistic Michigan companies in the ${targetRegion} area that are strong prospects for custom packaging solutions (bottles, jars, pouches, boxes, labels, custom containers).
+  const existing = prospectsState.all.map(p => p.company);
+  const exclusion = existing.length ? `\nDo not include any of these companies (already listed): ${existing.join(', ')}.` : '';
 
-Industries to cover (mix them across the list): fitness/sports nutrition, cosmetics/personal care, food & beverage, cannabis/hemp, manufacturing/consumer goods, automotive aftermarket products, medical devices/diagnostics, nutraceuticals/supplements, pet products, and e-commerce brands.
+  const prompt = `You are a B2B sales intelligence agent for Stephen Gould, a global custom packaging company. Generate 5 real or realistic Michigan companies in the ${targetRegion} area that are strong prospects for custom packaging solutions (bottles, jars, pouches, boxes, labels, custom containers).${exclusion}
 
-Return ONLY a JSON array of 15 objects — no markdown, no explanation:
+Industries to cover (mix them): fitness/sports nutrition, cosmetics/personal care, food & beverage, cannabis/hemp, manufacturing/consumer goods, automotive aftermarket products, medical devices/diagnostics, nutraceuticals/supplements, pet products, and e-commerce brands.
+
+Return ONLY a JSON array of exactly 5 objects — no markdown, no explanation:
 [
   {
     "company": "Company Name",
@@ -2003,15 +2040,33 @@ Return ONLY a JSON array of 15 objects — no markdown, no explanation:
 Scoring: High = large or fast-growing brand, clear high-volume packaging needs. Medium = solid mid-size prospect. Low = smaller but worth a cold call.`;
 
   try {
-    const raw = await callClaude([{ role: 'user', content: prompt }], 'claude-opus-4-6', 4096);
-    const jsonStr = raw.startsWith('[') ? raw : (raw.match(/\[[\s\S]*\]/) || [])[0];
-    if (!jsonStr) throw new Error('Unexpected response from Claude');
-    prospectsState.all = JSON.parse(jsonStr).map(p => ({ ...p, _region: targetRegion }));
+    const raw = await callClaude([{ role: 'user', content: prompt }], 'claude-opus-4-6', 2048);
+    let jsonStr = raw.startsWith('[') ? raw : (raw.match(/\[[\s\S]*\]/) || [])[0] || null;
+
+    let parsed;
+    try {
+      parsed = JSON.parse(jsonStr);
+    } catch {
+      // Response may be truncated — attempt repair
+      const repaired = repairJsonArray(jsonStr || raw);
+      if (!repaired) throw new Error('Response was cut off — tap Retry');
+      parsed = JSON.parse(repaired);
+    }
+
+    const newItems = parsed.map(p => ({ ...p, _region: targetRegion }));
+    prospectsState.all = [...prospectsState.all, ...newItems];
     prospectsState.generated = true;
-    prospectsState.added = new Set();
     renderProspects();
   } catch(e) {
-    list.innerHTML = `<div class="empty"><p style="color:var(--red)">Could not load prospects: ${esc(e.message)}</p></div>`;
+    if (!append) {
+      list.innerHTML = `<div class="empty" style="padding-top:32px">
+        <p style="color:var(--red);margin-bottom:16px">${esc(e.message)}</p>
+        <button class="wide-btn primary" style="max-width:160px;margin:0 auto" onclick="generateProspects(false)">Retry</button>
+      </div>`;
+    } else {
+      toast('Failed to load more: ' + e.message, 'err');
+      renderProspects();
+    }
   } finally {
     prospectsState.loading = false;
   }
@@ -2046,6 +2101,8 @@ function renderProspects() {
     list.innerHTML = `<div class="empty"><p>No prospects match the current filters.</p></div>`;
     return;
   }
+
+  const showLoadMore = scoreFilter !== 'saved' && scoreFilter !== 'contacted' && prospectsState.generated && !prospectsState.loading;
 
   list.innerHTML = rows.map(({ p, i }) => {
     const key         = proKey(p);
@@ -2085,7 +2142,8 @@ function renderProspects() {
         </button>
       </div>
     </div>`;
-  }).join('');
+  }).join('')
+  + (showLoadMore ? `<div style="text-align:center;padding:14px 0 20px"><button class="wide-btn" id="load-more-btn" onclick="loadMoreProspects()" style="background:var(--navyLL);color:var(--dim);border:1px solid var(--border);max-width:220px;margin:0 auto">Load More Prospects</button></div>` : '');
 }
 
 function toggleSaveProspect(idx) {
