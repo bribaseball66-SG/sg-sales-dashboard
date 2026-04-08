@@ -730,13 +730,17 @@
       <div class="chip"    data-ind="ecommerce"      onclick="setProsFilter('ind',this)">E-commerce</div>
     </div>
     <div class="pros-filters" id="pros-region-chips">
-      <div class="chip on" data-region="all"          onclick="setProsFilter('region',this)">All Regions</div>
-      <div class="chip"    data-region="Metro Detroit" onclick="setProsFilter('region',this)">Metro Detroit</div>
-      <div class="chip"    data-region="Grand Rapids"  onclick="setProsFilter('region',this)">Grand Rapids</div>
-      <div class="chip"    data-region="Ann Arbor"     onclick="setProsFilter('region',this)">Ann Arbor</div>
-      <div class="chip"    data-region="Lansing"       onclick="setProsFilter('region',this)">Lansing</div>
-      <div class="chip"    data-region="Kalamazoo"     onclick="setProsFilter('region',this)">Kalamazoo</div>
-      <div class="chip"    data-region="Flint"         onclick="setProsFilter('region',this)">Flint</div>
+      <div class="chip on" data-region="all"            onclick="setProsFilter('region',this)">All Regions</div>
+      <div class="chip"    data-region="Metro Detroit"  onclick="setProsFilter('region',this)">Metro Detroit</div>
+      <div class="chip"    data-region="Grand Rapids"   onclick="setProsFilter('region',this)">Grand Rapids</div>
+      <div class="chip"    data-region="Ann Arbor"      onclick="setProsFilter('region',this)">Ann Arbor</div>
+      <div class="chip"    data-region="Lansing"        onclick="setProsFilter('region',this)">Lansing</div>
+      <div class="chip"    data-region="Kalamazoo"      onclick="setProsFilter('region',this)">Kalamazoo</div>
+      <div class="chip"    data-region="Flint"          onclick="setProsFilter('region',this)">Flint</div>
+      <div class="chip"    data-region="Traverse City"  onclick="setProsFilter('region',this)">Traverse City</div>
+      <div class="chip"    data-region="Muskegon"       onclick="setProsFilter('region',this)">Muskegon</div>
+      <div class="chip"    data-region="Holland"        onclick="setProsFilter('region',this)">Holland</div>
+      <div class="chip"    data-region="Saginaw"        onclick="setProsFilter('region',this)">Saginaw</div>
     </div>
     <div class="pros-bottom-row">
       <div class="pros-score-filters" id="pros-score-chips">
@@ -2047,18 +2051,22 @@ const PROSPECTS_JSON_URL = 'https://raw.githubusercontent.com/bribaseball66-SG/h
 async function loadProspects(force) {
   if (prospectsState.generated && !force) { renderProspects(); return; }
   if (prospectsState.loading) return;
+  prospectsState.loading = true;
 
-  // Try the pre-generated daily file first (committed by GitHub Actions each morning)
+  // Try the pre-generated daily file first (committed by Cloudflare Worker each morning)
   if (!force) {
     try {
       const res = await fetch(PROSPECTS_JSON_URL, { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         if (data.prospects?.length) {
-          prospectsState.all        = data.prospects;
-          prospectsState.generated  = true;
-          prospectsState.batchRegion = data.regions?.[0] || 'pre-generated';
-          prospectsState.added      = new Set();
+          prospectsState.all       = data.prospects;
+          prospectsState.generated = true;
+          // Store all unique regions present in the file
+          const regions = [...new Set(data.prospects.map(p => p._region).filter(Boolean))];
+          prospectsState.batchRegions = regions.length ? regions : (data.regions || []);
+          // Don't wipe `added` — preserve "Added to Contacts" state for this session
+          prospectsState.loading = false;
           renderProspects();
           return;
         }
@@ -2066,6 +2074,7 @@ async function loadProspects(force) {
     } catch { /* fall through to live generation */ }
   }
 
+  prospectsState.loading = false;
   await generateProspects(false);
 }
 
@@ -2117,7 +2126,7 @@ Scoring:
 - Medium = 50–200 employees, $50k–$250k packaging spend, established buying cycle
 - Low = under 50 employees or niche, worth a cold call but lower volume`;
 
-  const raw = await callClaude([{ role: 'user', content: prompt }], 'claude-opus-4-6', 1024);
+  const raw = await callClaude([{ role: 'user', content: prompt }], 'claude-opus-4-6', 1500);
   let jsonStr = raw.startsWith('[') ? raw : (raw.match(/\[[\s\S]*\]/) || [])[0] || null;
   let parsed;
   try {
@@ -2130,65 +2139,100 @@ Scoring:
   return parsed.map(p => ({ ...p, _region: region }));
 }
 
+// Five region sets, one per weekday — same rotation as the Cloudflare Worker
+const PROS_REGION_SETS = [
+  ['Metro Detroit', 'Grand Rapids', 'Ann Arbor',    'Kalamazoo'],   // Mon
+  ['Grand Rapids',  'Lansing',      'Muskegon',     'Holland'],     // Tue
+  ['Ann Arbor',     'Metro Detroit','Traverse City', 'Flint'],      // Wed
+  ['Lansing',       'Flint',        'Saginaw',       'Metro Detroit'],// Thu
+  ['Kalamazoo',     'Grand Rapids', 'Holland',       'Muskegon'],   // Fri
+];
+
 async function generateProspects(append = false) {
   if (prospectsState.loading) return;
   prospectsState.loading = true;
   const list = document.getElementById('prospects-list');
 
-  const BATCHES = 4;      // 4 calls × 3 prospects = 12 total
   const PER_BATCH = 3;
-  const TOTAL = BATCHES * PER_BATCH;
+  const BATCHES   = 4;
+  const TOTAL     = BATCHES * PER_BATCH; // 12
 
-  const randomRegions = ['Metro Detroit','Grand Rapids','Lansing','Ann Arbor','Kalamazoo','Flint','Traverse City','Muskegon','Holland','Saginaw'];
-  const targetRegion = append
-    ? (prospectsState.batchRegion || randomRegions[0])
-    : (prospectsState.regionFilter !== 'all'
-        ? prospectsState.regionFilter
-        : randomRegions[Math.floor(Math.random() * randomRegions.length)]);
+  // Pick 4 different regions for this run
+  let regions;
+  if (append) {
+    // Rotate to the next set so "Load More" gives fresh geography
+    const cur = prospectsState.batchRegions || PROS_REGION_SETS[0];
+    const nextIdx = (PROS_REGION_SETS.findIndex(s => s[0] === cur[0]) + 1) % PROS_REGION_SETS.length;
+    regions = PROS_REGION_SETS[nextIdx];
+  } else if (prospectsState.regionFilter !== 'all') {
+    // User has a region filter active — use that region for all 4 batches
+    regions = Array(BATCHES).fill(prospectsState.regionFilter);
+  } else {
+    const dayIdx = new Date().getDay() % PROS_REGION_SETS.length;
+    regions = PROS_REGION_SETS[dayIdx];
+  }
 
   if (!append) {
-    prospectsState.all = [];
-    prospectsState.added = new Set();
-    prospectsState.batchRegion = targetRegion;
-    list.innerHTML = `<div class="empty" style="padding-top:40px">
-      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="animation:spin 1.5s linear infinite"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-      <p id="pros-progress" style="margin-top:14px;font-size:15px">Finding prospects… 0 / ${TOTAL}</p>
+    prospectsState.all          = [];
+    prospectsState.added        = new Set();
+    prospectsState.generated    = false;
+    prospectsState.batchRegions = regions;
+    list.innerHTML = `<div style="padding:44px 0 32px;text-align:center">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 1.5s linear infinite;opacity:.5"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      <p id="pros-progress" style="margin-top:12px;font-size:14px;color:var(--dim)">Generating prospects… <strong id="pros-count" style="color:var(--text)">0</strong> / ${TOTAL}</p>
+      <p style="font-size:12px;color:#475569;margin-top:4px" id="pros-regions-label">Regions: ${regions.join(', ')}</p>
     </div>`;
   } else {
+    prospectsState.batchRegions = regions;
     const btn = document.getElementById('load-more-btn');
     if (btn) { btn.disabled = true; btn.textContent = 'Loading…'; }
   }
 
-  const startCount = prospectsState.all.length;
-  let batchErrors = 0;
+  let completed = 0;
 
-  for (let i = 0; i < BATCHES; i++) {
-    try {
-      const existing = prospectsState.all.map(p => p.company);
-      const batch = await fetchProspectBatch(targetRegion, existing);
-      prospectsState.all = [...prospectsState.all, ...batch];
-      prospectsState.generated = true;
+  // Fire all 4 batches in parallel — each targets a different region
+  const results = await Promise.allSettled(
+    regions.map(region =>
+      fetchProspectBatch(region, []).then(batch => {
+        completed++;
+        const countEl = document.getElementById('pros-count');
+        if (countEl) countEl.textContent = String(completed * PER_BATCH);
+        return batch;
+      })
+    )
+  );
 
-      // Update live progress counter
-      const prog = document.getElementById('pros-progress');
-      const found = prospectsState.all.length - startCount;
-      if (prog) prog.textContent = `Finding prospects… ${found} / ${TOTAL}`;
-
-      // Render after each batch so results appear progressively
-      if (!append) renderProspects();
-    } catch (e) {
-      batchErrors++;
-      console.warn(`Prospect batch ${i + 1} failed: ${e.message}`);
+  // Merge results, deduplicate by company name
+  const seen = new Set(prospectsState.all.map(p => proKey(p)));
+  let newProspects = [];
+  let failures = 0;
+  for (const r of results) {
+    if (r.status === 'fulfilled') {
+      for (const p of r.value) {
+        const k = proKey(p);
+        if (!seen.has(k)) { seen.add(k); newProspects.push(p); }
+      }
+    } else {
+      failures++;
+      console.warn('Prospect batch failed:', r.reason?.message);
     }
   }
 
-  if (append) {
-    renderProspects();
-  } else if (prospectsState.all.length === 0) {
+  prospectsState.all       = [...prospectsState.all, ...newProspects];
+  prospectsState.generated = prospectsState.all.length > 0;
+
+  if (!append && prospectsState.all.length === 0) {
     list.innerHTML = `<div class="empty" style="padding-top:32px">
-      <p style="color:var(--red);margin-bottom:16px">Could not load prospects — check connection</p>
+      <p style="color:var(--red);margin-bottom:16px">Could not generate prospects — tap Retry or check connection.</p>
       <button class="wide-btn primary" style="max-width:160px;margin:0 auto" onclick="generateProspects(false)">Retry</button>
     </div>`;
+  } else {
+    renderProspects();
+    if (failures > 0 && newProspects.length > 0) {
+      toast(`${newProspects.length} prospects loaded (${failures} batch${failures > 1 ? 'es' : ''} failed)`, 'err');
+    } else if (failures === BATCHES) {
+      toast('All batches failed — check connection', 'err');
+    }
   }
 
   prospectsState.loading = false;
