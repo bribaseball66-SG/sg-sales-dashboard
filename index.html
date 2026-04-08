@@ -311,10 +311,10 @@
       background: var(--navyL); border: 1px solid var(--border);
       border-radius: 24px; padding: 10px 22px; font-size: 14px; font-weight: 600;
       z-index: 400; white-space: nowrap; pointer-events: none;
-      transition: transform .3s cubic-bezier(.32,.72,0,1);
-      box-shadow: 0 8px 32px rgba(0,0,0,.4);
+      transition: transform .3s cubic-bezier(.32,.72,0,1), opacity .35s ease;
+      box-shadow: 0 8px 32px rgba(0,0,0,.4); opacity: 0;
     }
-    #toast.on  { transform: translateX(-50%) translateY(0); }
+    #toast.on  { transform: translateX(-50%) translateY(0); opacity: 1; }
     #toast.ok  { border-color: var(--green); color: var(--green); }
     #toast.err { border-color: var(--red);   color: var(--red);   }
 
@@ -669,8 +669,19 @@
 <!-- ── Tab: Projects ──────────────────────────────────────── -->
 <div class="tab" id="tab-projects">
   <div class="page-body">
-    <div class="page-title">Project Folders</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
+      <div class="page-title" style="margin-bottom:0">Project Folders</div>
+      <button class="icon-btn" onclick="toggleNewFolder()" title="New folder" style="font-size:20px;line-height:1;padding:4px 10px">+</button>
+    </div>
     <div class="page-sub">Saved quote analyses organized by client.</div>
+    <div id="new-folder-form" style="display:none;margin:8px 0 12px">
+      <div style="display:flex;gap:8px">
+        <input type="text" id="new-folder-name" placeholder="Folder name…"
+               style="flex:1;background:var(--navyL);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;padding:10px 13px;font-family:inherit;outline:none"
+               onkeydown="if(event.key==='Enter')createProjectFolder();if(event.key==='Escape')toggleNewFolder()">
+        <button class="btn btn-p" style="white-space:nowrap" onclick="createProjectFolder()">Create</button>
+      </div>
+    </div>
     <div id="proj-list"></div>
   </div>
 </div>
@@ -1573,6 +1584,36 @@ function getProjects() {
 }
 function saveProjects(p) { localStorage.setItem('sg_projects', JSON.stringify(p)); }
 
+function toggleNewFolder() {
+  const form = document.getElementById('new-folder-form');
+  const opening = form.style.display === 'none';
+  form.style.display = opening ? '' : 'none';
+  if (opening) setTimeout(() => document.getElementById('new-folder-name')?.focus(), 50);
+}
+
+function createProjectFolder() {
+  const input = document.getElementById('new-folder-name');
+  const name = input?.value.trim();
+  if (!name) { toast('Enter a folder name', 'err'); return; }
+  const projects = getProjects();
+  if (projects.hasOwnProperty(name)) { toast('Folder already exists', 'err'); return; }
+  projects[name] = [];
+  saveProjects(projects);
+  input.value = '';
+  document.getElementById('new-folder-form').style.display = 'none';
+  renderProjects();
+  toast(`"${name}" created`, 'ok');
+}
+
+function deleteProjectFolder(client) {
+  if (!confirm(`Delete the "${client}" folder and all its quotes?\n\nThis cannot be undone.`)) return;
+  const projects = getProjects();
+  delete projects[client];
+  saveProjects(projects);
+  renderProjects();
+  toast('Folder deleted', 'ok');
+}
+
 function renderProjects() {
   const projects = getProjects();
   const el = document.getElementById('proj-list');
@@ -1580,36 +1621,45 @@ function renderProjects() {
 
   const clients = Object.keys(projects);
   if (!clients.length) {
-    el.innerHTML = `<div class="empty"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><p>No saved quotes yet.<br>Analyze a quote and tap Save.</p></div>`;
+    el.innerHTML = `<div class="empty"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><p>No folders yet. Tap + to create one,<br>or analyze a quote and tap Save.</p></div>`;
     return;
   }
 
   el.innerHTML = clients.map(client => {
     const quotes = projects[client];
     const latest = quotes[0];
+    const meta = quotes.length
+      ? `${quotes.length} quote${quotes.length > 1 ? 's' : ''} · Last: ${esc(latest.date)}`
+      : 'Empty folder';
     return `
     <div class="proj-card">
       <div class="proj-hdr" onclick="toggleProject(this)">
         <div>
           <div class="proj-name">${esc(client)}</div>
-          <div class="proj-meta">${quotes.length} quote${quotes.length>1?'s':''} · Last: ${esc(latest.date)}</div>
+          <div class="proj-meta">${meta}</div>
         </div>
-        <span class="proj-count">${quotes.length}</span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="proj-count">${quotes.length}</span>
+          <button class="pq-del" style="flex-shrink:0" onclick="event.stopPropagation();deleteProjectFolder('${esc(client)}')" title="Delete folder">✕</button>
+        </div>
       </div>
       <div class="proj-body">
-        ${quotes.map((q, i) => {
-          const mColor = !q.markup ? '#94a3b8' : q.markup.health==='STRONG' ? '#10b981' : q.markup.health==='ACCEPTABLE' ? '#f59e0b' : '#ef4444';
-          return `<div class="pq-row" onclick="viewQuote('${esc(client)}',${i})">
-            <div class="pq-left">
-              <span class="pq-date">${esc(q.date)}</span>
-              <span class="pq-price">Target: $${esc(q.targetPrice)}/unit${q.markup?` · Supplier: $${q.markup.cost}`:''}</span>
-            </div>
-            <div class="pq-right">
-              ${q.markup ? `<span class="pq-margin" style="color:${mColor}">${q.markup.margin}% ${q.markup.health}</span>` : ''}
-              <button class="pq-del" onclick="event.stopPropagation();deleteQuote('${esc(client)}',${i})">✕</button>
-            </div>
-          </div>`;
-        }).join('')}
+        ${quotes.length === 0
+          ? `<div style="padding:12px 16px;font-size:13px;color:var(--dim)">No quotes saved yet. Analyze a quote and tap Save to Project.</div>`
+          : quotes.map((q, i) => {
+              const mColor = !q.markup ? '#94a3b8' : q.markup.health==='STRONG' ? '#10b981' : q.markup.health==='ACCEPTABLE' ? '#f59e0b' : '#ef4444';
+              return `<div class="pq-row" onclick="viewQuote('${esc(client)}',${i})">
+                <div class="pq-left">
+                  <span class="pq-date">${esc(q.date)}</span>
+                  <span class="pq-price">Target: $${esc(q.targetPrice)}/unit${q.markup ? ` · Supplier: $${q.markup.cost}` : ''}</span>
+                </div>
+                <div class="pq-right">
+                  ${q.markup ? `<span class="pq-margin" style="color:${mColor}">${q.markup.margin}% ${q.markup.health}</span>` : ''}
+                  <button class="pq-del" onclick="event.stopPropagation();deleteQuote('${esc(client)}',${i})">✕</button>
+                </div>
+              </div>`;
+            }).join('')
+        }
       </div>
     </div>`;
   }).join('');
@@ -2387,7 +2437,10 @@ function showAddProspect(idx) {
 function toast(msg, type='') {
   const el = document.getElementById('toast');
   el.textContent = msg; el.className = 'on' + (type ? ' '+type : '');
-  clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('on'), 2000);
+  clearTimeout(el._t); clearTimeout(el._t2);
+  // Fade out at 2s, then slide away after fade completes
+  el._t  = setTimeout(() => el.style.opacity = '0', 2000);
+  el._t2 = setTimeout(() => { el.classList.remove('on'); el.style.opacity = ''; }, 2350);
 }
 
 function esc(s) {
