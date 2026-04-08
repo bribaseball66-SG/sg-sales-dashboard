@@ -1078,6 +1078,7 @@ async function openContact(id) {
         <button class="btn btn-s" onclick="showForm('note')">📝 Add Note</button>
         <button class="btn btn-s" onclick="showForm('status')">🏷 Update Status</button>
         <button class="btn btn-s" onclick="showForm('followup')">📅 Set Follow-Up</button>
+        <button class="btn btn-s" onclick="showForm('edit')">✏️ Edit Contact</button>
         <button class="btn btn-w" style="background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.25)" onclick="deleteContact()">🗑 Delete Contact</button>
       </div>
       <div class="slbl">Recent Notes</div>
@@ -1207,6 +1208,21 @@ function showForm(type) {
       <div class="fg"><label class="fl">Date</label><input type="date" id="f-date" value="${nextDate(7)}"></div>
       <div class="fg"><label class="fl">Task note (optional)</label><textarea id="f-notes" rows="3" placeholder="What to do on this date?"></textarea></div>
       <button class="btn btn-p btn-w" onclick="doFollowUp()">Set Follow-Up</button>`;
+  } else if (type === 'edit') {
+    const c = S.contacts.find(x => x.id === activeId);
+    const p = c?.properties || {};
+    div.innerHTML = `<div class="slbl">Edit Contact</div>
+      <div class="form-row">
+        <div class="fg" style="margin:0 0 12px"><label class="fl">First Name</label><input type="text" id="ef-first" value="${esc(p.firstname||'')}"></div>
+        <div class="fg" style="margin:0 0 12px"><label class="fl">Last Name</label><input type="text" id="ef-last" value="${esc(p.lastname||'')}"></div>
+      </div>
+      <div class="fg"><label class="fl">Street Address</label><input type="text" id="ef-street" value="${esc(p.address||'')}" placeholder="123 Main St"></div>
+      <div class="form-row">
+        <div class="fg" style="margin:0 0 12px"><label class="fl">City</label><input type="text" id="ef-city" value="${esc(p.city||'')}" placeholder="Grand Rapids"></div>
+        <div class="fg" style="margin:0 0 12px"><label class="fl">State</label><input type="text" id="ef-state" value="${esc(p.state||'')}" placeholder="MI" maxlength="2"></div>
+        <div class="fg" style="margin:0 0 12px"><label class="fl">Zip</label><input type="text" id="ef-zip" value="${esc(p.zip||'')}" placeholder="49501" maxlength="10"></div>
+      </div>
+      <button class="btn btn-p btn-w" onclick="doEditContact()">Save Changes</button>`;
   } else if (type === 'email') {
     div.innerHTML = `<div class="slbl">Draft Follow-Up Email</div>
       <div class="fg">
@@ -1294,6 +1310,35 @@ async function doFollowUp() {
     await createTask(dateV, document.getElementById('f-notes')?.value.trim());
     toast('Follow-up set ✓', 'ok'); closeSheet(); render();
   } catch(e) { toast('Error: ' + e.message, 'err'); }
+}
+
+async function doEditContact() {
+  const first  = document.getElementById('ef-first')?.value.trim();
+  const last   = document.getElementById('ef-last')?.value.trim();
+  const street = document.getElementById('ef-street')?.value.trim();
+  const city   = document.getElementById('ef-city')?.value.trim();
+  const state  = document.getElementById('ef-state')?.value.trim();
+  const zip    = document.getElementById('ef-zip')?.value.trim();
+
+  if (!first) { toast('First name required', 'err'); return; }
+
+  const props = { firstname: first, lastname: last || '' };
+  if (street !== undefined) props.address = street;
+  if (city   !== undefined) props.city    = city;
+  if (state  !== undefined) props.state   = state;
+  if (zip    !== undefined) props.zip     = zip;
+
+  try {
+    await hs('PATCH', `/crm/v3/objects/contacts/${activeId}`, { properties: props });
+
+    // Update local state so the card and sheet header reflect changes immediately
+    const c = S.contacts.find(x => x.id === activeId);
+    if (c) Object.assign(c.properties, props);
+
+    toast('Contact updated ✓', 'ok');
+    closeSheet();
+    render();
+  } catch(e) { toast('Update failed: ' + e.message, 'err'); }
 }
 
 async function createTask(dateStr, subject) {
