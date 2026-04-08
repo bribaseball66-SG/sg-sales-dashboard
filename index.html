@@ -1046,7 +1046,7 @@ function updateStats() {
 }
 
 function setFilter(el) {
-  document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+  document.querySelectorAll('#chips .chip').forEach(c => c.classList.remove('on'));
   el.classList.add('on');
   S.filter = el.dataset.f;
   render();
@@ -1985,8 +1985,7 @@ async function loadProspects(force) {
       const res = await fetch(PROSPECTS_JSON_URL, { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
-        const isToday = data.generated && new Date(data.generated).toDateString() === new Date().toDateString();
-        if (isToday && data.prospects?.length) {
+        if (data.prospects?.length) {
           prospectsState.all        = data.prospects;
           prospectsState.generated  = true;
           prospectsState.batchRegion = data.regions?.[0] || 'pre-generated';
@@ -2097,6 +2096,15 @@ Scoring: High = large or fast-growing brand, clear high-volume packaging needs. 
 function renderProspects() {
   const list = document.getElementById('prospects-list');
   if (!list) return;
+
+  // Keep chip visuals in sync with internal state (guards against cross-tab class corruption)
+  [['ind', 'pros-industry-chips', prospectsState.indFilter],
+   ['region', 'pros-region-chips', prospectsState.regionFilter],
+   ['score', 'pros-score-chips', prospectsState.scoreFilter]].forEach(([attr, cid, val]) => {
+    document.querySelectorAll('#' + cid + ' .chip').forEach(c => c.classList.remove('on'));
+    const active = document.querySelector('#' + cid + ' [data-' + attr + '="' + val + '"]');
+    if (active) active.classList.add('on');
+  });
 
   const prosData      = getProsData();
   const savedKeys     = new Set(Object.keys(prosData.saved     || {}));
