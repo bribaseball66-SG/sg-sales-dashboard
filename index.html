@@ -421,6 +421,46 @@
     #qc-selected.on { display: flex; }
     .qc-clear { background: none; border: none; color: var(--dim); cursor: pointer; font-size: 16px; padding: 2px 4px; }
 
+    /* ── Prospects tab ──────────────────────────────────────── */
+    #prospects-toolbar {
+      background: var(--navy); padding: 10px 16px;
+      position: sticky; top: 0; z-index: 50;
+      border-bottom: 1px solid var(--border);
+    }
+    .pros-filters { display: flex; gap: 7px; overflow-x: auto; scrollbar-width: none; margin-bottom: 8px; }
+    .pros-filters::-webkit-scrollbar { display: none; }
+    .pros-score-filters { display: flex; gap: 7px; }
+    .pros-card {
+      background: var(--navyL); border: 1px solid var(--border);
+      border-radius: 13px; padding: 14px 15px; margin-bottom: 8px;
+    }
+    .pros-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 6px; }
+    .pros-company { font-size: 15px; font-weight: 700; flex: 1; margin-right: 8px; line-height: 1.3; }
+    .pros-score { font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 12px; white-space: nowrap; flex-shrink: 0; }
+    .score-high { background: rgba(16,185,129,.15); color: #10b981; }
+    .score-med  { background: rgba(245,158,11,.15);  color: #f59e0b; }
+    .score-low  { background: rgba(148,163,184,.12); color: #94a3b8; }
+    .pros-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+    .pros-industry {
+      font-size: 11px; font-weight: 600; padding: 2px 8px;
+      background: rgba(59,130,246,.1); color: #60a5fa;
+      border-radius: 8px; border: 1px solid rgba(59,130,246,.2);
+    }
+    .pros-location { font-size: 12px; color: var(--dim); }
+    .pros-why { font-size: 13px; color: var(--text); line-height: 1.55; margin-bottom: 7px; }
+    .pros-dm { font-size: 12px; color: var(--dim); margin-bottom: 9px; }
+    .pros-need { font-size: 11px; color: #475569; margin-bottom: 9px; }
+    .pros-add-btn {
+      width: 100%; padding: 9px; border: none; border-radius: 9px;
+      background: var(--blue); color: #fff;
+      font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      transition: opacity .15s;
+    }
+    .pros-add-btn:active { opacity: .8; }
+    .pros-add-btn:disabled { opacity: .45; cursor: not-allowed; }
+    .pros-add-btn.added { background: rgba(16,185,129,.15); color: var(--green); border: 1px solid rgba(16,185,129,.3); }
+
     @media (min-width: 600px) {
       #sheet { max-width: 540px; left: 50%; right: auto; transform: translateX(-50%) translateY(100%); }
       #sheet.on { transform: translateX(-50%) translateY(0); }
@@ -648,6 +688,34 @@
   </div>
 </div>
 
+<!-- ── Tab: Prospects ─────────────────────────────────────── -->
+<div class="tab" id="tab-prospects">
+  <div id="prospects-toolbar">
+    <div class="pros-filters" id="pros-industry-chips">
+      <div class="chip on" data-ind="all"           onclick="setProsFilter('ind',this)">All Industries</div>
+      <div class="chip"    data-ind="fitness"        onclick="setProsFilter('ind',this)">Fitness</div>
+      <div class="chip"    data-ind="cosmetics"      onclick="setProsFilter('ind',this)">Cosmetics</div>
+      <div class="chip"    data-ind="food"           onclick="setProsFilter('ind',this)">Food &amp; Bev</div>
+      <div class="chip"    data-ind="cannabis"       onclick="setProsFilter('ind',this)">Cannabis</div>
+      <div class="chip"    data-ind="manufacturing"  onclick="setProsFilter('ind',this)">Manufacturing</div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div class="pros-score-filters" id="pros-score-chips">
+        <div class="chip on" data-score="all"    onclick="setProsFilter('score',this)">All Scores</div>
+        <div class="chip"    data-score="High"   onclick="setProsFilter('score',this)">High</div>
+        <div class="chip"    data-score="Medium" onclick="setProsFilter('score',this)">Medium</div>
+        <div class="chip"    data-score="Low"    onclick="setProsFilter('score',this)">Low</div>
+      </div>
+      <button class="icon-btn" onclick="loadProspects(true)" title="Find new prospects" style="flex-shrink:0;margin-left:6px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="page-body" style="padding-top:14px">
+    <div id="prospects-list"></div>
+  </div>
+</div>
+
 <!-- ── Bottom nav ────────────────────────────────────────── -->
 <nav id="bottom-nav">
   <button class="nav-btn active" data-t="contacts" onclick="setTab('contacts')">
@@ -665,6 +733,10 @@
   <button class="nav-btn" data-t="calls" onclick="setTab('calls')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.46a2 2 0 0 1 1.98-2.18h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
     Call Log
+  </button>
+  <button class="nav-btn" data-t="prospects" onclick="setTab('prospects')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+    Prospects
   </button>
 </nav>
 
@@ -706,11 +778,13 @@ function setTab(name) {
   document.getElementById('refresh-btn').style.display = name === 'contacts' ? '' : 'none';
   document.getElementById('fab').classList.toggle('hidden', name !== 'contacts');
   document.getElementById('hdr-tag').textContent =
-    name === 'contacts' ? 'Sales Workspace' :
-    name === 'quotes'   ? 'Quote Analyzer'  :
-    name === 'projects' ? 'Project Folders' : 'Quick Call';
-  if (name === 'projects') renderProjects();
-  if (name === 'calls')    initCallLogger();
+    name === 'contacts'  ? 'Sales Workspace' :
+    name === 'quotes'    ? 'Quote Analyzer'  :
+    name === 'projects'  ? 'Project Folders' :
+    name === 'prospects' ? 'Prospects'        : 'Quick Call';
+  if (name === 'projects')  renderProjects();
+  if (name === 'calls')     initCallLogger();
+  if (name === 'prospects') loadProspects();
 }
 
 // ── API helpers ───────────────────────────────────────────
@@ -1260,6 +1334,11 @@ async function submitNewContact() {
 
     toast(`${first} ${last} added ✓`, 'ok');
     closeSheet();
+    if (window._prosSubmitIdx !== undefined) {
+      prospectsState.added.add(window._prosSubmitIdx);
+      window._prosSubmitIdx = undefined;
+      renderProspects();
+    }
     await loadData();
   } catch(e) { toast('Error: ' + e.message, 'err'); }
 }
@@ -1800,6 +1879,136 @@ async function doQuickCall() {
     btn.disabled  = false;
     activeId      = prevActiveId;
   }
+}
+
+// ── Prospects ─────────────────────────────────────────────
+
+const prospectsState = {
+  all: [], indFilter: 'all', scoreFilter: 'all',
+  loading: false, generated: false, added: new Set(),
+};
+
+function setProsFilter(type, el) {
+  if (type === 'ind') {
+    document.querySelectorAll('#pros-industry-chips .chip').forEach(c => c.classList.remove('on'));
+    el.classList.add('on');
+    prospectsState.indFilter = el.dataset.ind;
+  } else {
+    document.querySelectorAll('#pros-score-chips .chip').forEach(c => c.classList.remove('on'));
+    el.classList.add('on');
+    prospectsState.scoreFilter = el.dataset.score;
+  }
+  renderProspects();
+}
+
+async function loadProspects(force) {
+  if (prospectsState.generated && !force) { renderProspects(); return; }
+  if (prospectsState.loading) return;
+  await generateProspects();
+}
+
+async function generateProspects() {
+  prospectsState.loading = true;
+  const list = document.getElementById('prospects-list');
+  list.innerHTML = `<div class="empty" style="padding-top:40px">
+    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="animation:spin 1.5s linear infinite"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+    <p style="margin-top:14px;font-size:15px">Finding Michigan prospects…</p>
+  </div>`;
+
+  const regions = ['Metro Detroit','Grand Rapids','Lansing area','Ann Arbor','Kalamazoo','Flint area','Traverse City area','Muskegon','Holland','Saginaw area'];
+  const region = regions[Math.floor(Math.random() * regions.length)];
+
+  const prompt = `You are a B2B sales intelligence agent for Stephen Gould, a global custom packaging company. Generate 15 real or realistic Michigan companies in the ${region} region that are strong prospects for custom packaging solutions (bottles, jars, pouches, boxes, labels, custom containers).
+
+Industries to cover (mix them): fitness/sports nutrition, cosmetics/personal care, food & beverage, cannabis/hemp, and general manufacturing/consumer goods.
+
+Return ONLY a JSON array of 15 objects — no markdown, no explanation:
+[
+  {
+    "company": "Company Name",
+    "industry": "fitness" | "cosmetics" | "food" | "cannabis" | "manufacturing",
+    "location": "City, MI",
+    "score": "High" | "Medium" | "Low",
+    "decisionMaker": "First Last, Title" or null,
+    "website": "example.com" or null,
+    "whyCallThem": "1-2 direct sentences on why they need custom packaging and why they're a good prospect right now.",
+    "packagingNeed": "e.g. supplement bottles, cosmetic jars, kraft pouches, custom boxes"
+  }
+]
+
+Scoring: High = large or fast-growing brand with clear high-volume packaging needs. Medium = solid mid-size prospect. Low = smaller or less certain but worth a cold call.`;
+
+  try {
+    const raw = await callClaude([{ role: 'user', content: prompt }], 'claude-opus-4-6');
+    const jsonStr = raw.startsWith('[') ? raw : (raw.match(/\[[\s\S]*\]/) || [])[0];
+    if (!jsonStr) throw new Error('Unexpected response from Claude');
+    prospectsState.all = JSON.parse(jsonStr);
+    prospectsState.generated = true;
+    prospectsState.added = new Set();
+    renderProspects();
+  } catch(e) {
+    list.innerHTML = `<div class="empty"><p style="color:var(--red)">Could not load prospects: ${esc(e.message)}</p></div>`;
+  } finally {
+    prospectsState.loading = false;
+  }
+}
+
+function renderProspects() {
+  const list = document.getElementById('prospects-list');
+  if (!list) return;
+  const { indFilter, scoreFilter, all, added } = prospectsState;
+
+  const rows = all.map((p, i) => ({ p, i })).filter(({ p }) => {
+    if (indFilter !== 'all' && p.industry !== indFilter) return false;
+    if (scoreFilter !== 'all' && p.score !== scoreFilter) return false;
+    return true;
+  });
+
+  if (!rows.length) {
+    list.innerHTML = `<div class="empty"><p>No prospects match the current filters.</p></div>`;
+    return;
+  }
+
+  const IND_LABEL = { fitness:'Fitness', cosmetics:'Cosmetics', food:'Food & Bev', cannabis:'Cannabis', manufacturing:'Manufacturing' };
+
+  list.innerHTML = rows.map(({ p, i }) => {
+    const isAdded = added.has(i);
+    const scoreClass = p.score === 'High' ? 'score-high' : p.score === 'Medium' ? 'score-med' : 'score-low';
+    return `<div class="pros-card">
+      <div class="pros-top">
+        <div class="pros-company">${esc(p.company)}</div>
+        <span class="pros-score ${scoreClass}">${esc(p.score)}</span>
+      </div>
+      <div class="pros-meta">
+        <span class="pros-industry">${esc(IND_LABEL[p.industry] || p.industry)}</span>
+        <span class="pros-location">${esc(p.location)}</span>
+      </div>
+      <div class="pros-why">${esc(p.whyCallThem)}</div>
+      ${p.packagingNeed ? `<div class="pros-need">Packaging: ${esc(p.packagingNeed)}</div>` : ''}
+      ${p.decisionMaker ? `<div class="pros-dm">Contact: ${esc(p.decisionMaker)}</div>` : ''}
+      <button class="pros-add-btn${isAdded ? ' added' : ''}" onclick="showAddProspect(${i})" ${isAdded ? 'disabled' : ''}>
+        ${isAdded
+          ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Added to Contacts`
+          : `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add to Contacts`
+        }
+      </button>
+    </div>`;
+  }).join('');
+}
+
+function showAddProspect(idx) {
+  const p = prospectsState.all[idx];
+  if (!p) return;
+  showAddContact();
+  document.getElementById('ac-company').value = p.company;
+  if (p.decisionMaker) {
+    const namePart = p.decisionMaker.replace(/,.*$/, '').trim().split(/\s+/);
+    document.getElementById('ac-first').value = namePart[0] || '';
+    document.getElementById('ac-last').value  = namePart.slice(1).join(' ') || '';
+  }
+  const note = [p.whyCallThem, p.packagingNeed ? 'Packaging need: ' + p.packagingNeed : '', p.website ? 'Website: ' + p.website : ''].filter(Boolean).join('\n\n');
+  document.getElementById('ac-note').value = note;
+  window._prosSubmitIdx = idx;
 }
 
 // ── Utilities ─────────────────────────────────────────────
