@@ -902,7 +902,7 @@ async function loadData() {
           properties: ['hs_task_subject', 'hs_timestamp', 'hs_task_status'],
           inputs: ch.map(id => ({ id })),
         });
-        for (const t of (res.results || [])) taskMap[t.id] = t.properties;
+        for (const t of (res.results || [])) taskMap[t.id] = { _id: t.id, ...t.properties };
       }
     }
 
@@ -912,7 +912,7 @@ async function loadData() {
       const active = ids
         .map(id => taskMap[id])
         .filter(t => t && t.hs_task_status !== 'COMPLETED' && t.hs_timestamp)
-        .map(t => ({ ms: new Date(t.hs_timestamp).getTime(), subject: t.hs_task_subject || '' }))
+        .map(t => ({ id: t._id, ms: new Date(t.hs_timestamp).getTime(), subject: t.hs_task_subject || '' }))
         .sort((a, b) => a.ms - b.ms);
       if (!active.length) continue;
       const overdue = active.filter(t => t.ms < now);
@@ -1302,11 +1302,21 @@ async function createTask(dateStr, subject) {
   const co = c?.properties.company || '';
   const ms = new Date(dateStr + 'T00:00:00').getTime();
   const sub = subject || `Follow up with ${name} at ${co}`;
-  const task = await hs('POST', '/crm/v3/objects/tasks', {
-    properties:{ hs_task_subject:sub, hs_task_status:'NOT_STARTED', hs_task_type:'CALL', hs_timestamp:ms },
-  });
-  await hs('PUT', `/crm/v4/objects/tasks/${task.id}/associations/default/contacts/${activeId}`, null);
-  S.tasks[activeId] = { ms, subject: sub };
+
+  const existing = S.tasks[activeId];
+  if (existing?.id) {
+    // Update the existing task in-place so old dates can't revert
+    await hs('PATCH', `/crm/v3/objects/tasks/${existing.id}`, {
+      properties: { hs_task_subject: sub, hs_timestamp: ms, hs_task_status: 'NOT_STARTED' },
+    });
+    S.tasks[activeId] = { id: existing.id, ms, subject: sub };
+  } else {
+    const task = await hs('POST', '/crm/v3/objects/tasks', {
+      properties: { hs_task_subject: sub, hs_task_status: 'NOT_STARTED', hs_task_type: 'CALL', hs_timestamp: ms },
+    });
+    await hs('PUT', `/crm/v4/objects/tasks/${task.id}/associations/default/contacts/${activeId}`, null);
+    S.tasks[activeId] = { id: task.id, ms, subject: sub };
+  }
 }
 
 // ── Add Contact ───────────────────────────────────────────
@@ -1326,6 +1336,12 @@ function showAddContact() {
       <div class="fg"><label class="fl">Company *</label><input type="text" id="ac-company" placeholder="Acme Corp"></div>
       <div class="fg"><label class="fl">Email</label><input type="text" id="ac-email" placeholder="jane@acme.com"></div>
       <div class="fg"><label class="fl">Phone</label><input type="text" id="ac-phone" placeholder="(555) 000-0000"></div>
+      <div class="fg"><label class="fl">Street Address</label><input type="text" id="ac-street" placeholder="123 Main St"></div>
+      <div class="form-row">
+        <div class="fg" style="margin:0 0 12px"><label class="fl">City</label><input type="text" id="ac-city" placeholder="Grand Rapids"></div>
+        <div class="fg" style="margin:0 0 12px"><label class="fl">State</label><input type="text" id="ac-state" placeholder="MI" maxlength="2"></div>
+        <div class="fg" style="margin:0 0 12px"><label class="fl">Zip</label><input type="text" id="ac-zip" placeholder="49501" maxlength="10"></div>
+      </div>
       <div class="fg"><label class="fl">Lead Status</label><div class="status-row" id="ac-status">
         ${[['IN_PROGRESS','Active'],['CONNECTED','Engaged'],['OPEN','Follow Up'],['NEW','New']]
           .map(([v,l],i) => `<button class="sopt${i===0?' on':''}" data-v="${v}">${l}</button>`).join('')}
@@ -1351,6 +1367,10 @@ async function submitNewContact() {
   const company = document.getElementById('ac-company')?.value.trim();
   const email   = document.getElementById('ac-email')?.value.trim();
   const phone   = document.getElementById('ac-phone')?.value.trim();
+  const street  = document.getElementById('ac-street')?.value.trim();
+  const city    = document.getElementById('ac-city')?.value.trim();
+  const state   = document.getElementById('ac-state')?.value.trim();
+  const zip     = document.getElementById('ac-zip')?.value.trim();
   const status  = document.querySelector('#ac-status .sopt.on')?.dataset.v || 'NEW';
   const note    = document.getElementById('ac-note')?.value.trim();
   const dateV   = document.getElementById('ac-date')?.value;
@@ -1360,9 +1380,13 @@ async function submitNewContact() {
 
   try {
     const props = { firstname:first, company, hs_lead_status:status };
-    if (last)  props.lastname = last;
-    if (email) props.email    = email;
-    if (phone) props.phone    = phone;
+    if (last)   props.lastname = last;
+    if (email)  props.email    = email;
+    if (phone)  props.phone    = phone;
+    if (street) props.address  = street;
+    if (city)   props.city     = city;
+    if (state)  props.state    = state;
+    if (zip)    props.zip      = zip;
 
     const contact = await hs('POST', '/crm/v3/objects/contacts', { properties: props });
     activeId = contact.id;
@@ -2012,22 +2036,63 @@ function repairJsonArray(str) {
   return candidate.length > 4 ? candidate : null;
 }
 
+// Fetch one batch of 3 prospects from Claude and return parsed array
+async function fetchProspectBatch(region, existing) {
+  const exclusion = existing.length
+    ? `\nDo not include any of these companies (already listed): ${existing.join(', ')}.`
+    : '';
+
+  const prompt = `You are a B2B sales intelligence agent for Stephen Gould, a global custom packaging company. Generate 3 real or realistic Michigan companies in the ${region} area that fit our ideal customer profile and are strong prospects for custom packaging solutions (bottles, jars, pouches, boxes, labels, custom containers).${exclusion}
+
+Ideal customer profile:
+- Employee count: 50–1,000 employees
+- Annual packaging spend: $50,000–$1,000,000+
+- Packaging-heavy industries (mix these): fitness/sports nutrition, cosmetics/personal care, food & beverage, cannabis/hemp, nutraceuticals/supplements, medical devices/diagnostics, pet products, automotive aftermarket products, consumer goods/manufacturing, e-commerce brands
+
+Target decision makers (use one of these titles when possible):
+VP of Procurement, Purchasing Manager, Director of Supply Chain, Operations Manager, Procurement Specialist, VP of Operations
+
+Return ONLY a JSON array of exactly 3 objects — no markdown, no explanation:
+[
+  {
+    "company": "Company Name",
+    "industry": "fitness"|"cosmetics"|"food"|"cannabis"|"nutraceuticals"|"medical"|"pet"|"automotive"|"manufacturing"|"ecommerce",
+    "location": "City, MI",
+    "employees": "estimated headcount as a number string e.g. 150",
+    "score": "High"|"Medium"|"Low",
+    "decisionMaker": "First Last, Title" or null,
+    "website": "example.com" or null,
+    "whyCallThem": "1-2 direct sentences on their packaging volume/need and why they are a strong prospect right now.",
+    "packagingNeed": "e.g. supplement bottles, cosmetic jars, kraft pouches, custom boxes"
+  }
+]
+
+Scoring:
+- High = 200–1,000 employees, $250k+ annual packaging spend, active brand growth or product launches
+- Medium = 50–200 employees, $50k–$250k packaging spend, established buying cycle
+- Low = under 50 employees or niche, worth a cold call but lower volume`;
+
+  const raw = await callClaude([{ role: 'user', content: prompt }], 'claude-opus-4-6', 1024);
+  let jsonStr = raw.startsWith('[') ? raw : (raw.match(/\[[\s\S]*\]/) || [])[0] || null;
+  let parsed;
+  try {
+    parsed = JSON.parse(jsonStr);
+  } catch {
+    const repaired = repairJsonArray(jsonStr || raw);
+    if (!repaired) throw new Error('Response cut off');
+    parsed = JSON.parse(repaired);
+  }
+  return parsed.map(p => ({ ...p, _region: region }));
+}
+
 async function generateProspects(append = false) {
   if (prospectsState.loading) return;
   prospectsState.loading = true;
   const list = document.getElementById('prospects-list');
 
-  if (!append) {
-    prospectsState.all = [];
-    prospectsState.added = new Set();
-    list.innerHTML = `<div class="empty" style="padding-top:40px">
-      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="animation:spin 1.5s linear infinite"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-      <p style="margin-top:14px;font-size:15px">Finding Michigan prospects…</p>
-    </div>`;
-  } else {
-    const btn = document.getElementById('load-more-btn');
-    if (btn) { btn.disabled = true; btn.textContent = 'Loading…'; }
-  }
+  const BATCHES = 4;      // 4 calls × 3 prospects = 12 total
+  const PER_BATCH = 3;
+  const TOTAL = BATCHES * PER_BATCH;
 
   const randomRegions = ['Metro Detroit','Grand Rapids','Lansing','Ann Arbor','Kalamazoo','Flint','Traverse City','Muskegon','Holland','Saginaw'];
   const targetRegion = append
@@ -2035,62 +2100,53 @@ async function generateProspects(append = false) {
     : (prospectsState.regionFilter !== 'all'
         ? prospectsState.regionFilter
         : randomRegions[Math.floor(Math.random() * randomRegions.length)]);
-  if (!append) prospectsState.batchRegion = targetRegion;
 
-  const existing = prospectsState.all.map(p => p.company);
-  const exclusion = existing.length ? `\nDo not include any of these companies (already listed): ${existing.join(', ')}.` : '';
-
-  const prompt = `You are a B2B sales intelligence agent for Stephen Gould, a global custom packaging company. Generate 5 real or realistic Michigan companies in the ${targetRegion} area that are strong prospects for custom packaging solutions (bottles, jars, pouches, boxes, labels, custom containers).${exclusion}
-
-Industries to cover (mix them): fitness/sports nutrition, cosmetics/personal care, food & beverage, cannabis/hemp, manufacturing/consumer goods, automotive aftermarket products, medical devices/diagnostics, nutraceuticals/supplements, pet products, and e-commerce brands.
-
-Return ONLY a JSON array of exactly 5 objects — no markdown, no explanation:
-[
-  {
-    "company": "Company Name",
-    "industry": "fitness"|"cosmetics"|"food"|"cannabis"|"manufacturing"|"automotive"|"medical"|"nutraceuticals"|"pet"|"ecommerce",
-    "location": "City, MI",
-    "score": "High"|"Medium"|"Low",
-    "decisionMaker": "First Last, Title" or null,
-    "website": "example.com" or null,
-    "whyCallThem": "1-2 direct sentences on why they need custom packaging and why they are a good prospect right now.",
-    "packagingNeed": "e.g. supplement bottles, cosmetic jars, kraft pouches, custom boxes"
+  if (!append) {
+    prospectsState.all = [];
+    prospectsState.added = new Set();
+    prospectsState.batchRegion = targetRegion;
+    list.innerHTML = `<div class="empty" style="padding-top:40px">
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="animation:spin 1.5s linear infinite"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      <p id="pros-progress" style="margin-top:14px;font-size:15px">Finding prospects… 0 / ${TOTAL}</p>
+    </div>`;
+  } else {
+    const btn = document.getElementById('load-more-btn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Loading…'; }
   }
-]
 
-Scoring: High = large or fast-growing brand, clear high-volume packaging needs. Medium = solid mid-size prospect. Low = smaller but worth a cold call.`;
+  const startCount = prospectsState.all.length;
+  let batchErrors = 0;
 
-  try {
-    const raw = await callClaude([{ role: 'user', content: prompt }], 'claude-opus-4-6', 2048);
-    let jsonStr = raw.startsWith('[') ? raw : (raw.match(/\[[\s\S]*\]/) || [])[0] || null;
-
-    let parsed;
+  for (let i = 0; i < BATCHES; i++) {
     try {
-      parsed = JSON.parse(jsonStr);
-    } catch {
-      // Response may be truncated — attempt repair
-      const repaired = repairJsonArray(jsonStr || raw);
-      if (!repaired) throw new Error('Response was cut off — tap Retry');
-      parsed = JSON.parse(repaired);
-    }
+      const existing = prospectsState.all.map(p => p.company);
+      const batch = await fetchProspectBatch(targetRegion, existing);
+      prospectsState.all = [...prospectsState.all, ...batch];
+      prospectsState.generated = true;
 
-    const newItems = parsed.map(p => ({ ...p, _region: targetRegion }));
-    prospectsState.all = [...prospectsState.all, ...newItems];
-    prospectsState.generated = true;
-    renderProspects();
-  } catch(e) {
-    if (!append) {
-      list.innerHTML = `<div class="empty" style="padding-top:32px">
-        <p style="color:var(--red);margin-bottom:16px">${esc(e.message)}</p>
-        <button class="wide-btn primary" style="max-width:160px;margin:0 auto" onclick="generateProspects(false)">Retry</button>
-      </div>`;
-    } else {
-      toast('Failed to load more: ' + e.message, 'err');
-      renderProspects();
+      // Update live progress counter
+      const prog = document.getElementById('pros-progress');
+      const found = prospectsState.all.length - startCount;
+      if (prog) prog.textContent = `Finding prospects… ${found} / ${TOTAL}`;
+
+      // Render after each batch so results appear progressively
+      if (!append) renderProspects();
+    } catch (e) {
+      batchErrors++;
+      console.warn(`Prospect batch ${i + 1} failed: ${e.message}`);
     }
-  } finally {
-    prospectsState.loading = false;
   }
+
+  if (append) {
+    renderProspects();
+  } else if (prospectsState.all.length === 0) {
+    list.innerHTML = `<div class="empty" style="padding-top:32px">
+      <p style="color:var(--red);margin-bottom:16px">Could not load prospects — check connection</p>
+      <button class="wide-btn primary" style="max-width:160px;margin:0 auto" onclick="generateProspects(false)">Retry</button>
+    </div>`;
+  }
+
+  prospectsState.loading = false;
 }
 
 function renderProspects() {
