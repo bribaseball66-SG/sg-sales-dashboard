@@ -1973,9 +1973,31 @@ function setProsFilter(type, el) {
   renderProspects();
 }
 
+const PROSPECTS_JSON_URL = 'https://raw.githubusercontent.com/bribaseball66-SG/hubspot-sales/main/prospects.json';
+
 async function loadProspects(force) {
   if (prospectsState.generated && !force) { renderProspects(); return; }
   if (prospectsState.loading) return;
+
+  // Try the pre-generated daily file first (committed by GitHub Actions each morning)
+  if (!force) {
+    try {
+      const res = await fetch(PROSPECTS_JSON_URL, { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        const isToday = data.generated && new Date(data.generated).toDateString() === new Date().toDateString();
+        if (isToday && data.prospects?.length) {
+          prospectsState.all        = data.prospects;
+          prospectsState.generated  = true;
+          prospectsState.batchRegion = data.regions?.[0] || 'pre-generated';
+          prospectsState.added      = new Set();
+          renderProspects();
+          return;
+        }
+      }
+    } catch { /* fall through to live generation */ }
+  }
+
   await generateProspects(false);
 }
 
