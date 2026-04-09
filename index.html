@@ -830,7 +830,7 @@
         </button>
       </div>
       <div class="rp-search-row">
-        <input id="rp-city-input" type="text" placeholder="City or area in Michigan (e.g. Grand Rapids)" />
+        <input id="rp-city-input" type="text" placeholder="City or area in Michigan (e.g. Grand Rapids)" autocomplete="off" autocorrect="off" autocapitalize="none" onkeydown="if(event.key==='Enter')planRoute()" />
         <button class="wide-btn primary" style="flex-shrink:0;padding:10px 16px;font-size:13px" onclick="planRoute()">Plan Route</button>
       </div>
       <div class="rp-hint">Claude will find 12 packaging prospects in that area and build a driving route.</div>
@@ -2495,7 +2495,7 @@ function toggleRoutePlanner() {
   const open  = panel.classList.toggle('active');
   btn.classList.toggle('active', open);
   list.style.display = open ? 'none' : '';
-  if (open) document.getElementById('rp-city-input').focus();
+  if (open) requestAnimationFrame(() => document.getElementById('rp-city-input').focus());
 }
 
 async function planRoute() {
@@ -2530,7 +2530,7 @@ Return ONLY a JSON array of exactly 12 objects ordered geographically to minimiz
 ]`;
 
   try {
-    const resp = await fetch('/ai/messages', {
+    const resp = await fetch(BASE + '/ai/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
