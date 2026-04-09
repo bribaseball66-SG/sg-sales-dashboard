@@ -503,6 +503,7 @@
     .rp-title  { font-size: 15px; font-weight: 800; flex: 1; }
     .rp-search-row { display: flex; gap: 8px; margin-bottom: 6px; }
     .rp-search-row input { flex: 1; min-width: 0; }
+    #rp-city-input { color: #f1f5f9; -webkit-text-fill-color: #f1f5f9; background: #1e293b; }
     .rp-hint { font-size: 12px; color: #475569; margin-bottom: 14px; }
     .rp-card {
       background: var(--navyL); border: 1px solid var(--border);
@@ -2156,6 +2157,20 @@ function getProsData() {
 }
 function saveProsData(d) { localStorage.setItem('sg_pros_data', JSON.stringify(d)); }
 
+function saveProspectsCache() {
+  try { localStorage.setItem('sg_prospects_cache', JSON.stringify(prospectsState.all)); } catch {}
+}
+function loadProspectsCache() {
+  try {
+    const raw = localStorage.getItem('sg_prospects_cache');
+    if (raw) {
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr) && arr.length) { prospectsState.all = arr; return true; }
+    }
+  } catch {}
+  return false;
+}
+
 function getMergedProspects() {
   const prosData  = getProsData();
   const dismissed = new Set([
@@ -2170,6 +2185,8 @@ function getMergedProspects() {
 
 function dismissProspect(key) {
   prospectsState.dismissed.add(key);
+  prospectsState.all = prospectsState.all.filter(p => proKey(p) !== key);
+  saveProspectsCache();
   const d = getProsData();
   if (!d.dismissed) d.dismissed = {};
   d.dismissed[key] = true;
@@ -2206,19 +2223,31 @@ async function loadProspects(force) {
   if (prospectsState.loading) return;
   prospectsState.loading = true;
 
-  // Try the pre-generated daily file first (committed by Cloudflare Worker each morning)
+  // Always restore cached cards first so the list is never blank on refresh
+  if (!prospectsState.generated) {
+    const restored = loadProspectsCache();
+    if (restored) {
+      prospectsState.generated = true;
+      renderProspects(); // show cached cards immediately while we fetch
+    }
+  }
+
+  // On first load (not force), try to merge in the pre-generated daily file
   if (!force) {
     try {
       const res = await fetch(PROSPECTS_JSON_URL, { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         if (data.prospects?.length) {
-          prospectsState.all       = data.prospects;
+          // Merge daily prospects with cached ones, deduping by key
+          const dismissed = getProsData().dismissed || {};
+          const seen = new Set(prospectsState.all.map(p => proKey(p)));
+          const fresh = data.prospects.filter(p => !seen.has(proKey(p)) && !dismissed[proKey(p)]);
+          prospectsState.all = [...fresh, ...prospectsState.all];
           prospectsState.generated = true;
-          // Store all unique regions present in the file
           const regions = [...new Set(data.prospects.map(p => p._region).filter(Boolean))];
           prospectsState.batchRegions = regions.length ? regions : (data.regions || []);
-          // Don't wipe `added` — preserve "Added to Contacts" state for this session
+          saveProspectsCache();
           prospectsState.loading = false;
           renderProspects();
           return;
@@ -2384,9 +2413,10 @@ async function generateProspects(append = false) {
   // Remove loading banner regardless of outcome
   document.getElementById('pros-loading-banner')?.remove();
 
-  // Prepend new results so fresh ones appear at top
+  // Prepend new results so fresh ones appear at top, then persist
   prospectsState.all       = [...newProspects, ...prospectsState.all];
   prospectsState.generated = prospectsState.all.length > 0;
+  saveProspectsCache();
 
   if (prospectsState.all.length === 0 && newProspects.length === 0) {
     list.innerHTML = `<div class="empty" style="padding-top:32px">
