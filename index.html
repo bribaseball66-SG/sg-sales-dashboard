@@ -487,9 +487,17 @@
     .pros-add-btn.added { background: rgba(16,185,129,.15); color: var(--green); border: 1px solid rgba(16,185,129,.3); }
 
     /* ── Route Planner ─────────────────────────────────────── */
-    /* max-height toggle keeps input in DOM at all times — fixes iOS focus bug */
-    #route-planner-panel { max-height: 0; overflow: hidden; transition: max-height .35s ease, margin .35s ease; margin-bottom: 0; }
-    #route-planner-panel.active { max-height: 4000px; overflow: visible; padding: 0 0 20px; border-bottom: 1px solid var(--border); margin-bottom: 18px; }
+    /* visibility+position toggle: input stays interactive in the DOM when open */
+    #route-planner-panel {
+      position: absolute; left: -9999px; top: -9999px;
+      visibility: hidden; pointer-events: none;
+      padding: 0 0 20px; width: calc(100% - 32px);
+    }
+    #route-planner-panel.active {
+      position: static; left: auto; top: auto;
+      visibility: visible; pointer-events: auto;
+      border-bottom: 1px solid var(--border); margin-bottom: 18px;
+    }
     #route-btn.active { background: rgba(26,115,232,.15); color: #1a73e8; border-color: rgba(26,115,232,.4); }
     .rp-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; padding-top: 4px; }
     .rp-title  { font-size: 15px; font-weight: 800; flex: 1; }
