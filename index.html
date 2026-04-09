@@ -122,6 +122,7 @@
       background: var(--navyL); border: 1px solid var(--border); color: var(--dim);
       border-radius: 20px; padding: 5px 13px; font-size: 12px; font-weight: 600;
       cursor: pointer; white-space: nowrap; transition: all .15s; flex-shrink: 0;
+      touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none;
     }
     .chip.on { background: var(--blue); border-color: var(--blue); color: #fff; }
 
@@ -798,39 +799,39 @@
 <div class="tab" id="tab-prospects">
   <div id="prospects-toolbar">
     <div class="pros-filters" id="pros-industry-chips">
-      <div class="chip on" data-ind="all"           onclick="setProsFilter('ind',this)">All Industries</div>
-      <div class="chip"    data-ind="fitness"        onclick="setProsFilter('ind',this)">Fitness</div>
-      <div class="chip"    data-ind="cosmetics"      onclick="setProsFilter('ind',this)">Cosmetics</div>
-      <div class="chip"    data-ind="food"           onclick="setProsFilter('ind',this)">Food &amp; Bev</div>
-      <div class="chip"    data-ind="cannabis"       onclick="setProsFilter('ind',this)">Cannabis</div>
-      <div class="chip"    data-ind="manufacturing"  onclick="setProsFilter('ind',this)">Manufacturing</div>
-      <div class="chip"    data-ind="automotive"     onclick="setProsFilter('ind',this)">Automotive</div>
-      <div class="chip"    data-ind="medical"        onclick="setProsFilter('ind',this)">Medical</div>
-      <div class="chip"    data-ind="nutraceuticals" onclick="setProsFilter('ind',this)">Nutraceuticals</div>
-      <div class="chip"    data-ind="pet"            onclick="setProsFilter('ind',this)">Pet Products</div>
-      <div class="chip"    data-ind="ecommerce"      onclick="setProsFilter('ind',this)">E-commerce</div>
+      <div class="chip on" data-ind="all"           ontouchend="setProsFilter('ind',this,event)" onclick="setProsFilter('ind',this,event)">All Industries</div>
+      <div class="chip"    data-ind="fitness"        ontouchend="setProsFilter('ind',this,event)" onclick="setProsFilter('ind',this,event)">Fitness</div>
+      <div class="chip"    data-ind="cosmetics"      ontouchend="setProsFilter('ind',this,event)" onclick="setProsFilter('ind',this,event)">Cosmetics</div>
+      <div class="chip"    data-ind="food"           ontouchend="setProsFilter('ind',this,event)" onclick="setProsFilter('ind',this,event)">Food &amp; Bev</div>
+      <div class="chip"    data-ind="cannabis"       ontouchend="setProsFilter('ind',this,event)" onclick="setProsFilter('ind',this,event)">Cannabis</div>
+      <div class="chip"    data-ind="manufacturing"  ontouchend="setProsFilter('ind',this,event)" onclick="setProsFilter('ind',this,event)">Manufacturing</div>
+      <div class="chip"    data-ind="automotive"     ontouchend="setProsFilter('ind',this,event)" onclick="setProsFilter('ind',this,event)">Automotive</div>
+      <div class="chip"    data-ind="medical"        ontouchend="setProsFilter('ind',this,event)" onclick="setProsFilter('ind',this,event)">Medical</div>
+      <div class="chip"    data-ind="nutraceuticals" ontouchend="setProsFilter('ind',this,event)" onclick="setProsFilter('ind',this,event)">Nutraceuticals</div>
+      <div class="chip"    data-ind="pet"            ontouchend="setProsFilter('ind',this,event)" onclick="setProsFilter('ind',this,event)">Pet Products</div>
+      <div class="chip"    data-ind="ecommerce"      ontouchend="setProsFilter('ind',this,event)" onclick="setProsFilter('ind',this,event)">E-commerce</div>
     </div>
     <div class="pros-filters" id="pros-region-chips">
-      <div class="chip on" data-region="all"            onclick="setProsFilter('region',this)">All Regions</div>
-      <div class="chip"    data-region="Metro Detroit"  onclick="setProsFilter('region',this)">Metro Detroit</div>
-      <div class="chip"    data-region="Grand Rapids"   onclick="setProsFilter('region',this)">Grand Rapids</div>
-      <div class="chip"    data-region="Ann Arbor"      onclick="setProsFilter('region',this)">Ann Arbor</div>
-      <div class="chip"    data-region="Lansing"        onclick="setProsFilter('region',this)">Lansing</div>
-      <div class="chip"    data-region="Kalamazoo"      onclick="setProsFilter('region',this)">Kalamazoo</div>
-      <div class="chip"    data-region="Flint"          onclick="setProsFilter('region',this)">Flint</div>
-      <div class="chip"    data-region="Traverse City"  onclick="setProsFilter('region',this)">Traverse City</div>
-      <div class="chip"    data-region="Muskegon"       onclick="setProsFilter('region',this)">Muskegon</div>
-      <div class="chip"    data-region="Holland"        onclick="setProsFilter('region',this)">Holland</div>
-      <div class="chip"    data-region="Saginaw"        onclick="setProsFilter('region',this)">Saginaw</div>
+      <div class="chip on" data-region="all"            ontouchend="setProsFilter('region',this,event)" onclick="setProsFilter('region',this,event)">All Regions</div>
+      <div class="chip"    data-region="Metro Detroit"  ontouchend="setProsFilter('region',this,event)" onclick="setProsFilter('region',this,event)">Metro Detroit</div>
+      <div class="chip"    data-region="Grand Rapids"   ontouchend="setProsFilter('region',this,event)" onclick="setProsFilter('region',this,event)">Grand Rapids</div>
+      <div class="chip"    data-region="Ann Arbor"      ontouchend="setProsFilter('region',this,event)" onclick="setProsFilter('region',this,event)">Ann Arbor</div>
+      <div class="chip"    data-region="Lansing"        ontouchend="setProsFilter('region',this,event)" onclick="setProsFilter('region',this,event)">Lansing</div>
+      <div class="chip"    data-region="Kalamazoo"      ontouchend="setProsFilter('region',this,event)" onclick="setProsFilter('region',this,event)">Kalamazoo</div>
+      <div class="chip"    data-region="Flint"          ontouchend="setProsFilter('region',this,event)" onclick="setProsFilter('region',this,event)">Flint</div>
+      <div class="chip"    data-region="Traverse City"  ontouchend="setProsFilter('region',this,event)" onclick="setProsFilter('region',this,event)">Traverse City</div>
+      <div class="chip"    data-region="Muskegon"       ontouchend="setProsFilter('region',this,event)" onclick="setProsFilter('region',this,event)">Muskegon</div>
+      <div class="chip"    data-region="Holland"        ontouchend="setProsFilter('region',this,event)" onclick="setProsFilter('region',this,event)">Holland</div>
+      <div class="chip"    data-region="Saginaw"        ontouchend="setProsFilter('region',this,event)" onclick="setProsFilter('region',this,event)">Saginaw</div>
     </div>
     <div class="pros-bottom-row">
       <div class="pros-score-filters" id="pros-score-chips">
-        <div class="chip on" data-score="all"       onclick="setProsFilter('score',this)">All</div>
-        <div class="chip"    data-score="High"      onclick="setProsFilter('score',this)">High</div>
-        <div class="chip"    data-score="Medium"    onclick="setProsFilter('score',this)">Medium</div>
-        <div class="chip"    data-score="Low"       onclick="setProsFilter('score',this)">Low</div>
-        <div class="chip"    data-score="saved"     onclick="setProsFilter('score',this)">⭐ Saved</div>
-        <div class="chip"    data-score="contacted" onclick="setProsFilter('score',this)">Contacted</div>
+        <div class="chip on" data-score="all"       ontouchend="setProsFilter('score',this,event)" onclick="setProsFilter('score',this,event)">All</div>
+        <div class="chip"    data-score="High"      ontouchend="setProsFilter('score',this,event)" onclick="setProsFilter('score',this,event)">High</div>
+        <div class="chip"    data-score="Medium"    ontouchend="setProsFilter('score',this,event)" onclick="setProsFilter('score',this,event)">Medium</div>
+        <div class="chip"    data-score="Low"       ontouchend="setProsFilter('score',this,event)" onclick="setProsFilter('score',this,event)">Low</div>
+        <div class="chip"    data-score="saved"     ontouchend="setProsFilter('score',this,event)" onclick="setProsFilter('score',this,event)">⭐ Saved</div>
+        <div class="chip"    data-score="contacted" ontouchend="setProsFilter('score',this,event)" onclick="setProsFilter('score',this,event)">Contacted</div>
       </div>
       <div style="display:flex;gap:6px;flex-shrink:0;margin-left:6px">
         <button class="icon-btn" id="route-btn" onclick="toggleRoutePlanner()" title="Cold Call Route Planner">
@@ -852,7 +853,7 @@
         </button>
       </div>
       <div class="rp-search-row">
-        <input id="rp-city-input" type="text" placeholder="City or area in Michigan…" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" onkeydown="if(event.key==='Enter'){event.preventDefault();planRoute();}" />
+        <input id="rp-city-input" type="text" placeholder="City or area in Michigan…" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" onkeydown="if(event.key==='Enter'){event.preventDefault();planRoute();}" style="color:#f1f5f9!important;-webkit-text-fill-color:#f1f5f9!important;background-color:#1e293b!important;opacity:1!important" />
         <button class="wide-btn primary" style="flex-shrink:0;padding:10px 16px;font-size:13px" onclick="planRoute()">Plan Route</button>
       </div>
       <div class="rp-hint">Type a city or area, then tap Plan Route. Claude finds 12 prospects and builds a driving route.</div>
@@ -2194,7 +2195,8 @@ function dismissProspect(key) {
   renderProspects();
 }
 
-function setProsFilter(type, el) {
+function setProsFilter(type, el, evt) {
+  if (evt) { evt.preventDefault(); evt.stopPropagation(); }
   const cid   = type === 'ind' ? 'pros-industry-chips' : type === 'region' ? 'pros-region-chips' : 'pros-score-chips';
   const attr  = type === 'ind' ? 'ind' : type === 'region' ? 'region' : 'score';
   const wasOn = el.classList.contains('on');
@@ -2425,10 +2427,16 @@ async function generateProspects(append = false) {
     </div>`;
   } else {
     renderProspects();
-    if (failures > 0 && newProspects.length > 0) {
-      toast(`${newProspects.length} prospects loaded (${failures} batch${failures > 1 ? 'es' : ''} failed)`, 'err');
-    } else if (failures === BATCHES) {
-      toast('All batches failed — check connection', 'err');
+    if (failures > 0) {
+      // Append a retry notice below the cards rather than just a toast
+      const retryDiv = document.createElement('div');
+      retryDiv.style.cssText = 'text-align:center;padding:12px 0 18px';
+      retryDiv.innerHTML = failures === BATCHES
+        ? `<p style="font-size:13px;color:var(--red);margin-bottom:10px">All batches failed — check connection.</p>
+           <button class="wide-btn primary" style="max-width:180px;margin:0 auto" onclick="generateProspects(false)">Retry</button>`
+        : `<p style="font-size:12px;color:#475569;margin-bottom:8px">${failures} batch${failures > 1 ? 'es' : ''} failed — ${newProspects.length} loaded.</p>
+           <button class="wide-btn" style="max-width:160px;margin:0 auto;background:var(--navyLL);color:var(--dim);border:1px solid var(--border)" onclick="loadProspects(true)">Load More</button>`;
+      list.appendChild(retryDiv);
     }
   }
 
