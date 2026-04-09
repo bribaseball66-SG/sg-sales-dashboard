@@ -2193,6 +2193,8 @@ function dismissProspect(key) {
   d.dismissed[key] = true;
   saveProsData(d);
   renderProspects();
+  // When industry filter changes, fetch new prospects for that industry
+  if (type === 'ind') loadProspects(true);
 }
 
 function setProsFilter(type, el, evt) {
