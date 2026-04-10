@@ -488,23 +488,6 @@
     .pros-add-btn.added { background: rgba(16,185,129,.15); color: var(--green); border: 1px solid rgba(16,185,129,.3); }
 
     /* ── Route Planner ─────────────────────────────────────── */
-    /* visibility+position toggle: input stays interactive in the DOM when open */
-    #route-planner-panel {
-      position: absolute; left: -9999px; top: -9999px;
-      visibility: hidden; pointer-events: none;
-      padding: 0 0 20px; width: calc(100% - 32px);
-    }
-    #route-planner-panel.active {
-      position: static; left: auto; top: auto;
-      visibility: visible; pointer-events: auto;
-      border-bottom: 1px solid var(--border); margin-bottom: 18px;
-    }
-    #route-btn.active { background: rgba(26,115,232,.15); color: #1a73e8; border-color: rgba(26,115,232,.4); }
-    .rp-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; padding-top: 4px; }
-    .rp-title  { font-size: 15px; font-weight: 800; flex: 1; }
-    .rp-search-row { display: flex; gap: 8px; margin-bottom: 6px; }
-    .rp-search-row input { flex: 1; min-width: 0; }
-    #rp-city-input { color: #f1f5f9; -webkit-text-fill-color: #f1f5f9; background: #1e293b; }
     .rp-hint { font-size: 12px; color: #475569; margin-bottom: 14px; }
     .rp-card {
       background: var(--navyL); border: 1px solid var(--border);
@@ -844,19 +827,13 @@
     </div>
   </div>
   <div class="page-body" style="padding-top:14px">
-    <div id="route-planner-panel">
-      <div class="rp-header">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
-        <span class="rp-title">Cold Call Route Planner</span>
-        <button class="icon-btn" onclick="toggleRoutePlanner()" title="Close" style="flex-shrink:0">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
+    <div id="route-planner-panel" style="display:none;padding:0 0 20px;border-bottom:1px solid #334155;margin-bottom:18px">
+      <p style="font-size:15px;font-weight:800;margin:4px 0 12px">Cold Call Route Planner</p>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <input id="rp-city-input" type="text" placeholder="City or area in Michigan" style="flex:1;padding:10px;font-size:14px;color:#f1f5f9;background-color:#1e293b;border:1px solid #334155;border-radius:8px;box-sizing:border-box;outline:none" onkeydown="if(event.key==='Enter'){planRoute()}">
+        <button onclick="planRoute()" style="padding:10px 16px;background:#3b82f6;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">Plan Route</button>
       </div>
-      <div class="rp-search-row">
-        <input id="rp-city-input" type="text" placeholder="City or area in Michigan" style="width:100%;padding:10px;font-size:14px;color:white;background:#1e293b;border:1px solid #334155;border-radius:8px;box-sizing:border-box;" onkeydown="if(event.key==&quot;Enter&quot;){planRoute();}" />
-        <button class="wide-btn primary" style="flex-shrink:0;padding:10px 16px;font-size:13px" onclick="planRoute()">Plan Route</button>
-      </div>
-      <div class="rp-hint">Type a city or area, then tap Plan Route. Claude finds 12 prospects and builds a driving route.</div>
+      <div class="rp-hint">Type a city, tap Plan Route. Claude finds 15 stops and builds a driving route.</div>
       <div id="rp-results"></div>
     </div>
     <div id="prospects-list"></div>
@@ -2572,8 +2549,17 @@ let routeState = { loading: false, stops: [] };
 function toggleRoutePlanner() {
   const panel = document.getElementById('route-planner-panel');
   const btn   = document.getElementById('route-btn');
-  const open  = panel.classList.toggle('active');
-  btn.classList.toggle('active', open);
+  if (panel.style.display === 'none' || panel.style.display === '') {
+    panel.style.display = 'block';
+    btn.style.background = 'rgba(26,115,232,.15)';
+    btn.style.color = '#1a73e8';
+    btn.style.borderColor = 'rgba(26,115,232,.4)';
+  } else {
+    panel.style.display = 'none';
+    btn.style.background = '';
+    btn.style.color = '';
+    btn.style.borderColor = '';
+  }
 }
 
 async function planRoute() {
