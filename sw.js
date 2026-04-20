@@ -1,4 +1,4 @@
-const CACHE = 'sg-sales-v8';
+const CACHE = 'sg-sales-v9';
 const STATIC = ['./manifest.json', './icon.svg', './sw.js'];
 
 self.addEventListener('install', e => {

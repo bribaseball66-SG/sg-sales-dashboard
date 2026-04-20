@@ -416,6 +416,18 @@
     .qc-det-total .qc-det-val { font-size: 13px; font-weight: 800; }
     .qc-det-gp    .qc-det-val { color: var(--green); font-size: 13px; font-weight: 800; }
     .qc-det-comm  .qc-det-val { color: var(--amber);  font-size: 12px; font-weight: 700; }
+    .calc-upload-btn {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; padding: 13px; border-radius: 10px; cursor: pointer;
+      background: var(--navyLL); border: 1px dashed var(--border);
+      font-size: 13px; font-weight: 600; color: var(--dim);
+      transition: color .15s, border-color .15s;
+    }
+    .calc-upload-btn:hover { color: var(--text); border-color: #475569; }
+    .calc-status { font-size: 12px; padding: 8px 11px; border-radius: 8px; margin-top: 8px; }
+    .calc-status.loading { background: rgba(59,130,246,.1); color: var(--accent); border: 1px solid rgba(59,130,246,.2); }
+    .calc-status.ok  { background: rgba(16,185,129,.1);  color: var(--green); border: 1px solid rgba(16,185,129,.25); }
+    .calc-status.err { background: rgba(239,68,68,.1);   color: var(--red);   border: 1px solid rgba(239,68,68,.25); }
 
     /* ── Quick Call Logger ──────────────────────────────────── */
     #qc-dropdown {
@@ -624,6 +636,14 @@
 
     <!-- ── Calculator mode ── -->
     <div id="qmode-calc">
+      <div style="margin-bottom:16px">
+        <label class="calc-upload-btn" for="calc-pdf-input">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+          Upload Supplier Quote — AI Fills Fields (PDF / DOCX)
+        </label>
+        <input type="file" id="calc-pdf-input" accept=".pdf,application/pdf,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display:none" onchange="handleCalcUpload(this)">
+        <div id="calc-pdf-status" style="display:none"></div>
+      </div>
       <div class="fg">
         <label class="fl">Account / Company Name *</label>
         <input type="text" id="qc-account" placeholder="e.g. Acme Corp" autocorrect="off" autocapitalize="words">
@@ -1920,6 +1940,87 @@ async function handleDocUpload(input, textareaId, statusId) {
   } catch (e) {
     statusEl.className = 'err';
     statusEl.textContent = 'Upload error: ' + e.message;
+  }
+
+  input.value = '';
+}
+
+// ── Calc PDF Upload ───────────────────────────────────────────
+
+async function handleCalcUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  const statusEl = document.getElementById('calc-pdf-status');
+  statusEl.style.display = '';
+  const ext = file.name.split('.').pop().toLowerCase();
+  statusEl.className = 'calc-status loading';
+  statusEl.textContent = `Reading ${file.name}…`;
+
+  try {
+    const buf = await file.arrayBuffer();
+    let text;
+    if (ext === 'pdf') {
+      let pages;
+      ({ text, pages } = await extractPDF(buf));
+      if (!text) throw new Error('No extractable text — PDF may be image-based (scanned)');
+    } else if (ext === 'docx') {
+      ({ text } = await extractDOCX(buf));
+      if (!text) throw new Error('No text found in DOCX');
+    } else {
+      throw new Error('Unsupported file type — use PDF or DOCX');
+    }
+
+    statusEl.textContent = 'Analyzing with AI…';
+
+    const prompt = `You are a packaging procurement analyst. Extract structured data from this supplier quote and return ONLY valid JSON — no markdown, no explanation.
+
+SUPPLIER QUOTE:
+${text}
+
+Return exactly this JSON (use null for any field not found):
+{
+  "itemDesc": "full product description — material, size, color, neck finish, quantity unit, etc.",
+  "accountName": "buyer/client company name if shown in the quote header or ship-to field, otherwise null",
+  "unitCost": 0.38,
+  "freightCost": null,
+  "toolingCost": null,
+  "qtys": [5000, 10000, null]
+}
+
+Rules:
+- unitCost: supplier unit price as a plain number. If tiered pricing exists, use the first/lowest-qty tier.
+- freightCost: only include if an explicit freight or shipping dollar amount is stated; otherwise null.
+- toolingCost: only include if an explicit tooling, mold, setup, dies, or plates dollar amount is stated; otherwise null.
+- qtys: array of exactly 3 elements — up to 3 quantity tiers from the quote (smallest to largest), pad remaining slots with null.
+- All dollar values: plain numbers only, no $ signs or commas.
+- itemDesc: be specific — include all specs (material, size, color, finish, neck size, wall thickness, etc.).`;
+
+    const raw = await callClaude([{ role: 'user', content: prompt }]);
+    const jsonStr = raw.startsWith('{') ? raw : (raw.match(/\{[\s\S]*\}/) || [])[0];
+    if (!jsonStr) throw new Error('Could not parse AI response');
+    const data = JSON.parse(jsonStr);
+
+    const filled = [];
+    if (data.accountName) { document.getElementById('qc-account').value    = data.accountName;    filled.push('account'); }
+    if (data.itemDesc)    { document.getElementById('qc-desc').value       = data.itemDesc;       filled.push('description'); }
+    if (data.unitCost)    { document.getElementById('qc-unit-cost').value  = data.unitCost;       filled.push('unit cost'); }
+    if (data.freightCost) { document.getElementById('qc-freight').value    = data.freightCost;    filled.push('freight'); }
+    if (data.toolingCost) { document.getElementById('qc-tooling').value    = data.toolingCost;    filled.push('tooling'); }
+
+    const qtys = (data.qtys || []).filter(q => q && q > 0);
+    if (qtys[0]) { document.getElementById('qc-qty1').value = qtys[0]; filled.push('qty 1'); }
+    if (qtys[1]) { document.getElementById('qc-qty2').value = qtys[1]; filled.push('qty 2'); }
+    if (qtys[2]) { document.getElementById('qc-qty3').value = qtys[2]; filled.push('qty 3'); }
+
+    if (data.unitCost && qtys.length) calcQuote();
+
+    const summary = filled.length ? filled.join(', ') : 'no fields recognized';
+    statusEl.className = 'calc-status ok';
+    statusEl.textContent = `✓ Filled: ${summary}. Review and add any missing fields.`;
+  } catch(e) {
+    statusEl.className = 'calc-status err';
+    statusEl.textContent = 'Error: ' + e.message;
   }
 
   input.value = '';
