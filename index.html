@@ -428,6 +428,30 @@
     .calc-status.loading { background: rgba(59,130,246,.1); color: var(--accent); border: 1px solid rgba(59,130,246,.2); }
     .calc-status.ok  { background: rgba(16,185,129,.1);  color: var(--green); border: 1px solid rgba(16,185,129,.25); }
     .calc-status.err { background: rgba(239,68,68,.1);   color: var(--red);   border: 1px solid rgba(239,68,68,.25); }
+    /* drag-drop zone */
+    .drop-zone {
+      position: relative; border: 2px dashed var(--border); border-radius: 12px;
+      padding: 28px 20px; text-align: center; cursor: pointer;
+      transition: border-color .2s, background .2s; margin-bottom: 14px;
+      background: var(--navyLL);
+    }
+    .drop-zone.drag-over { border-color: var(--accent); background: rgba(59,130,246,.07); }
+    .drop-zone input[type=file] { position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%; }
+    .drop-zone-icon { color: var(--dim); margin-bottom: 10px; }
+    .drop-zone-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .drop-zone-sub   { font-size: 12px; color: var(--dim); }
+    .drop-zone.has-file .drop-zone-icon svg { stroke: var(--accent); }
+    .drop-zone.has-file { border-color: var(--accent); border-style: solid; }
+    /* notes section */
+    .qc-notes-section { margin-bottom: 14px; }
+    .qc-notes-section textarea {
+      background: var(--navyLL); border: 1px solid var(--border); border-radius: 10px;
+      color: var(--text); font-size: 13px; font-family: inherit;
+      padding: 10px 13px; outline: none; resize: none; line-height: 1.6;
+      transition: border-color .2s; width: 100%;
+    }
+    .qc-notes-section textarea:focus { border-color: var(--accent); }
+    .qc-notes-section textarea::placeholder { color: #475569; }
 
     /* ── Quick Call Logger ──────────────────────────────────── */
     #qc-dropdown {
@@ -636,14 +660,15 @@
 
     <!-- ── Calculator mode ── -->
     <div id="qmode-calc">
-      <div style="margin-bottom:16px">
-        <label class="calc-upload-btn" for="calc-pdf-input">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-          Upload Supplier Quote — AI Fills Fields (PDF / DOCX)
-        </label>
-        <input type="file" id="calc-pdf-input" accept=".pdf,application/pdf,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display:none" onchange="handleCalcUpload(this)">
-        <div id="calc-pdf-status" style="display:none"></div>
+      <div class="drop-zone" id="calc-drop-zone">
+        <input type="file" id="calc-pdf-input" accept=".pdf,application/pdf,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onchange="handleCalcUpload(this)">
+        <div class="drop-zone-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="15" x2="12" y2="19"/><polyline points="9 18 12 21 15 18"/></svg>
+        </div>
+        <div class="drop-zone-title" id="calc-drop-title">Drop supplier quote here</div>
+        <div class="drop-zone-sub">PDF or DOCX &mdash; AI reads it and fills the fields below</div>
       </div>
+      <div id="calc-pdf-status" style="display:none"></div>
       <div class="fg">
         <label class="fl">Account / Company Name *</label>
         <input type="text" id="qc-account" placeholder="e.g. Acme Corp" autocorrect="off" autocapitalize="words">
@@ -690,6 +715,10 @@
             <input type="number" id="qc-commission" value="43" step="0.1" min="0" max="100" oninput="calcQuote()">
           </div>
         </div>
+      </div>
+      <div class="qc-notes-section">
+        <label class="fl">Notes</label>
+        <textarea id="qc-notes" rows="3" placeholder="Freight details, lead time, special instructions, follow-up actions…"></textarea>
       </div>
       <div id="qc-result" style="display:none">
         <hr class="divider" style="margin-top:0">
@@ -961,6 +990,7 @@ function setTab(name) {
     name === 'projects'  ? 'Project Folders' :
     name === 'prospects' ? 'Prospects'        : 'Quick Call';
   if (name === 'projects')  renderProjects();
+  if (name === 'quotes')     initDropZone();
   if (name === 'calls')     initCallLogger();
   if (name === 'prospects') loadProspects();
 }
@@ -1702,8 +1732,10 @@ function saveCalcQuote() {
   if (!lastCalcQuote) return;
   const account = (document.getElementById('qc-account')?.value || '').trim();
   if (!account) { toast('Enter an account name to save', 'err'); return; }
-  lastCalcQuote.accountName = account;
-  lastCalcQuote.date = new Date().toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+  lastCalcQuote.accountName  = account;
+  lastCalcQuote.itemDesc     = (document.getElementById('qc-desc')?.value    || '').trim();
+  lastCalcQuote.notes        = (document.getElementById('qc-notes')?.value   || '').trim();
+  lastCalcQuote.date         = new Date().toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
   const projects = getProjects();
   if (!projects[account]) projects[account] = [];
   projects[account].unshift(lastCalcQuote);
@@ -1789,6 +1821,7 @@ function renderProjects() {
                 <div class="pq-left">
                   <span class="pq-date">${esc(q.date)}</span>
                   <span class="pq-price">${esc(q.itemDesc || 'Quote')}${tierSummary ? ` · ${tierSummary}` : ''}</span>
+                  ${q.notes ? `<span style="font-size:11px;color:#475569;display:block;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px">${esc(q.notes)}</span>` : ''}
                 </div>
                 <div class="pq-right">
                   ${t0 ? `<span class="pq-margin" style="color:var(--green)">GP ${fd(t0.grossProfit)}</span>` : ''}
@@ -1838,7 +1871,8 @@ function viewQuote(clientName, idx) {
     const qtys = (q.tiers || []).map(t => t.qty);
     document.getElementById('qc-qty1').value = qtys[0] || '';
     document.getElementById('qc-qty2').value = qtys[1] || '';
-    document.getElementById('qc-qty3').value = qtys[2] || '';
+    document.getElementById('qc-qty3').value  = qtys[2] || '';
+    document.getElementById('qc-notes').value  = q.notes || '';
     lastCalcQuote = q;
     renderCalcResults(q);
     document.getElementById('qc-result').style.display = '';
@@ -1947,15 +1981,42 @@ async function handleDocUpload(input, textareaId, statusId) {
 
 // ── Calc PDF Upload ───────────────────────────────────────────
 
+function initDropZone() {
+  const zone = document.getElementById('calc-drop-zone');
+  if (!zone || zone._initDone) return;
+  zone._initDone = true;
+
+  zone.addEventListener('dragover', e => {
+    e.preventDefault();
+    zone.classList.add('drag-over');
+  });
+  zone.addEventListener('dragleave', e => {
+    if (!zone.contains(e.relatedTarget)) zone.classList.remove('drag-over');
+  });
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    const file = e.dataTransfer?.files?.[0];
+    if (file) processCalcFile(file);
+  });
+}
+
 async function handleCalcUpload(input) {
   const file = input.files[0];
-  if (!file) return;
+  if (file) await processCalcFile(file);
+  input.value = '';
+}
 
+async function processCalcFile(file) {
+  const zone     = document.getElementById('calc-drop-zone');
   const statusEl = document.getElementById('calc-pdf-status');
+  const titleEl  = document.getElementById('calc-drop-title');
+  const ext      = file.name.split('.').pop().toLowerCase();
+
   statusEl.style.display = '';
-  const ext = file.name.split('.').pop().toLowerCase();
-  statusEl.className = 'calc-status loading';
-  statusEl.textContent = `Reading ${file.name}…`;
+  statusEl.className     = 'calc-status loading';
+  statusEl.textContent   = `Reading ${file.name}…`;
+  if (zone)  zone.classList.remove('drag-over');
 
   try {
     const buf = await file.arrayBuffer();
@@ -1992,7 +2053,7 @@ Rules:
 - unitCost: supplier unit price as a plain number. If tiered pricing exists, use the first/lowest-qty tier.
 - freightCost: only include if an explicit freight or shipping dollar amount is stated; otherwise null.
 - toolingCost: only include if an explicit tooling, mold, setup, dies, or plates dollar amount is stated; otherwise null.
-- qtys: array of exactly 3 elements — up to 3 quantity tiers from the quote (smallest to largest), pad remaining slots with null.
+- qtys: array of exactly 3 elements — up to 3 quantity tiers from the quote (smallest to largest), pad remaining with null.
 - All dollar values: plain numbers only, no $ signs or commas.
 - itemDesc: be specific — include all specs (material, size, color, finish, neck size, wall thickness, etc.).`;
 
@@ -2003,10 +2064,10 @@ Rules:
 
     const filled = [];
     if (data.accountName) { document.getElementById('qc-account').value    = data.accountName;    filled.push('account'); }
-    if (data.itemDesc)    { document.getElementById('qc-desc').value       = data.itemDesc;       filled.push('description'); }
-    if (data.unitCost)    { document.getElementById('qc-unit-cost').value  = data.unitCost;       filled.push('unit cost'); }
-    if (data.freightCost) { document.getElementById('qc-freight').value    = data.freightCost;    filled.push('freight'); }
-    if (data.toolingCost) { document.getElementById('qc-tooling').value    = data.toolingCost;    filled.push('tooling'); }
+    if (data.itemDesc)    { document.getElementById('qc-desc').value        = data.itemDesc;       filled.push('description'); }
+    if (data.unitCost)    { document.getElementById('qc-unit-cost').value   = data.unitCost;       filled.push('unit cost'); }
+    if (data.freightCost) { document.getElementById('qc-freight').value     = data.freightCost;    filled.push('freight'); }
+    if (data.toolingCost) { document.getElementById('qc-tooling').value     = data.toolingCost;    filled.push('tooling'); }
 
     const qtys = (data.qtys || []).filter(q => q && q > 0);
     if (qtys[0]) { document.getElementById('qc-qty1').value = qtys[0]; filled.push('qty 1'); }
@@ -2015,15 +2076,17 @@ Rules:
 
     if (data.unitCost && qtys.length) calcQuote();
 
+    const shortName = file.name.length > 28 ? file.name.slice(0, 25) + '…' : file.name;
+    if (titleEl) titleEl.textContent = shortName;
+    if (zone)    zone.classList.add('has-file');
+
     const summary = filled.length ? filled.join(', ') : 'no fields recognized';
-    statusEl.className = 'calc-status ok';
+    statusEl.className   = 'calc-status ok';
     statusEl.textContent = `✓ Filled: ${summary}. Review and add any missing fields.`;
   } catch(e) {
-    statusEl.className = 'calc-status err';
+    statusEl.className   = 'calc-status err';
     statusEl.textContent = 'Error: ' + e.message;
   }
-
-  input.value = '';
 }
 
 // ── Quote mode toggle ─────────────────────────────────────
