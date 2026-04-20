@@ -398,6 +398,25 @@
     #pdf-status.ok  { background: rgba(16,185,129,.1);  color: var(--green); border: 1px solid rgba(16,185,129,.25); }
     #pdf-status.err { background: rgba(239,68,68,.1);   color: var(--red);   border: 1px solid rgba(239,68,68,.25); }
 
+    /* ── Quote Calculator ─────────────────────────────────────── */
+    .qc-rate-box  { background: var(--navyLL); border-radius: 10px; padding: 12px 13px; margin-bottom: 14px; }
+    .qc-rate-hdr  { font-size: 10px; text-transform: uppercase; letter-spacing: .8px; color: var(--dim); font-weight: 700; margin-bottom: 10px; }
+    .qc-rate-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .qc-tiers     { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; margin-bottom: 16px; }
+    .qc-tier      { background: var(--navyL); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .qc-tier-hdr  { background: var(--blue); padding: 10px 13px; display: flex; align-items: center; justify-content: space-between; }
+    .qc-tier-qty  { font-size: 14px; font-weight: 800; color: #fff; }
+    .qc-tier-usell { font-size: 11px; color: rgba(255,255,255,.75); font-weight: 600; white-space: nowrap; }
+    .qc-det-row   { display: grid; grid-template-columns: 1fr auto auto; gap: 4px 8px; padding: 7px 13px; border-top: 1px solid var(--border); align-items: center; }
+    .qc-det-lbl   { font-size: 11px; color: var(--dim); font-weight: 500; }
+    .qc-det-sub   { font-size: 10px; color: #475569; text-align: right; white-space: nowrap; }
+    .qc-det-val   { font-size: 12px; font-weight: 600; text-align: right; white-space: nowrap; }
+    .qc-det-total { border-top: 2px solid var(--border); }
+    .qc-det-total .qc-det-lbl { color: var(--text); font-weight: 700; }
+    .qc-det-total .qc-det-val { font-size: 13px; font-weight: 800; }
+    .qc-det-gp    .qc-det-val { color: var(--green); font-size: 13px; font-weight: 800; }
+    .qc-det-comm  .qc-det-val { color: var(--amber);  font-size: 12px; font-weight: 700; }
+
     /* ── Quick Call Logger ──────────────────────────────────── */
     #qc-dropdown {
       display: none; position: absolute; left: 0; right: 0;
@@ -592,52 +611,88 @@
   <div id="list"></div>
 </div>
 
-<!-- ── Tab: Quote Analyzer ───────────────────────────────── -->
+<!-- ── Tab: Quote Calculator ─────────────────────────────── -->
 <div class="tab" id="tab-quotes">
   <div class="page-body">
-    <div class="page-title">Quote Analyzer</div>
+    <div class="page-title">Quote Calculator</div>
 
     <!-- Mode toggle -->
     <div class="mode-toggle">
-      <button class="mtog on" id="mtog-single"  onclick="setQuoteMode('single')">Single Quote</button>
-      <button class="mtog"    id="mtog-compare" onclick="setQuoteMode('compare')">Compare Two Quotes</button>
+      <button class="mtog on" id="mtog-calc"    onclick="setQuoteMode('calc')">Calculator</button>
+      <button class="mtog"    id="mtog-compare" onclick="setQuoteMode('compare')">Compare Quotes</button>
     </div>
 
-    <!-- Shared: client + target price -->
-    <div class="form-row" style="margin-bottom:12px">
-      <div class="fg" style="margin:0">
-        <label class="fl">Client Name</label>
-        <input type="text" id="q-client" placeholder="e.g. Private Label Labs" autocorrect="off">
-      </div>
-      <div class="fg" style="margin:0">
-        <label class="fl">Your Target Price / unit</label>
-        <input type="number" id="q-price" placeholder="0.65" step="0.01" min="0">
-      </div>
-    </div>
-
-    <!-- ── Single mode ── -->
-    <div id="qmode-single">
-      <div class="page-sub" style="margin-bottom:14px">Paste a supplier quote or upload a PDF/DOCX, enter your target price, and Claude will analyze the margin, flag issues, and draft the Tracy email.</div>
+    <!-- ── Calculator mode ── -->
+    <div id="qmode-calc">
       <div class="fg">
-        <div class="quote-label-row">
-          <span class="fl" style="margin:0">Supplier Quote</span>
-          <label class="pdf-upload-btn" for="pdf-input-a">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-            Upload PDF / DOCX
-          </label>
-          <input type="file" id="pdf-input-a" accept=".pdf,application/pdf,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display:none" onchange="handleDocUpload(this,'q-quote','pdf-status-a')">
-        </div>
-        <div id="pdf-status-a" style="display:none"></div>
-        <textarea id="q-quote" rows="7" placeholder="Paste the supplier quote here…&#10;&#10;e.g. 3oz HDPE bottle, natural, 28/410 neck, MOQ 10,000 units, $0.38/unit FOB Ningbo, 45-day lead time…"></textarea>
+        <label class="fl">Account / Company Name *</label>
+        <input type="text" id="qc-account" placeholder="e.g. Acme Corp" autocorrect="off" autocapitalize="words">
       </div>
-      <button class="wide-btn primary" id="analyze-btn" onclick="analyzeQuote()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        Analyze Quote
-      </button>
+      <div class="fg">
+        <label class="fl">Item Description</label>
+        <input type="text" id="qc-desc" placeholder="e.g. 3oz HDPE bottle, natural, 28/410 neck" autocorrect="off">
+      </div>
+      <div class="form-row">
+        <div class="fg" style="margin:0">
+          <label class="fl">Supplier Unit Cost ($)</label>
+          <input type="number" id="qc-unit-cost" placeholder="0.380" step="0.001" min="0" oninput="calcQuote()">
+        </div>
+        <div class="fg" style="margin:0">
+          <label class="fl">Freight Cost ($)</label>
+          <input type="number" id="qc-freight" placeholder="0.00" step="0.01" min="0" oninput="calcQuote()">
+        </div>
+      </div>
+      <div class="fg" style="margin-top:10px">
+        <label class="fl">Tooling / Setup / Plates ($)</label>
+        <input type="number" id="qc-tooling" placeholder="0.00" step="0.01" min="0" oninput="calcQuote()">
+      </div>
+      <div class="fg">
+        <label class="fl">Quantity Tiers (up to 3)</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+          <input type="number" id="qc-qty1" placeholder="Qty 1" min="1" step="1" oninput="calcQuote()">
+          <input type="number" id="qc-qty2" placeholder="Qty 2" min="1" step="1" oninput="calcQuote()">
+          <input type="number" id="qc-qty3" placeholder="Qty 3" min="1" step="1" oninput="calcQuote()">
+        </div>
+      </div>
+      <div class="qc-rate-box">
+        <div class="qc-rate-hdr">Rate Settings</div>
+        <div class="qc-rate-grid">
+          <div>
+            <label class="fl">Unit Margin %</label>
+            <input type="number" id="qc-margin" value="35" step="0.1" min="0" max="99" oninput="calcQuote()">
+          </div>
+          <div>
+            <label class="fl">Freight &amp; Tooling Markup %</label>
+            <input type="number" id="qc-frt-markup" value="27" step="0.1" min="0" oninput="calcQuote()">
+          </div>
+          <div>
+            <label class="fl">Commission %</label>
+            <input type="number" id="qc-commission" value="43" step="0.1" min="0" max="100" oninput="calcQuote()">
+          </div>
+        </div>
+      </div>
+      <div id="qc-result" style="display:none">
+        <hr class="divider" style="margin-top:0">
+        <div id="qc-tier-cards"></div>
+        <button class="wide-btn success" onclick="saveCalcQuote()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Save Quote to Projects
+        </button>
+      </div>
     </div>
 
     <!-- ── Compare mode ── -->
     <div id="qmode-compare" style="display:none">
+      <div class="form-row" style="margin-bottom:12px">
+        <div class="fg" style="margin:0">
+          <label class="fl">Client Name</label>
+          <input type="text" id="q-client" placeholder="e.g. Private Label Labs" autocorrect="off">
+        </div>
+        <div class="fg" style="margin:0">
+          <label class="fl">Target Price / unit</label>
+          <input type="number" id="q-price" placeholder="0.65" step="0.01" min="0">
+        </div>
+      </div>
       <div class="page-sub" style="margin-bottom:14px">Paste or upload two supplier quotes and Claude will compare them side by side and recommend the winner.</div>
       <div class="compare-cols">
         <!-- Quote A -->
@@ -673,26 +728,6 @@
       </button>
     </div>
 
-    <!-- ── Single result ── -->
-    <div id="quote-result" style="display:none">
-      <hr class="divider">
-      <div class="result-grid">
-        <div class="rcard"><div class="rl">Supplier Price</div><div class="rv b" id="r-supplier">—</div><div class="rs">per unit</div></div>
-        <div class="rcard"><div class="rl">Est. Landed Cost</div><div class="rv" id="r-landed" style="font-size:16px;margin-top:4px">—</div></div>
-        <div class="rcard"><div class="rl">Your Sell Price</div><div class="rv b" id="r-sell">—</div><div class="rs">per unit</div></div>
-        <div class="rcard"><div class="rl">Margin</div><div class="rv" id="r-margin">—</div><div class="rs" id="r-health"></div></div>
-      </div>
-      <div id="r-missing-block" style="display:none" class="result-block">
-        <div class="rb-title">⚠ Missing Info</div>
-        <div id="r-missing-list"></div>
-      </div>
-      <div class="result-block">
-        <div class="rb-title">Tracy Email <button class="copy-btn" onclick="copyEmail()">Copy</button></div>
-        <div class="email-text" id="r-email"></div>
-      </div>
-      <button class="wide-btn success" onclick="saveToProject()">💾 Save to Projects</button>
-    </div>
-
     <!-- ── Compare result ── -->
     <div id="compare-result" style="display:none">
       <hr class="divider">
@@ -720,7 +755,6 @@
   </div>
 </div>
 
-<!-- ── Tab: Projects ──────────────────────────────────────── -->
 <div class="tab" id="tab-projects">
   <div class="page-body">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
@@ -880,7 +914,7 @@
 const BASE = 'https://sg-hubspot-proxy.bribaseball66sg.workers.dev';
 let S = { contacts: [], tasks: {}, filter: 'all', loading: false };
 let activeId = null;
-let lastAnalysis = null; // stores { analysis, markup, clientName, targetPrice }
+let lastCalcQuote = null;
 
 // ── Boot ──────────────────────────────────────────────────
 
@@ -903,7 +937,7 @@ function setTab(name) {
   document.getElementById('fab').classList.toggle('hidden', name !== 'contacts');
   document.getElementById('hdr-tag').textContent =
     name === 'contacts'  ? 'Sales Workspace' :
-    name === 'quotes'    ? 'Quote Analyzer'  :
+    name === 'quotes'    ? 'Quote Calculator' :
     name === 'projects'  ? 'Project Folders' :
     name === 'prospects' ? 'Prospects'        : 'Quick Call';
   if (name === 'projects')  renderProjects();
@@ -1536,112 +1570,125 @@ async function submitNewContact() {
   } catch(e) { toast('Error: ' + e.message, 'err'); }
 }
 
-// ── Quote Analyzer ────────────────────────────────────────
+// ── Quote Calculator ────────────────────────────────────────
 
-async function analyzeQuote() {
-  const clientName  = document.getElementById('q-client').value.trim();
-  const targetPrice = document.getElementById('q-price').value.trim();
-  const quoteText   = document.getElementById('q-quote').value.trim();
-
-  if (!clientName)  { toast('Enter a client name', 'err'); return; }
-  if (!targetPrice) { toast('Enter your target price', 'err'); return; }
-  if (!quoteText)   { toast('Paste a supplier quote', 'err'); return; }
-
-  const btn = document.getElementById('analyze-btn');
-  btn.disabled = true;
-  btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 1s linear infinite"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Analyzing…`;
-  document.getElementById('quote-result').style.display = 'none';
-
-  try {
-    const prompt = `You are an expert packaging sales analyst at Stephen Gould, a global packaging company. Analyze the supplier quote below and return ONLY a valid JSON object — no markdown, no explanation.
-
-SUPPLIER QUOTE:
-${quoteText}
-
-CLIENT: ${clientName}
-SALES REP'S TARGET SELLING PRICE: $${targetPrice} per unit
-
-Return exactly this JSON structure. Nothing else:
-{
-  "unitPriceNumber": 0.38,
-  "estLandedCostDisplay": "e.g. '~$0.49/unit' — FOB: add realistic freight + duty estimate; DDP: use quoted price; if truly unknown: 'Not enough info'",
-  "estLandedCostNumber": 0.49,
-  "missingInfo": ["ONLY include items if something critical is missing. Leave as empty array [] if the quote has everything needed."],
-  "draftEmail": "Write the email in exactly this format — no deviations:\\n\\nHi Tracy,\\nHope you are having a good week.\\nCan you please create a quote for the following items:\\nShip To: ${clientName} — [address TBD]\\n• [product spec from the quote — description, material, size, color, neck finish] — Qty: [MOQ from quote] — Unit Price: $${targetPrice}\\n[add more line items only if the quote contains multiple products]\\nThanks,\\nBrian Blakeslee | Stephen Gould"
-}`;
-
-    const raw = await callClaude([{ role:'user', content: prompt }]);
-    const jsonStr = raw.startsWith('{') ? raw : (raw.match(/\{[\s\S]*\}/) || [])[0];
-    if (!jsonStr) throw new Error('Unexpected response from Claude');
-    const analysis = JSON.parse(jsonStr);
-    const markup   = calcMarkup(analysis.unitPriceNumber, analysis.estLandedCostNumber, targetPrice);
-
-    lastAnalysis = { analysis, markup, clientName, targetPrice, rawQuote: quoteText,
-      date: new Date().toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }) };
-
-    renderQuoteResult(analysis, markup, targetPrice);
-  } catch(e) {
-    toast('Analysis failed: ' + e.message, 'err');
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> Analyze Quote`;
-  }
+function fd(n) { // format dollar amount (no cents for large, 2dp for small)
+  if (!isFinite(n)) return '—';
+  if (Math.abs(n) >= 100) return n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+  return n.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function fu(n) { // format unit price (strip trailing zeros but keep min 2dp)
+  if (!isFinite(n)) return '—';
+  const s = n.toFixed(4).replace(/0+$/, '').replace(/\.$/, '');
+  const parts = s.split('.');
+  if (!parts[1] || parts[1].length < 2) return '$' + n.toFixed(2);
+  return '$' + s;
 }
 
-function calcMarkup(costRaw, landedRaw, targetRaw) {
-  const cost   = parseFloat(String(costRaw  ||'').replace(/[^0-9.]/g,''));
-  const landed = parseFloat(String(landedRaw||'').replace(/[^0-9.]/g,''));
-  const target = parseFloat(String(targetRaw||'').replace(/[^0-9.]/g,''));
-  if (!cost || !target || cost <= 0 || target <= 0) return null;
-  const basis  = (landed && landed > cost) ? landed : cost;
-  const margin = ((target - basis) / target) * 100;
-  return {
-    cost: cost.toFixed(2), landed: (landed && landed > cost) ? landed.toFixed(2) : null,
-    target: target.toFixed(2), margin: margin.toFixed(1),
-    health: margin >= 35 ? 'STRONG' : margin >= 25 ? 'ACCEPTABLE' : margin >= 15 ? 'THIN' : 'LOW',
+function calcQuote() {
+  const unitCost      = parseFloat(document.getElementById('qc-unit-cost')?.value)  || 0;
+  const freightCost   = parseFloat(document.getElementById('qc-freight')?.value)    || 0;
+  const toolingCost   = parseFloat(document.getElementById('qc-tooling')?.value)    || 0;
+  const marginPct     = parseFloat(document.getElementById('qc-margin')?.value)     || 35;
+  const frtMarkupPct  = parseFloat(document.getElementById('qc-frt-markup')?.value) || 27;
+  const commissionPct = parseFloat(document.getElementById('qc-commission')?.value) || 43;
+
+  const qtys = [
+    parseInt(document.getElementById('qc-qty1')?.value) || 0,
+    parseInt(document.getElementById('qc-qty2')?.value) || 0,
+    parseInt(document.getElementById('qc-qty3')?.value) || 0,
+  ].filter(q => q > 0);
+
+  const resultEl = document.getElementById('qc-result');
+  if (!unitCost || unitCost <= 0 || !qtys.length) { resultEl.style.display = 'none'; return; }
+
+  const unitSell    = unitCost / (1 - marginPct / 100);
+  const freightSell = freightCost * (1 + frtMarkupPct / 100);
+  const toolingSell = toolingCost * (1 + frtMarkupPct / 100);
+
+  const tiers = qtys.map(qty => {
+    const unitExtCost = unitCost * qty;
+    const unitExtSell = unitSell * qty;
+    const totalCost   = unitExtCost + freightCost + toolingCost;
+    const totalSell   = unitExtSell + freightSell + toolingSell;
+    const grossProfit = totalSell - totalCost;
+    const commission  = grossProfit * (commissionPct / 100);
+    return { qty, unitExtCost, unitExtSell, totalCost, totalSell, grossProfit, commission };
+  });
+
+  lastCalcQuote = {
+    type: 'calculator',
+    accountName:    (document.getElementById('qc-account')?.value || '').trim(),
+    itemDesc:       (document.getElementById('qc-desc')?.value    || '').trim(),
+    unitCost, freightCost, toolingCost,
+    unitSell, freightSell, toolingSell,
+    marginPct, frtMarkupPct, commissionPct,
+    tiers,
+    date: new Date().toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }),
   };
+
+  renderCalcResults(lastCalcQuote);
+  resultEl.style.display = '';
 }
 
-function renderQuoteResult(analysis, markup, targetPrice) {
-  const healthColor = !markup ? '' : markup.health === 'STRONG' ? 'g' : markup.health === 'ACCEPTABLE' ? 'a' : 'r';
-  const healthEmoji = !markup ? '' : markup.health === 'STRONG' ? '✓' : markup.health === 'ACCEPTABLE' ? '~' : '⚠';
+function renderCalcResults(q) {
+  const { unitSell, freightCost, toolingCost, freightSell, toolingSell,
+          frtMarkupPct, commissionPct } = q;
+  const hasFrt  = freightCost  > 0;
+  const hasTool = toolingCost  > 0;
 
-  document.getElementById('r-supplier').textContent = markup ? `$${markup.cost}` : `$${(analysis.unitPriceNumber||0).toFixed(2)}`;
-  document.getElementById('r-landed').textContent   = analysis.estLandedCostDisplay || 'Unknown';
-  document.getElementById('r-sell').textContent     = markup ? `$${markup.target}` : `$${parseFloat(targetPrice).toFixed(2)}`;
+  const html = (q.tiers || []).map(t => `
+    <div class="qc-tier">
+      <div class="qc-tier-hdr">
+        <span class="qc-tier-qty">${t.qty.toLocaleString('en-US')} units</span>
+        <span class="qc-tier-usell">${fu(unitSell)}/unit</span>
+      </div>
+      <div class="qc-det-row">
+        <span class="qc-det-lbl">Units</span>
+        <span class="qc-det-sub">${fd(t.unitExtCost)} cost</span>
+        <span class="qc-det-val">${fd(t.unitExtSell)}</span>
+      </div>
+      ${hasFrt ? `<div class="qc-det-row">
+        <span class="qc-det-lbl">Freight</span>
+        <span class="qc-det-sub">${fd(freightCost)} cost</span>
+        <span class="qc-det-val">${fd(freightSell)}</span>
+      </div>` : ''}
+      ${hasTool ? `<div class="qc-det-row">
+        <span class="qc-det-lbl">Tooling</span>
+        <span class="qc-det-sub">${fd(toolingCost)} cost</span>
+        <span class="qc-det-val">${fd(toolingSell)}</span>
+      </div>` : ''}
+      <div class="qc-det-row qc-det-total">
+        <span class="qc-det-lbl">Total Sell</span>
+        <span class="qc-det-sub">${fd(t.totalCost)} cost</span>
+        <span class="qc-det-val">${fd(t.totalSell)}</span>
+      </div>
+      <div class="qc-det-row qc-det-gp">
+        <span class="qc-det-lbl">Gross Profit</span>
+        <span class="qc-det-sub"></span>
+        <span class="qc-det-val">${fd(t.grossProfit)}</span>
+      </div>
+      <div class="qc-det-row qc-det-comm">
+        <span class="qc-det-lbl">Commission (${commissionPct}%)</span>
+        <span class="qc-det-sub"></span>
+        <span class="qc-det-val">${fd(t.commission)}</span>
+      </div>
+    </div>`).join('');
 
-  const mEl = document.getElementById('r-margin');
-  mEl.textContent = markup ? `${markup.margin}%` : '—';
-  mEl.className   = `rv ${healthColor}`;
-  document.getElementById('r-health').textContent = markup ? `${healthEmoji} ${markup.health}` : '';
-
-  const missing = analysis.missingInfo || [];
-  const mb = document.getElementById('r-missing-block');
-  if (missing.length) {
-    mb.style.display = '';
-    document.getElementById('r-missing-list').innerHTML = missing.map(m => `<div class="missing-item">${esc(m)}</div>`).join('');
-  } else {
-    mb.style.display = 'none';
-  }
-
-  document.getElementById('r-email').textContent = analysis.draftEmail || '';
-  document.getElementById('quote-result').style.display = '';
-  document.getElementById('quote-result').scrollIntoView({ behavior:'smooth', block:'start' });
+  document.getElementById('qc-tier-cards').innerHTML = `<div class="qc-tiers">${html}</div>`;
 }
 
-function copyEmail() {
-  const text = document.getElementById('r-email')?.textContent || '';
-  navigator.clipboard.writeText(text).then(() => toast('Email copied ✓', 'ok')).catch(() => toast('Copy failed', 'err'));
-}
-
-function saveToProject() {
-  if (!lastAnalysis) return;
-  const { clientName } = lastAnalysis;
+function saveCalcQuote() {
+  if (!lastCalcQuote) return;
+  const account = (document.getElementById('qc-account')?.value || '').trim();
+  if (!account) { toast('Enter an account name to save', 'err'); return; }
+  lastCalcQuote.accountName = account;
+  lastCalcQuote.date = new Date().toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
   const projects = getProjects();
-  if (!projects[clientName]) projects[clientName] = [];
-  projects[clientName].unshift(lastAnalysis);
+  if (!projects[account]) projects[account] = [];
+  projects[account].unshift(lastCalcQuote);
   saveProjects(projects);
-  toast(`Saved to ${clientName} ✓`, 'ok');
+  toast(`Saved to ${account} ✓`, 'ok');
   setTab('projects');
 }
 
@@ -1715,6 +1762,20 @@ function renderProjects() {
         ${quotes.length === 0
           ? `<div style="padding:12px 16px;font-size:13px;color:var(--dim)">No quotes saved yet. Analyze a quote and tap Save to Project.</div>`
           : quotes.map((q, i) => {
+              if (q.type === 'calculator') {
+                const t0 = q.tiers?.[0];
+                const tierSummary = (q.tiers || []).map(t => t.qty.toLocaleString('en-US')).join(' / ');
+                return `<div class="pq-row" onclick="viewQuote('${esc(client)}',${i})">
+                <div class="pq-left">
+                  <span class="pq-date">${esc(q.date)}</span>
+                  <span class="pq-price">${esc(q.itemDesc || 'Quote')}${tierSummary ? ` · ${tierSummary}` : ''}</span>
+                </div>
+                <div class="pq-right">
+                  ${t0 ? `<span class="pq-margin" style="color:var(--green)">GP ${fd(t0.grossProfit)}</span>` : ''}
+                  <button class="pq-del" onclick="event.stopPropagation();deleteQuote('${esc(client)}',${i})">✕</button>
+                </div>
+              </div>`;
+              }
               const mColor = !q.markup ? '#94a3b8' : q.markup.health==='STRONG' ? '#10b981' : q.markup.health==='ACCEPTABLE' ? '#f59e0b' : '#ef4444';
               return `<div class="pq-row" onclick="viewQuote('${esc(client)}',${i})">
                 <div class="pq-left">
@@ -1742,12 +1803,29 @@ function viewQuote(clientName, idx) {
   const projects = getProjects();
   const q = projects[clientName]?.[idx];
   if (!q) return;
-  lastAnalysis = q;
-  document.getElementById('q-client').value = q.clientName;
-  document.getElementById('q-price').value  = q.targetPrice;
-  document.getElementById('q-quote').value  = q.rawQuote || '';
-  setTab('quotes');
-  renderQuoteResult(q.analysis, q.markup, q.targetPrice);
+
+  if (q.type === 'calculator') {
+    setTab('quotes');
+    setQuoteMode('calc');
+    document.getElementById('qc-account').value    = q.accountName  || '';
+    document.getElementById('qc-desc').value       = q.itemDesc     || '';
+    document.getElementById('qc-unit-cost').value  = q.unitCost     || '';
+    document.getElementById('qc-freight').value    = q.freightCost  != null ? q.freightCost : '';
+    document.getElementById('qc-tooling').value    = q.toolingCost  != null ? q.toolingCost : '';
+    document.getElementById('qc-margin').value     = q.marginPct    || 35;
+    document.getElementById('qc-frt-markup').value = q.frtMarkupPct || 27;
+    document.getElementById('qc-commission').value = q.commissionPct|| 43;
+    const qtys = (q.tiers || []).map(t => t.qty);
+    document.getElementById('qc-qty1').value = qtys[0] || '';
+    document.getElementById('qc-qty2').value = qtys[1] || '';
+    document.getElementById('qc-qty3').value = qtys[2] || '';
+    lastCalcQuote = q;
+    renderCalcResults(q);
+    document.getElementById('qc-result').style.display = '';
+    setTimeout(() => document.getElementById('qc-result').scrollIntoView({ behavior:'smooth', block:'start' }), 100);
+  } else {
+    toast('Legacy quote — open-ended analysis format', 'ok');
+  }
 }
 
 function deleteQuote(clientName, idx) {
@@ -1850,13 +1928,13 @@ async function handleDocUpload(input, textareaId, statusId) {
 // ── Quote mode toggle ─────────────────────────────────────
 
 function setQuoteMode(mode) {
-  const isCmp = mode === 'compare';
-  document.getElementById('mtog-single') .classList.toggle('on', !isCmp);
-  document.getElementById('mtog-compare').classList.toggle('on',  isCmp);
-  document.getElementById('qmode-single') .style.display = isCmp ? 'none' : '';
-  document.getElementById('qmode-compare').style.display = isCmp ? '' : 'none';
-  document.getElementById('quote-result')  .style.display = 'none';
-  document.getElementById('compare-result').style.display = 'none';
+  const isCalc = mode === 'calc';
+  const isCmp  = mode === 'compare';
+  document.getElementById('mtog-calc')   .classList.toggle('on', isCalc);
+  document.getElementById('mtog-compare').classList.toggle('on', isCmp);
+  document.getElementById('qmode-calc')    .style.display = isCalc ? '' : 'none';
+  document.getElementById('qmode-compare') .style.display = isCmp  ? '' : 'none';
+  if (isCmp) document.getElementById('compare-result').style.display = 'none';
 }
 
 // ── Quote Comparison ──────────────────────────────────────
