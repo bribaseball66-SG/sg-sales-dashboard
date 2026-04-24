@@ -73,11 +73,12 @@
     .nav-btn {
       flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
       gap: 3px; background: none; border: none; color: var(--dim); cursor: pointer;
-      font-size: 10px; font-weight: 600; letter-spacing: .3px; text-transform: uppercase;
-      font-family: inherit; transition: color .15s; padding: 6px 0;
+      font-size: 9.5px; font-weight: 600; letter-spacing: .2px; text-transform: uppercase;
+      font-family: inherit; transition: color .15s; padding: 6px 2px;
+      min-width: 0; white-space: nowrap;
     }
     .nav-btn.active { color: var(--accent); }
-    .nav-btn svg { width: 20px; height: 20px; }
+    .nav-btn svg { width: 19px; height: 19px; }
 
     /* ── Tabs ────────────────────────────────────────────── */
     .tab {
@@ -125,6 +126,33 @@
       touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none;
     }
     .chip.on { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+    /* Follow-Up Alerts banner */
+    #followup-banner {
+      display: none; align-items: center; justify-content: space-between;
+      background: linear-gradient(90deg, rgba(245,158,11,.18), rgba(245,158,11,.08));
+      border-bottom: 1px solid rgba(245,158,11,.35);
+      padding: 11px 16px; gap: 12px;
+    }
+    .fub-left { display: flex; align-items: center; gap: 11px; min-width: 0; }
+    .fub-icon {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: rgba(245,158,11,.22); color: var(--amber);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; font-weight: 700; flex-shrink: 0;
+    }
+    .fub-ttl { font-size: 13px; font-weight: 700; color: var(--text); line-height: 1.2; }
+    .fub-sub { font-size: 11px; color: var(--dim); margin-top: 2px; }
+    .fub-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .fub-btn {
+      background: none; border: 1px solid var(--border); color: var(--text);
+      border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 600;
+      cursor: pointer; font-family: inherit; transition: all .15s;
+    }
+    .fub-view { background: var(--amber); border-color: var(--amber); color: #1a1a1a; }
+    .fub-view:active { opacity: .8; }
+    .fub-dismiss { padding: 4px 10px; font-size: 16px; line-height: 1; color: var(--dim); }
+    .fub-dismiss:hover { color: var(--text); }
 
     #stats {
       display: grid; grid-template-columns: repeat(4,1fr);
@@ -442,6 +470,73 @@
     .drop-zone-sub   { font-size: 12px; color: var(--dim); }
     .drop-zone.has-file .drop-zone-icon svg { stroke: var(--accent); }
     .drop-zone.has-file { border-color: var(--accent); border-style: solid; }
+
+    /* OCR zone (Add Contact) */
+    .ocr-zone {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--navyLL); border: 1.5px dashed var(--border);
+      border-radius: 12px; padding: 12px 14px; cursor: pointer;
+      transition: border-color .2s, background .2s; margin-bottom: 14px;
+    }
+    .ocr-zone:active { transform: scale(.995); }
+    .ocr-zone:hover { border-color: var(--accent); }
+    .ocr-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: rgba(59,130,246,.15); color: var(--accent);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .ocr-text { min-width: 0; }
+    .ocr-ttl { font-size: 13px; font-weight: 700; color: var(--text); line-height: 1.2; }
+    .ocr-sub { font-size: 11px; color: var(--dim); margin-top: 3px; }
+    #ac-ocr-status {
+      padding: 9px 13px; border-radius: 9px; font-size: 12px; font-weight: 600;
+      margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+    }
+    #ac-ocr-status.loading { background: rgba(59,130,246,.1); color: var(--accent); border: 1px solid rgba(59,130,246,.2); }
+    #ac-ocr-status.ok  { background: rgba(16,185,129,.1); color: var(--green); border: 1px solid rgba(16,185,129,.25); }
+    #ac-ocr-status.err { background: rgba(239,68,68,.1); color: var(--red); border: 1px solid rgba(239,68,68,.25); }
+
+    /* AI PM cards */
+    #aipm-status {
+      padding: 10px 13px; border-radius: 10px; font-size: 13px; font-weight: 600;
+      margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+    }
+    #aipm-status.loading { background: rgba(59,130,246,.1); color: var(--accent); border: 1px solid rgba(59,130,246,.2); }
+    #aipm-status.ok  { background: rgba(16,185,129,.1); color: var(--green); border: 1px solid rgba(16,185,129,.25); }
+    #aipm-status.err { background: rgba(239,68,68,.1); color: var(--red); border: 1px solid rgba(239,68,68,.25); }
+    .aipm-card {
+      background: var(--navyL); border: 1px solid var(--border);
+      border-radius: 13px; padding: 14px 15px; margin-bottom: 10px;
+      border-left: 3px solid var(--accent);
+    }
+    .aipm-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+    .aipm-co { font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.25; }
+    .aipm-contact { font-size: 12px; color: var(--dim); margin-top: 2px; }
+    .aipm-del {
+      background: none; border: none; color: #475569; cursor: pointer;
+      padding: 4px; border-radius: 6px; flex-shrink: 0;
+    }
+    .aipm-del:hover { color: var(--red); }
+    .aipm-product {
+      font-size: 13px; color: var(--text); margin: 8px 0;
+      background: var(--navy); border-radius: 8px; padding: 8px 11px;
+    }
+    .aipm-meta-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+    .aipm-chip {
+      background: var(--navyLL); border: 1px solid var(--border);
+      border-radius: 14px; padding: 3px 10px; font-size: 11px; color: var(--dim); font-weight: 600;
+    }
+    .aipm-chip.money { background: rgba(16,185,129,.12); border-color: rgba(16,185,129,.25); color: var(--green); }
+    .aipm-chip.qty   { background: rgba(59,130,246,.12); border-color: rgba(59,130,246,.25); color: var(--accent); }
+    .aipm-next {
+      background: rgba(245,158,11,.08); border-left: 2px solid var(--amber);
+      padding: 8px 11px; border-radius: 0 8px 8px 0; margin-top: 8px;
+      font-size: 12px; color: var(--text); line-height: 1.5;
+    }
+    .aipm-next b { color: var(--amber); font-weight: 700; }
+    .aipm-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border); }
+    .aipm-date { font-size: 11px; color: var(--dim); }
+    .aipm-file { font-size: 11px; color: var(--dim); max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     /* notes section */
     .qc-notes-section { margin-bottom: 14px; }
     .qc-notes-section textarea {
@@ -454,7 +549,7 @@
     .qc-notes-section textarea::placeholder { color: #475569; }
 
     /* ── Quick Call Logger ──────────────────────────────────── */
-    #qc-dropdown {
+    #ql-dropdown {
       display: none; position: absolute; left: 0; right: 0;
       background: var(--navyL); border: 1px solid var(--border);
       border-radius: 10px; z-index: 10;
@@ -468,13 +563,13 @@
     .qc-opt:active { background: var(--navyLL); }
     .qc-opt strong { display: block; font-weight: 600; }
     .qc-opt span   { font-size: 11px; color: var(--dim); }
-    #qc-selected {
+    #ql-selected {
       display: none; margin-top: 8px;
       background: var(--navyLL); border-radius: 8px;
       padding: 10px 12px; font-size: 13px;
       align-items: center; justify-content: space-between;
     }
-    #qc-selected.on { display: flex; }
+    #ql-selected.on { display: flex; }
     .qc-clear { background: none; border: none; color: var(--dim); cursor: pointer; font-size: 16px; padding: 2px 4px; }
 
     /* ── Prospects tab ──────────────────────────────────────── */
@@ -631,6 +726,7 @@
     </div>
     <div id="chips">
       <div class="chip on" data-f="all"      onclick="setFilter(this)">All</div>
+      <div class="chip"    data-f="stale"    onclick="setFilter(this)">⏰ Stale 7d+</div>
       <div class="chip"    data-f="overdue"  onclick="setFilter(this)">⚠ Overdue</div>
       <div class="chip"    data-f="engaged"  onclick="setFilter(this)">Engaged</div>
       <div class="chip"    data-f="active"   onclick="setFilter(this)">Active</div>
@@ -638,6 +734,7 @@
       <div class="chip"    data-f="notask"   onclick="setFilter(this)">No Task</div>
     </div>
   </div>
+  <div id="followup-banner"></div>
   <div id="stats">
     <div class="stat"><div class="sn r" id="s-overdue">—</div><div class="sl">Overdue</div></div>
     <div class="stat"><div class="sn a" id="s-soon">—</div><div class="sl">This Week</div></div>
@@ -687,9 +784,15 @@
           <input type="number" id="qc-freight" placeholder="0.00" step="0.01" min="0" oninput="calcQuote()">
         </div>
       </div>
-      <div class="fg" style="margin-top:10px">
-        <label class="fl">Tooling / Setup / Plates ($)</label>
-        <input type="number" id="qc-tooling" placeholder="0.00" step="0.01" min="0" oninput="calcQuote()">
+      <div class="form-row" style="margin-top:10px">
+        <div class="fg" style="margin:0">
+          <label class="fl">Tariff % (on unit cost)</label>
+          <input type="number" id="qc-tariff" placeholder="0" step="0.1" min="0" max="100" oninput="calcQuote()">
+        </div>
+        <div class="fg" style="margin:0">
+          <label class="fl">Tooling / Setup ($)</label>
+          <input type="number" id="qc-tooling" placeholder="0.00" step="0.01" min="0" oninput="calcQuote()">
+        </div>
       </div>
       <div class="fg">
         <label class="fl">Quantity Tiers (up to 3)</label>
@@ -831,30 +934,30 @@
 
     <div class="fg" style="position:relative">
       <label class="fl">Contact *</label>
-      <input type="text" id="qc-search" placeholder="Search name or company…" oninput="filterQCContacts()" autocorrect="off" autocapitalize="none">
-      <div id="qc-dropdown"></div>
+      <input type="text" id="ql-search" placeholder="Search name or company…" oninput="filterQCContacts()" autocorrect="off" autocapitalize="none">
+      <div id="ql-dropdown"></div>
     </div>
-    <div id="qc-selected">
-      <span id="qc-sel-name" style="font-weight:600"></span>
+    <div id="ql-selected">
+      <span id="ql-sel-name" style="font-weight:600"></span>
       <button class="qc-clear" onclick="clearQCContact()">✕</button>
     </div>
 
     <div class="fg" style="margin-top:14px">
       <label class="fl">Call Notes *</label>
-      <textarea id="qc-notes" rows="4" placeholder="What did you discuss?"></textarea>
+      <textarea id="ql-notes" rows="4" placeholder="What did you discuss?"></textarea>
     </div>
 
     <div class="fg">
       <label class="fl">Update Status</label>
-      <div class="status-row" id="qc-status"></div>
+      <div class="status-row" id="ql-status"></div>
     </div>
 
     <div class="fg">
       <label class="fl">Set Follow-Up Date (optional)</label>
-      <input type="date" id="qc-date">
+      <input type="date" id="ql-date">
     </div>
 
-    <button class="wide-btn primary" id="qc-btn" onclick="doQuickCall()">
+    <button class="wide-btn primary" id="ql-btn" onclick="doQuickCall()">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.46a2 2 0 0 1 1.98-2.18h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
       Log Call
     </button>
@@ -864,6 +967,10 @@
 <!-- ── Tab: Prospects ─────────────────────────────────────── -->
 <div class="tab" id="tab-prospects">
   <div id="prospects-toolbar">
+    <div class="search-wrap" style="margin-bottom:8px">
+      <svg class="ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input id="pros-search" type="search" placeholder="Search company, contact, email, city…" oninput="renderProspects()" autocorrect="off" autocapitalize="none">
+    </div>
     <div class="pros-filters" id="pros-industry-chips">
       <div class="chip on" data-ind="all"           ontouchend="setProsFilter('ind',this,event)" onclick="setProsFilter('ind',this,event)">All Industries</div>
       <div class="chip"    data-ind="fitness"        ontouchend="setProsFilter('ind',this,event)" onclick="setProsFilter('ind',this,event)">Fitness</div>
@@ -923,6 +1030,30 @@
   </div>
 </div>
 
+<!-- ── Tab: AI Project Manager ───────────────────────────── -->
+<div class="tab" id="tab-ai-pm">
+  <div class="page-body">
+    <div class="page-title">AI Project Manager</div>
+    <div class="page-sub">Drop a quote PDF — AI extracts the details and builds a project card.</div>
+
+    <div class="drop-zone" id="aipm-drop-zone">
+      <input type="file" id="aipm-pdf-input" accept=".pdf,application/pdf,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onchange="handleAIPMUpload(this)">
+      <div class="drop-zone-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="15" x2="12" y2="19"/><polyline points="9 18 12 21 15 18"/></svg>
+      </div>
+      <div class="drop-zone-title" id="aipm-drop-title">Drop quote PDF or DOCX here</div>
+      <div class="drop-zone-sub">AI extracts company, contact, product, pricing &amp; next steps</div>
+    </div>
+    <div id="aipm-status" style="display:none"></div>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin:14px 0 8px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--dim);font-weight:700">Project Cards</div>
+      <button class="icon-btn" id="aipm-clear-btn" onclick="clearAllAIPMCards()" title="Clear all" style="font-size:12px;padding:4px 10px;display:none">Clear</button>
+    </div>
+    <div id="aipm-cards"></div>
+  </div>
+</div>
+
 <!-- ── Bottom nav ────────────────────────────────────────── -->
 <nav id="bottom-nav">
   <button class="nav-btn active" data-t="contacts" onclick="setTab('contacts')">
@@ -937,9 +1068,13 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
     Projects
   </button>
+  <button class="nav-btn" data-t="ai-pm" onclick="setTab('ai-pm')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/><circle cx="12" cy="12" r="4"/></svg>
+    AI PM
+  </button>
   <button class="nav-btn" data-t="calls" onclick="setTab('calls')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.46a2 2 0 0 1 1.98-2.18h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-    Call Log
+    Calls
   </button>
   <button class="nav-btn" data-t="prospects" onclick="setTab('prospects')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg>
@@ -988,11 +1123,13 @@ function setTab(name) {
     name === 'contacts'  ? 'Sales Workspace' :
     name === 'quotes'    ? 'Quote Calculator' :
     name === 'projects'  ? 'Project Folders' :
+    name === 'ai-pm'     ? 'AI Project Manager' :
     name === 'prospects' ? 'Prospects'        : 'Quick Call';
   if (name === 'projects')  renderProjects();
   if (name === 'quotes')     initDropZone();
   if (name === 'calls')     initCallLogger();
   if (name === 'prospects') loadProspects();
+  if (name === 'ai-pm')     { initAIPMDropZone(); renderAIPMCards(); }
 }
 
 // ── API helpers ───────────────────────────────────────────
@@ -1105,6 +1242,7 @@ function render() {
   const now = new Date(); now.setHours(0,0,0,0);
   const weekOut = new Date(now); weekOut.setDate(weekOut.getDate() + 7);
 
+  const weekAgoMs = Date.now() - 7 * 86400000;
   let rows = S.contacts.filter(c => {
     const p = c.properties;
     const name = (p.firstname||'') + ' ' + (p.lastname||'');
@@ -1116,6 +1254,7 @@ function render() {
     if (f === 'active')   return st === 'IN_PROGRESS';
     if (f === 'followup') return st === 'OPEN' || st === 'ATTEMPTED_TO_CONTACT';
     if (f === 'notask')   return !task;
+    if (f === 'stale')    return isStaleContact(c, weekAgoMs);
     return true;
   });
 
@@ -1210,6 +1349,62 @@ function updateStats() {
   document.getElementById('s-soon').textContent    = c.filter(x => { const t=S.tasks[x.id]; return t&&t.ms>=now&&t.ms<=week; }).length;
   document.getElementById('s-engaged').textContent = c.filter(x => (x.properties.hs_lead_status||'').toUpperCase()==='CONNECTED').length;
   document.getElementById('s-total').textContent   = c.length;
+  renderFollowUpAlerts();
+}
+
+// ── Follow-Up Alerts banner ───────────────────────────────
+let followupDismissedAt = 0; // session-only; resets on reload
+
+function isStaleContact(c, weekAgoMs) {
+  const p = c.properties || {};
+  const last    = p.notes_last_contacted ? new Date(p.notes_last_contacted).getTime() : null;
+  const created = p.createdate ? new Date(p.createdate).getTime() : 0;
+  const lastTouch = last || created;
+  // only flag if we have a reference point and it's >= 7 days old
+  return !!lastTouch && lastTouch <= weekAgoMs;
+}
+
+function renderFollowUpAlerts() {
+  const el = document.getElementById('followup-banner');
+  if (!el) return;
+  // Hide on non-contacts tabs
+  const weekAgoMs = Date.now() - 7 * 86400000;
+  const stale = S.contacts.filter(c => isStaleContact(c, weekAgoMs));
+  const dismissedRecently = (Date.now() - followupDismissedAt) < 4 * 3600 * 1000; // 4h snooze
+  if (!stale.length || dismissedRecently || S.filter === 'stale') {
+    el.style.display = 'none';
+    return;
+  }
+  el.style.display = 'flex';
+  el.innerHTML = `
+    <div class="fub-left">
+      <div class="fub-icon">!</div>
+      <div style="min-width:0">
+        <div class="fub-ttl">${stale.length} contact${stale.length === 1 ? '' : 's'} need follow-up</div>
+        <div class="fub-sub">No touchpoint in 7+ days</div>
+      </div>
+    </div>
+    <div class="fub-actions">
+      <button class="fub-btn fub-view" onclick="showFollowUpList()">View</button>
+      <button class="fub-btn fub-dismiss" onclick="dismissFollowUpBanner()" title="Snooze 4h">×</button>
+    </div>
+  `;
+}
+
+function dismissFollowUpBanner() {
+  followupDismissedAt = Date.now();
+  renderFollowUpAlerts();
+}
+
+function showFollowUpList() {
+  document.querySelectorAll('#chips .chip').forEach(c => c.classList.remove('on'));
+  const chip = document.querySelector('#chips .chip[data-f="stale"]');
+  if (chip) chip.classList.add('on');
+  S.filter = 'stale';
+  render();
+  // scroll to top of list
+  const tab = document.getElementById('tab-contacts');
+  if (tab) tab.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function setFilter(el) {
@@ -1541,6 +1736,17 @@ function showAddContact() {
       <div class="sh-nm" style="color:var(--dim);font-size:13px">Creates directly in HubSpot</div>
     </div>
     <div class="sh-body">
+      <div class="ocr-zone" onclick="document.getElementById('ac-ocr-input').click()">
+        <input type="file" id="ac-ocr-input" accept="image/*" style="display:none" onchange="handleContactScreenshot(this)">
+        <div class="ocr-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+        </div>
+        <div class="ocr-text">
+          <div class="ocr-ttl">Scan screenshot or business card</div>
+          <div class="ocr-sub">AI reads it and auto-fills these fields</div>
+        </div>
+      </div>
+      <div id="ac-ocr-status" style="display:none"></div>
       <div class="form-row">
         <div class="fg" style="margin:0 0 12px"><label class="fl">First Name *</label><input type="text" id="ac-first" placeholder="Jane"></div>
         <div class="fg" style="margin:0 0 12px"><label class="fl">Last Name</label><input type="text" id="ac-last" placeholder="Smith"></div>
@@ -1620,6 +1826,282 @@ async function submitNewContact() {
   } catch(e) { toast('Error: ' + e.message, 'err'); }
 }
 
+// ── Screenshot OCR → auto-fill contact ───────────────────
+
+async function handleContactScreenshot(inp) {
+  const file = inp?.files?.[0];
+  if (!file) return;
+  const status = document.getElementById('ac-ocr-status');
+  const setStatus = (cls, msg) => {
+    status.className = cls;
+    status.style.display = 'flex';
+    status.innerHTML = msg;
+  };
+
+  try {
+    if (!file.type.startsWith('image/')) {
+      setStatus('err', '⚠ File must be an image');
+      return;
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      setStatus('err', '⚠ Image must be under 8MB');
+      return;
+    }
+
+    setStatus('loading', `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.22-8.56" class="spin-ico"/></svg> Reading image…`);
+
+    // Read file as base64 data URL
+    const dataUrl = await new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(r.result);
+      r.onerror = () => reject(new Error('Failed to read file'));
+      r.readAsDataURL(file);
+    });
+    const [, mediaType, b64] = dataUrl.match(/^data:([^;]+);base64,(.+)$/) || [];
+    if (!b64) throw new Error('Could not parse image');
+
+    setStatus('loading', `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.22-8.56" class="spin-ico"/></svg> Extracting contact info…`);
+
+    const messages = [{
+      role: 'user',
+      content: [
+        {
+          type: 'image',
+          source: { type: 'base64', media_type: mediaType || 'image/png', data: b64 },
+        },
+        {
+          type: 'text',
+          text: `Extract contact info from this image (business card, email signature, LinkedIn profile, website contact page, screenshot, etc.).
+
+Return STRICT JSON only, no prose, no code fences:
+{
+  "first": "",
+  "last": "",
+  "company": "",
+  "title": "",
+  "email": "",
+  "phone": "",
+  "street": "",
+  "city": "",
+  "state": "",
+  "zip": ""
+}
+
+Rules:
+- Use "" for any field you cannot find. Do NOT guess.
+- Phone: digits only with formatting OK (e.g. "(616) 555-1212").
+- State: 2-letter abbreviation if US.
+- If multiple people are shown, pick the most prominent one.
+- If only a name is shown ("John Smith"), split into first/last.`,
+        },
+      ],
+    }];
+
+    const raw = await callClaude(messages, 'claude-opus-4-6', 512);
+    // Strip any accidental code fences or leading/trailing prose
+    const jsonText = (raw.match(/\{[\s\S]*\}/) || [raw])[0];
+    const data = JSON.parse(jsonText);
+
+    const setIf = (id, val) => {
+      const el = document.getElementById(id);
+      if (el && val && !el.value) el.value = String(val).trim();
+    };
+    setIf('ac-first', data.first);
+    setIf('ac-last', data.last);
+    setIf('ac-company', data.company);
+    setIf('ac-email', data.email);
+    setIf('ac-phone', data.phone);
+    setIf('ac-street', data.street);
+    setIf('ac-city', data.city);
+    setIf('ac-state', (data.state || '').toUpperCase().slice(0, 2));
+    setIf('ac-zip', data.zip);
+
+    // If a title came back, append to the note field for context
+    if (data.title) {
+      const noteEl = document.getElementById('ac-note');
+      if (noteEl && !noteEl.value) noteEl.value = `Title: ${data.title}`;
+    }
+
+    const filled = ['first','last','company','email','phone','street','city','state','zip']
+      .filter(k => data[k] && String(data[k]).trim()).length;
+    if (filled === 0) {
+      setStatus('err', '⚠ Nothing extracted — fill manually');
+    } else {
+      setStatus('ok', `✓ Auto-filled ${filled} field${filled === 1 ? '' : 's'} — review before saving`);
+    }
+  } catch (e) {
+    setStatus('err', '⚠ ' + (e.message || 'Extraction failed'));
+  } finally {
+    // reset so same file can trigger change again
+    inp.value = '';
+  }
+}
+
+// ── AI Project Manager ───────────────────────────────────
+
+const AIPM_KEY = 'sg_aipm_cards';
+function loadAIPMCards() {
+  try { return JSON.parse(localStorage.getItem(AIPM_KEY) || '[]'); }
+  catch { return []; }
+}
+function saveAIPMCards(cards) {
+  try { localStorage.setItem(AIPM_KEY, JSON.stringify(cards)); } catch {}
+}
+
+function initAIPMDropZone() {
+  const zone = document.getElementById('aipm-drop-zone');
+  if (!zone || zone._initDone) return;
+  zone._initDone = true;
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', e => { if (!zone.contains(e.relatedTarget)) zone.classList.remove('drag-over'); });
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    const file = e.dataTransfer?.files?.[0];
+    if (file) processAIPMFile(file);
+  });
+}
+
+async function handleAIPMUpload(input) {
+  const file = input.files?.[0];
+  if (file) await processAIPMFile(file);
+  input.value = '';
+}
+
+async function processAIPMFile(file) {
+  const statusEl = document.getElementById('aipm-status');
+  const titleEl  = document.getElementById('aipm-drop-title');
+  const ext      = file.name.split('.').pop().toLowerCase();
+  const setStatus = (cls, msg) => {
+    statusEl.className = cls;
+    statusEl.style.display = 'flex';
+    statusEl.innerHTML = msg;
+  };
+  try {
+    setStatus('loading', `Reading ${esc(file.name)}…`);
+    const buf = await file.arrayBuffer();
+    let text;
+    if (ext === 'pdf') {
+      const r = await extractPDF(buf);
+      text = r.text;
+      if (!text) throw new Error('No extractable text — PDF may be scanned');
+    } else if (ext === 'docx') {
+      const r = await extractDOCX(buf);
+      text = r.text;
+      if (!text) throw new Error('No text found in DOCX');
+    } else {
+      throw new Error('Use PDF or DOCX');
+    }
+
+    setStatus('loading', 'AI extracting project details…');
+
+    const prompt = `You are a sales project assistant for a custom packaging sales rep at Stephen Gould Corporation. Extract structured project details from this supplier quote document.
+
+DOCUMENT:
+${text}
+
+Return ONLY JSON, no markdown, no prose:
+{
+  "company": "client/buyer company name (NOT the supplier/vendor)",
+  "contact": "buyer's contact person name if shown, else null",
+  "contactEmail": "buyer's email if shown, else null",
+  "contactPhone": "buyer's phone if shown, else null",
+  "product": "product description — material, size, color, finish, specs",
+  "quantity": "quantity as string (e.g. '10,000 units' or '5K / 10K / 25K')",
+  "unitPrice": "unit price as shown (e.g. '$0.38' or '$0.38 @ 10K')",
+  "totalValue": "extended / total quote value if shown, else null",
+  "leadTime": "lead time if mentioned, else null",
+  "quoteDate": "quote date if shown (YYYY-MM-DD preferred), else null",
+  "nextSteps": "1-2 sentence, action-oriented next step for the sales rep (e.g. 'Confirm PO within 14 days to hold pricing. Send sample request form.')"
+}
+
+Rules:
+- company: the CLIENT being quoted to, not the supplier issuing the quote.
+- Use null only when truly absent — don't guess.
+- nextSteps: must be a concrete action, not a summary.`;
+
+    const raw = await callClaude([{ role: 'user', content: prompt }], 'claude-opus-4-6', 1200);
+    const jsonStr = raw.startsWith('{') ? raw : (raw.match(/\{[\s\S]*\}/) || [])[0];
+    if (!jsonStr) throw new Error('Could not parse AI response');
+    const data = JSON.parse(jsonStr);
+
+    const card = {
+      id: 'aipm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+      company:      data.company || 'Unknown Company',
+      contact:      data.contact || null,
+      contactEmail: data.contactEmail || null,
+      contactPhone: data.contactPhone || null,
+      product:      data.product || '',
+      quantity:     data.quantity || null,
+      unitPrice:    data.unitPrice || null,
+      totalValue:   data.totalValue || null,
+      leadTime:     data.leadTime || null,
+      quoteDate:    data.quoteDate || null,
+      nextSteps:    data.nextSteps || '',
+      fileName:     file.name,
+      createdAt:    Date.now(),
+    };
+
+    const cards = loadAIPMCards();
+    cards.unshift(card);
+    saveAIPMCards(cards);
+    renderAIPMCards();
+    setStatus('ok', `✓ Project card created for ${esc(card.company)}`);
+    if (titleEl) titleEl.textContent = 'Drop another quote PDF or DOCX';
+  } catch (e) {
+    setStatus('err', '⚠ ' + (e.message || 'Failed to process file'));
+  }
+}
+
+function renderAIPMCards() {
+  const wrap = document.getElementById('aipm-cards');
+  const clearBtn = document.getElementById('aipm-clear-btn');
+  if (!wrap) return;
+  const cards = loadAIPMCards();
+  if (clearBtn) clearBtn.style.display = cards.length ? '' : 'none';
+  if (!cards.length) {
+    wrap.innerHTML = `<div class="empty" style="padding:32px 16px"><p style="font-size:13px;color:var(--dim)">No project cards yet. Drop a quote above to get started.</p></div>`;
+    return;
+  }
+  wrap.innerHTML = cards.map(c => `
+    <div class="aipm-card">
+      <div class="aipm-head">
+        <div style="min-width:0;flex:1">
+          <div class="aipm-co">${esc(c.company)}</div>
+          ${(c.contact || c.contactEmail || c.contactPhone) ? `<div class="aipm-contact">${[c.contact, c.contactEmail, c.contactPhone].filter(Boolean).map(esc).join(' · ')}</div>` : ''}
+        </div>
+        <button class="aipm-del" onclick="deleteAIPMCard('${c.id}')" title="Delete">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </button>
+      </div>
+      ${c.product ? `<div class="aipm-product">${esc(c.product)}</div>` : ''}
+      <div class="aipm-meta-row">
+        ${c.quantity    ? `<span class="aipm-chip qty">${esc(c.quantity)}</span>` : ''}
+        ${c.unitPrice   ? `<span class="aipm-chip money">${esc(c.unitPrice)}</span>` : ''}
+        ${c.totalValue  ? `<span class="aipm-chip money">Total: ${esc(c.totalValue)}</span>` : ''}
+        ${c.leadTime    ? `<span class="aipm-chip">⏱ ${esc(c.leadTime)}</span>` : ''}
+        ${c.quoteDate   ? `<span class="aipm-chip">📅 ${esc(c.quoteDate)}</span>` : ''}
+      </div>
+      ${c.nextSteps ? `<div class="aipm-next"><b>Next:</b> ${esc(c.nextSteps)}</div>` : ''}
+      <div class="aipm-foot">
+        <span class="aipm-file" title="${esc(c.fileName)}">${esc(c.fileName)}</span>
+        <span class="aipm-date">${new Date(c.createdAt).toLocaleDateString('en-US', { month:'short', day:'numeric' })}</span>
+      </div>
+    </div>`).join('');
+}
+
+function deleteAIPMCard(id) {
+  const cards = loadAIPMCards().filter(c => c.id !== id);
+  saveAIPMCards(cards);
+  renderAIPMCards();
+}
+
+function clearAllAIPMCards() {
+  if (!confirm('Delete all project cards? This cannot be undone.')) return;
+  saveAIPMCards([]);
+  renderAIPMCards();
+}
+
 // ── Quote Calculator ────────────────────────────────────────
 
 function fd(n) { // format dollar amount (no cents for large, 2dp for small)
@@ -1636,8 +2118,9 @@ function fu(n) { // format unit price (strip trailing zeros but keep min 2dp)
 }
 
 function calcQuote() {
-  const unitCost      = parseFloat(document.getElementById('qc-unit-cost')?.value)  || 0;
+  const unitCostRaw   = parseFloat(document.getElementById('qc-unit-cost')?.value)  || 0;
   const freightCost   = parseFloat(document.getElementById('qc-freight')?.value)    || 0;
+  const tariffPct     = parseFloat(document.getElementById('qc-tariff')?.value)     || 0;
   const toolingCost   = parseFloat(document.getElementById('qc-tooling')?.value)    || 0;
   const marginPct     = parseFloat(document.getElementById('qc-margin')?.value)     || 35;
   const frtMarkupPct  = parseFloat(document.getElementById('qc-frt-markup')?.value) || 27;
@@ -1650,11 +2133,14 @@ function calcQuote() {
   ].filter(q => q > 0);
 
   const resultEl = document.getElementById('qc-result');
-  if (!unitCost || unitCost <= 0 || !qtys.length) { resultEl.style.display = 'none'; return; }
+  if (!unitCostRaw || unitCostRaw <= 0 || !qtys.length) { resultEl.style.display = 'none'; return; }
 
-  const unitSell    = unitCost / (1 - marginPct / 100);
-  const freightSell = freightCost * (1 + frtMarkupPct / 100);
-  const toolingSell = toolingCost * (1 + frtMarkupPct / 100);
+  // Tariff is applied as a % uplift to the supplier unit cost (landed unit cost)
+  const tariffPerUnit = unitCostRaw * (tariffPct / 100);
+  const unitCost      = unitCostRaw + tariffPerUnit; // landed unit cost
+  const unitSell      = unitCost / (1 - marginPct / 100);
+  const freightSell   = freightCost * (1 + frtMarkupPct / 100);
+  const toolingSell   = toolingCost * (1 + frtMarkupPct / 100);
 
   const tiers = qtys.map(qty => {
     const unitExtCost = unitCost * qty;
@@ -1670,7 +2156,7 @@ function calcQuote() {
     type: 'calculator',
     accountName:    (document.getElementById('qc-account')?.value || '').trim(),
     itemDesc:       (document.getElementById('qc-desc')?.value    || '').trim(),
-    unitCost, freightCost, toolingCost,
+    unitCostRaw, unitCost, freightCost, toolingCost, tariffPct, tariffPerUnit,
     unitSell, freightSell, toolingSell,
     marginPct, frtMarkupPct, commissionPct,
     tiers,
@@ -1682,10 +2168,11 @@ function calcQuote() {
 }
 
 function renderCalcResults(q) {
-  const { unitSell, freightCost, toolingCost, freightSell, toolingSell,
-          frtMarkupPct, commissionPct } = q;
-  const hasFrt  = freightCost  > 0;
-  const hasTool = toolingCost  > 0;
+  const { unitSell, unitCostRaw, unitCost, tariffPct, tariffPerUnit,
+          freightCost, toolingCost, freightSell, toolingSell, commissionPct } = q;
+  const hasFrt    = freightCost  > 0;
+  const hasTool   = toolingCost  > 0;
+  const hasTariff = tariffPct    > 0;
 
   const html = (q.tiers || []).map(t => `
     <div class="qc-tier">
@@ -1694,10 +2181,15 @@ function renderCalcResults(q) {
         <span class="qc-tier-usell">${fu(unitSell)}/unit</span>
       </div>
       <div class="qc-det-row">
-        <span class="qc-det-lbl">Units</span>
+        <span class="qc-det-lbl">Units${hasTariff ? ' (landed)' : ''}</span>
         <span class="qc-det-sub">${fd(t.unitExtCost)} cost</span>
         <span class="qc-det-val">${fd(t.unitExtSell)}</span>
       </div>
+      ${hasTariff ? `<div class="qc-det-row">
+        <span class="qc-det-lbl">— Tariff (${tariffPct}%)</span>
+        <span class="qc-det-sub">${fu(tariffPerUnit)}/unit</span>
+        <span class="qc-det-val">${fd(tariffPerUnit * t.qty)}</span>
+      </div>` : ''}
       ${hasFrt ? `<div class="qc-det-row">
         <span class="qc-det-lbl">Freight</span>
         <span class="qc-det-sub">${fd(freightCost)} cost</span>
@@ -2249,7 +2741,7 @@ function renderCompareResult(data, targetPrice) {
 let qcContactId = null;
 
 function initCallLogger() {
-  const statusEl = document.getElementById('qc-status');
+  const statusEl = document.getElementById('ql-status');
   if (statusEl && !statusEl.innerHTML.trim()) {
     statusEl.innerHTML = [
       ['IN_PROGRESS','Active'],['CONNECTED','Engaged'],['OPEN','Follow Up'],
@@ -2257,16 +2749,16 @@ function initCallLogger() {
     ].map(([v,l]) => `<button class="sopt" data-v="${v}" onclick="qcPickStatus(this)">${l}</button>`).join('');
   }
   // Reset form state (but keep contact if already selected)
-  const notesEl = document.getElementById('qc-notes');
+  const notesEl = document.getElementById('ql-notes');
   if (notesEl) notesEl.value = '';
-  const dateEl = document.getElementById('qc-date');
+  const dateEl = document.getElementById('ql-date');
   if (dateEl) dateEl.value = nextDate(7);
-  document.getElementById('qc-dropdown').style.display = 'none';
+  document.getElementById('ql-dropdown').style.display = 'none';
 }
 
 function filterQCContacts() {
-  const q = (document.getElementById('qc-search')?.value || '').toLowerCase();
-  const dd = document.getElementById('qc-dropdown');
+  const q = (document.getElementById('ql-search')?.value || '').toLowerCase();
+  const dd = document.getElementById('ql-dropdown');
   if (!q || !S.contacts.length) { dd.style.display = 'none'; return; }
 
   const matches = S.contacts.filter(c => {
@@ -2293,38 +2785,38 @@ function selectQCContact(id) {
   qcContactId = id;
   const p = c.properties;
   const name = [p.firstname, p.lastname].filter(Boolean).join(' ') || '—';
-  document.getElementById('qc-search').value = '';
-  document.getElementById('qc-dropdown').style.display = 'none';
-  document.getElementById('qc-sel-name').textContent = `${name} — ${p.company||''}`;
-  document.getElementById('qc-selected').classList.add('on');
+  document.getElementById('ql-search').value = '';
+  document.getElementById('ql-dropdown').style.display = 'none';
+  document.getElementById('ql-sel-name').textContent = `${name} — ${p.company||''}`;
+  document.getElementById('ql-selected').classList.add('on');
 
   // Pre-select current status
   const cur = (p.hs_lead_status||'').toUpperCase();
-  document.querySelectorAll('#qc-status .sopt').forEach(el =>
+  document.querySelectorAll('#ql-status .sopt').forEach(el =>
     el.classList.toggle('on', el.dataset.v === cur)
   );
 }
 
 function clearQCContact() {
   qcContactId = null;
-  document.getElementById('qc-selected').classList.remove('on');
-  document.getElementById('qc-sel-name').textContent = '';
-  document.querySelectorAll('#qc-status .sopt').forEach(el => el.classList.remove('on'));
+  document.getElementById('ql-selected').classList.remove('on');
+  document.getElementById('ql-sel-name').textContent = '';
+  document.querySelectorAll('#ql-status .sopt').forEach(el => el.classList.remove('on'));
 }
 
 function qcPickStatus(el) {
-  document.querySelectorAll('#qc-status .sopt').forEach(x => x.classList.remove('on'));
+  document.querySelectorAll('#ql-status .sopt').forEach(x => x.classList.remove('on'));
   el.classList.add('on');
 }
 
 async function doQuickCall() {
   if (!qcContactId) { toast('Select a contact', 'err'); return; }
-  const notes = document.getElementById('qc-notes')?.value.trim();
+  const notes = document.getElementById('ql-notes')?.value.trim();
   if (!notes) { toast('Enter call notes', 'err'); return; }
-  const status = document.querySelector('#qc-status .sopt.on')?.dataset.v || null;
-  const dateV  = document.getElementById('qc-date')?.value;
+  const status = document.querySelector('#ql-status .sopt.on')?.dataset.v || null;
+  const dateV  = document.getElementById('ql-date')?.value;
 
-  const btn = document.getElementById('qc-btn');
+  const btn = document.getElementById('ql-btn');
   btn.disabled = true;
 
   const prevActiveId = activeId;
@@ -2343,8 +2835,8 @@ async function doQuickCall() {
     if (dateV) await createTask(dateV);
 
     toast('Call logged ✓', 'ok');
-    document.getElementById('qc-notes').value = '';
-    document.getElementById('qc-date').value  = nextDate(7);
+    document.getElementById('ql-notes').value = '';
+    document.getElementById('ql-date').value  = nextDate(7);
     clearQCContact();
     render();
   } catch(e) {
@@ -2412,8 +2904,6 @@ function dismissProspect(key) {
   d.dismissed[key] = true;
   saveProsData(d);
   renderProspects();
-  // When industry filter changes, fetch new prospects for that industry
-  if (type === 'ind') loadProspects(true);
 }
 
 function setProsFilter(type, el, evt) {
@@ -2441,6 +2931,92 @@ function setProsFilter(type, el, evt) {
 
 const PROSPECTS_JSON_URL = 'https://raw.githubusercontent.com/bribaseball66-SG/hubspot-sales/main/prospects.json';
 
+// ── Apollo-powered prospect fetch (via Worker proxy) ─────
+// Expects Worker routes:
+//   POST {BASE}/apollo/companies   body: { industries, location, perPage }
+//   POST {BASE}/apollo/people      body: { company_id / organization_id, titles }
+// If the proxy isn't configured yet, callers fall back to Claude generation.
+
+const APOLLO_INDUSTRY_MAP = {
+  fitness:        ['health, wellness and fitness', 'sports'],
+  cosmetics:      ['cosmetics', 'personal care'],
+  food:           ['food & beverages', 'food production'],
+  cannabis:       ['tobacco', 'alternative medicine'],
+  manufacturing:  ['packaging and containers', 'plastics', 'consumer goods'],
+  automotive:     ['automotive'],
+  medical:        ['medical devices', 'medical practice', 'hospital & health care'],
+  nutraceuticals: ['pharmaceuticals', 'nutraceuticals'],
+  pet:            ['veterinary'],
+  ecommerce:      ['internet', 'retail', 'consumer goods'],
+};
+
+async function fetchApolloProspects({ industries, location, perPage = 12 }) {
+  const res = await fetch(BASE + '/apollo/companies', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      industries: industries && industries.length ? industries : undefined,
+      location,
+      per_page: perPage,
+      employee_ranges: ['11,50', '51,200', '201,500', '501,1000'],
+    }),
+  });
+  if (!res.ok) {
+    // 404 = route not configured, 501 = Apollo key missing → signal fallback
+    if (res.status === 404 || res.status === 501) throw new Error('APOLLO_UNAVAILABLE');
+    const txt = await res.text().catch(() => '');
+    throw new Error('Apollo error ' + res.status + ' ' + txt.slice(0, 120));
+  }
+  const data = await res.json();
+  const rows = data.organizations || data.results || data.companies || [];
+  return rows.map(o => normalizeApolloOrg(o));
+}
+
+function normalizeApolloOrg(o) {
+  const city  = o.city || o.primary_city || '';
+  const state = o.state || o.primary_state || '';
+  const location = [city, state].filter(Boolean).join(', ');
+  // Guess industry bucket from Apollo's industry string
+  const ind = (o.industry || '').toLowerCase();
+  let bucket = 'cpg';
+  if (/fitness|health|sport/.test(ind))         bucket = 'fitness';
+  else if (/cosmetic|beauty|personal/.test(ind)) bucket = 'cosmetics';
+  else if (/food|beverage|snack/.test(ind))      bucket = 'food';
+  else if (/pharma|nutra|supplement/.test(ind))  bucket = 'nutraceuticals';
+  else if (/medical|hospital|dental/.test(ind))  bucket = 'medical';
+  else if (/auto/.test(ind))                     bucket = 'automotive';
+  else if (/pet|vet/.test(ind))                  bucket = 'pet';
+  else if (/plastic|packag|manufactur/.test(ind)) bucket = 'manufacturing';
+  else if (/retail|internet|consumer/.test(ind)) bucket = 'ecommerce';
+
+  const emp = Number(o.estimated_num_employees || o.employee_count || 0) || null;
+  const score = emp ? (emp >= 200 ? 'High' : emp >= 50 ? 'Medium' : 'Low') : 'Medium';
+
+  // Pull first contact if Apollo returned contacts inline
+  const person = (o.primary_contact || (o.contacts && o.contacts[0])) || null;
+  const decisionMaker = person
+    ? [person.name, person.title].filter(Boolean).join(', ')
+    : null;
+
+  return {
+    company:       o.name || 'Unknown',
+    industry:      bucket,
+    location,
+    address:       [o.street_address, city, state, o.postal_code].filter(Boolean).join(', ') || null,
+    employees:     emp ? String(emp) : null,
+    score,
+    decisionMaker,
+    contactEmail:  person?.email || null,
+    contactPhone:  person?.phone || o.phone || null,
+    website:       (o.website_url || o.domain || '').replace(/^https?:\/\//, '') || null,
+    whyCallThem:   o.short_description || o.description || 'Apollo-sourced prospect matching ICP. Research before outreach.',
+    packagingNeed: null,
+    _region:       city || 'Apollo',
+    _source:       'apollo',
+    _apolloId:     o.id || o.organization_id || null,
+  };
+}
+
 async function loadProspects(force) {
   if (prospectsState.generated && !force) { renderProspects(); return; }
   if (prospectsState.loading) return;
@@ -2455,7 +3031,33 @@ async function loadProspects(force) {
     }
   }
 
-  // On first load (not force), try to merge in the pre-generated daily file
+  // 1) Try Apollo first (via Worker proxy)
+  if (force || !prospectsState.generated) {
+    try {
+      const industries = prospectsState.indFilter !== 'all'
+        ? (APOLLO_INDUSTRY_MAP[prospectsState.indFilter] || [])
+        : [];
+      const location = prospectsState.regionFilter !== 'all'
+        ? prospectsState.regionFilter + ', Michigan'
+        : 'Michigan';
+      const apolloRows = await fetchApolloProspects({ industries, location, perPage: 15 });
+      if (apolloRows.length) {
+        const dismissed = getProsData().dismissed || {};
+        const seen = new Set(prospectsState.all.map(p => proKey(p)));
+        const fresh = apolloRows.filter(p => !seen.has(proKey(p)) && !dismissed[proKey(p)]);
+        prospectsState.all = [...fresh, ...prospectsState.all];
+        prospectsState.generated = true;
+        saveProspectsCache();
+        prospectsState.loading = false;
+        renderProspects();
+        return;
+      }
+    } catch (e) {
+      console.info('[prospects] Apollo not available, falling back:', e.message);
+    }
+  }
+
+  // 2) Fall back to the pre-generated daily file
   if (!force) {
     try {
       const res = await fetch(PROSPECTS_JSON_URL, { cache: 'no-store' });
@@ -2479,6 +3081,7 @@ async function loadProspects(force) {
     } catch { /* fall through to live generation */ }
   }
 
+  // 3) Last resort: live Claude generation
   prospectsState.loading = false;
   await generateProspects(false);
 }
@@ -2685,6 +3288,7 @@ function renderProspects() {
 
   const allProspects = getMergedProspects();
 
+  const searchQ = (document.getElementById('pros-search')?.value || '').toLowerCase().trim();
   const rows = allProspects.map((p, i) => ({ p, i })).filter(({ p }) => {
     const key         = proKey(p);
     const isSaved     = savedKeys.has(key);
@@ -2695,6 +3299,12 @@ function renderProspects() {
     if (indFilter !== 'all' && p.industry !== indFilter) return false;
     if (regionFilter !== 'all' && (p._region || '') !== regionFilter) return false;
     if (scoreFilter !== 'all' && p.score !== scoreFilter) return false;
+    if (searchQ) {
+      const hay = [p.company, p.decisionMaker, p.contactEmail, p.contactPhone,
+                   p.location, p.address, p.website, p.packagingNeed,
+                   IND_LABEL[p.industry] || p.industry].filter(Boolean).join(' ').toLowerCase();
+      if (!hay.includes(searchQ)) return false;
+    }
     return true;
   });
 
@@ -2726,7 +3336,9 @@ function renderProspects() {
       </div>
       ${p.address ? `<div class="pros-need" style="font-size:12px;color:var(--dim);margin-bottom:4px">📍 ${esc(p.address)}</div>` : ''}
       ${p.decisionMaker ? `<div class="pros-dm" style="margin-bottom:5px">👤 ${esc(p.decisionMaker)}</div>` : ''}
-      <div class="pros-why">${esc(p.whyCallThem)}</div>
+      ${(p.contactEmail || p.contactPhone) ? `<div class="pros-dm" style="margin-bottom:5px;font-size:12px">${p.contactEmail ? `✉️ <a href="mailto:${esc(p.contactEmail)}" style="color:var(--accent);text-decoration:none">${esc(p.contactEmail)}</a>` : ''}${(p.contactEmail && p.contactPhone) ? ' &middot; ' : ''}${p.contactPhone ? `☎ <a href="tel:${esc(p.contactPhone)}" style="color:var(--accent);text-decoration:none">${esc(p.contactPhone)}</a>` : ''}</div>` : ''}
+      ${p.website ? `<div class="pros-need" style="font-size:11px;margin-bottom:5px">🌐 <a href="https://${esc((p.website || '').replace(/^https?:\/\//, ''))}" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none">${esc((p.website || '').replace(/^https?:\/\//, ''))}</a></div>` : ''}
+      <div class="pros-why">${esc(p.whyCallThem || '')}</div>
       ${p.packagingNeed ? `<div class="pros-need">Packaging: ${esc(p.packagingNeed)}</div>` : ''}
       <textarea class="pros-notes-area" rows="2" placeholder="Notes…" onblur="saveProsNote(${i},this.value)">${esc(note)}</textarea>
       <div class="pros-actions">
