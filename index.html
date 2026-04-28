@@ -3683,9 +3683,7 @@ SUBJECT: [subject line here]
   try {
     const draft = await callClaude([{ role: 'user', content: prompt }], 'claude-opus-4-6', 600);
     const subjMatch = draft.match(/^SUBJECT:\s*(.+)/m);
-    const bodyPart  = draft.replace(/^SUBJECT:.*
----
-?/m, '').trim();
+    const bodyPart  = draft.replace(/^SUBJECT:[^\n]*\n---\n?/m, '').trim();
     subj.value = subjMatch ? subjMatch[1].trim() : `Custom Packaging for ${p.company}`;
     body.value = bodyPart || draft;
   } catch (e) {
