@@ -1006,9 +1006,13 @@
         <div class="chip"    data-score="saved"     ontouchend="setProsFilter('score',this,event)" onclick="setProsFilter('score',this,event)">⭐ Saved</div>
         <div class="chip"    data-score="contacted" ontouchend="setProsFilter('score',this,event)" onclick="setProsFilter('score',this,event)">Contacted</div>
       </div>
-      <div style="display:flex;gap:6px;flex-shrink:0;margin-left:6px">
+      <div style="display:flex;gap:6px;flex-shrink:0;margin-left:6px;align-items:center">
+        <span id="pros-count-badge" style="font-size:11px;color:var(--dim);white-space:nowrap;padding:0 2px"></span>
         <button class="icon-btn" id="route-btn" onclick="toggleRoutePlanner()" title="Cold Call Route Planner">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
+        </button>
+        <button class="icon-btn" onclick="exportProspectsCSV()" title="Export visible prospects to CSV">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         </button>
         <button class="icon-btn" onclick="loadProspects(true)" title="Find new prospects">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
@@ -1088,6 +1092,38 @@
 <!-- ── Sheet ─────────────────────────────────────────────── -->
 <div id="overlay" onclick="closeSheet()"></div>
 <div id="sheet"><div class="sh-pull"></div><div id="sheet-inner"></div></div>
+
+<!-- ── Prospect Email Draft Modal ────────────────────────── -->
+<div id="pros-email-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;align-items:flex-end;justify-content:center" onclick="if(event.target===this)closeProsEmailModal()">
+  <div style="background:var(--navy);border-radius:16px 16px 0 0;width:100%;max-width:600px;padding:20px 20px 32px;box-sizing:border-box;max-height:90vh;overflow-y:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div style="font-size:15px;font-weight:800;color:var(--text)">Cold Email Draft</div>
+      <button onclick="closeProsEmailModal()" style="background:none;border:none;color:var(--dim);cursor:pointer;font-size:20px;line-height:1;padding:0 4px">✕</button>
+    </div>
+    <div class="fg" style="margin-bottom:10px">
+      <label class="fl">To</label>
+      <input type="email" id="pros-email-to" placeholder="contact@company.com" style="width:100%;box-sizing:border-box">
+    </div>
+    <div class="fg" style="margin-bottom:10px">
+      <label class="fl">Subject</label>
+      <input type="text" id="pros-email-subject" placeholder="Generating…" style="width:100%;box-sizing:border-box">
+    </div>
+    <div class="fg" style="margin-bottom:14px">
+      <label class="fl">Body</label>
+      <textarea id="pros-email-body" rows="9" placeholder="Drafting personalized email…" style="width:100%;box-sizing:border-box;resize:vertical"></textarea>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button onclick="copyProsEmail()" style="flex:1;padding:12px;background:var(--navyLL);color:var(--text);border:1px solid var(--border);border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy
+      </button>
+      <button onclick="openMailtoFromPros()" style="flex:1;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Open in Mail
+      </button>
+    </div>
+  </div>
+</div>
 
 <!-- ── Toast ─────────────────────────────────────────────── -->
 <div id="toast"></div>
@@ -1830,6 +1866,7 @@ async function submitNewContact() {
     closeSheet();
     if (window._prosSubmitIdx !== undefined) {
       prospectsState.added.add(window._prosSubmitIdx); // now a company key string
+      try { const _ad = getProsData(); if (!_ad.added) _ad.added = {}; _ad.added[window._prosSubmitIdx] = true; saveProsData(_ad); } catch {}
       window._prosSubmitIdx = undefined;
       renderProspects();
     }
@@ -3035,6 +3072,12 @@ async function loadProspects(force) {
   if (prospectsState.loading) return;
   prospectsState.loading = true;
 
+  // Restore persisted 'added' keys so Add to Contacts button stays disabled after reload
+  try {
+    const _pd = getProsData();
+    if (_pd.added) { Object.keys(_pd.added).forEach(k => prospectsState.added.add(k)); }
+  } catch {}
+
   // Always restore cached cards first so the list is never blank on refresh
   if (!prospectsState.generated) {
     const restored = loadProspectsCache();
@@ -3112,12 +3155,15 @@ function repairJsonArray(str) {
 }
 
 // Fetch one batch of 3 prospects from Claude and return parsed array
-async function fetchProspectBatch(region, existing) {
+async function fetchProspectBatch(region, existing, industry) {
   const exclusion = existing.length
-    ? `\nDo not include any of these companies (already listed): ${existing.join(', ')}.`
+    ? `\nDo not include any of these companies (already listed): ${existing.slice(0, 50).join(', ')}.`
+    : '';
+  const industryFocus = industry && industry !== 'all'
+    ? `\nINDUSTRY FOCUS: All 3 results MUST be in the ${IND_LABEL[industry] || industry} industry specifically. Do not return companies from other industries.`
     : '';
 
-  const prompt = `You are a B2B sales intelligence agent for Stephen Gould, a global custom packaging company. Find 3 REAL, verifiable Michigan businesses in the ${region} area that are strong prospects for custom packaging (bottles, jars, pouches, boxes, labels, containers).${exclusion}
+  const prompt = `You are a B2B sales intelligence agent for Stephen Gould, a global custom packaging company. Find 3 REAL, verifiable Michigan businesses in the ${region} area that are strong prospects for custom packaging (bottles, jars, pouches, boxes, labels, containers).${exclusion}${industryFocus}
 
 CRITICAL: Only use companies that actually exist. Use their real street address. Do not invent or make up company names.
 
@@ -3221,10 +3267,14 @@ async function generateProspects(append = false) {
 
   let completed = 0;
 
+  // Build exclusion list from currently loaded prospects (prevents dupes across batches)
+  const existingNames = prospectsState.all.slice(0, 60).map(p => p.company).filter(Boolean);
+  const activeIndustry = prospectsState.indFilter;
+
   // Fire all 4 batches in parallel — each targets a different region
   const results = await Promise.allSettled(
     regions.map(region =>
-      fetchProspectBatch(region, []).then(batch => {
+      fetchProspectBatch(region, existingNames, activeIndustry).then(batch => {
         completed++;
         const countEl = document.getElementById('pros-count');
         if (countEl) countEl.textContent = String(completed * PER_BATCH);
@@ -3321,6 +3371,10 @@ function renderProspects() {
     return true;
   });
 
+  // Update visible count badge
+  const badge = document.getElementById('pros-count-badge');
+  if (badge) badge.textContent = rows.length ? `${rows.length} shown` : '';
+
   if (!rows.length) {
     list.innerHTML = `<div class="empty"><p>No prospects match the current filters.</p></div>`;
     return;
@@ -3351,6 +3405,7 @@ function renderProspects() {
       ${p.decisionMaker ? `<div class="pros-dm" style="margin-bottom:5px">👤 ${esc(p.decisionMaker)}</div>` : ''}
       ${(p.contactEmail || p.contactPhone) ? `<div class="pros-dm" style="margin-bottom:5px;font-size:12px">${p.contactEmail ? `✉️ <a href="mailto:${esc(p.contactEmail)}" style="color:var(--accent);text-decoration:none">${esc(p.contactEmail)}</a>` : ''}${(p.contactEmail && p.contactPhone) ? ' &middot; ' : ''}${p.contactPhone ? `☎ <a href="tel:${esc(p.contactPhone)}" style="color:var(--accent);text-decoration:none">${esc(p.contactPhone)}</a>` : ''}</div>` : ''}
       ${p.website ? `<div class="pros-need" style="font-size:11px;margin-bottom:5px">🌐 <a href="https://${esc((p.website || '').replace(/^https?:\/\//, ''))}" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none">${esc((p.website || '').replace(/^https?:\/\//, ''))}</a></div>` : ''}
+      <div class="pros-need" style="font-size:11px;margin-bottom:5px">🔗 <a href="https://www.linkedin.com/search/results/companies/?keywords=${encodeURIComponent(p.company)}" target="_blank" rel="noopener" style="color:#0a66c2;text-decoration:none">LinkedIn →</a>${p.decisionMaker ? ` &middot; <a href="https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(p.decisionMaker.replace(/,.*$/,'').trim() + ' ' + p.company)}" target="_blank" rel="noopener" style="color:#0a66c2;text-decoration:none">Find Contact</a>` : ''}</div>
       <div class="pros-why">${esc(p.whyCallThem || '')}</div>
       ${p.packagingNeed ? `<div class="pros-need">Packaging: ${esc(p.packagingNeed)}</div>` : ''}
       <textarea class="pros-notes-area" rows="2" placeholder="Notes…" onblur="saveProsNote(${i},this.value)">${esc(note)}</textarea>
@@ -3362,6 +3417,10 @@ function renderProspects() {
         <button class="pros-icon-btn${isContacted ? ' contacted-btn' : ''}" onclick="markContacted(${i})" title="${isContacted ? 'Unmark as contacted' : 'Mark as already contacted'}">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.46a2 2 0 0 1 1.98-2.18h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
           ${isContacted ? 'Contacted' : 'Contacted?'}
+        </button>
+        <button class="pros-icon-btn" onclick="draftProspectEmail(${i})" title="Draft cold email for this prospect">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Draft Email
         </button>
         <button class="pros-add-btn${isAdded ? ' added' : ''}" onclick="showAddProspect(${i})" ${isAdded ? 'disabled' : ''}>
           ${isAdded
@@ -3412,6 +3471,11 @@ function saveProsNote(idx, text) {
 
 // ── Cold Call Route Planner ───────────────────────────────
 let routeState = { loading: false, stops: [] };
+// Restore persisted route stops
+try {
+  const _rs = localStorage.getItem('sg_route_stops');
+  if (_rs) { const _arr = JSON.parse(_rs); if (Array.isArray(_arr) && _arr.length) routeState.stops = _arr; }
+} catch {}
 
 function toggleRoutePlanner() {
   const panel = document.getElementById('route-planner-panel');
@@ -3485,6 +3549,7 @@ Order the 15 stops geographically to minimize total driving distance (nearest-ne
     const existingNames = new Set(routeState.stops.map(s => s.company?.toLowerCase().trim()));
     const fresh = newStops.filter(s => !existingNames.has(s.company?.toLowerCase().trim()));
     routeState.stops = [...routeState.stops, ...fresh];
+    try { localStorage.setItem('sg_route_stops', JSON.stringify(routeState.stops)); } catch {}
     document.getElementById('rp-city-input').value = '';
     renderRoute();
     toast(`${fresh.length} stops added to route`, 'ok');
@@ -3529,6 +3594,7 @@ function renderRoute() {
 
 function removeRouteStop(idx) {
   routeState.stops.splice(idx, 1);
+  try { localStorage.setItem('sg_route_stops', JSON.stringify(routeState.stops)); } catch {}
   renderRoute();
 }
 
@@ -3561,6 +3627,107 @@ function exportRouteCSV() {
   a.href     = URL.createObjectURL(blob);
   a.download = `route-${new Date().toISOString().slice(0,10)}.csv`;
   a.click();
+}
+
+function closeProsEmailModal() {
+  document.getElementById('pros-email-overlay').style.display = 'none';
+}
+function copyProsEmail() {
+  const subj = document.getElementById('pros-email-subject')?.value || '';
+  const body = document.getElementById('pros-email-body')?.value || '';
+  const full = subj ? `Subject: ${subj}\n\n${body}` : body;
+  navigator.clipboard.writeText(full).then(() => toast('Email copied ✓', 'ok')).catch(() => toast('Copy failed', 'err'));
+}
+function openMailtoFromPros() {
+  const to   = encodeURIComponent(document.getElementById('pros-email-to')?.value || '');
+  const subj = encodeURIComponent(document.getElementById('pros-email-subject')?.value || '');
+  const body = encodeURIComponent(document.getElementById('pros-email-body')?.value || '');
+  window.location.href = `mailto:${to}?subject=${subj}&body=${body}`;
+}
+
+async function draftProspectEmail(idx) {
+  const p = getMergedProspects()[idx];
+  if (!p) return;
+  const modal = document.getElementById('pros-email-overlay');
+  const subj  = document.getElementById('pros-email-subject');
+  const body  = document.getElementById('pros-email-body');
+  if (!modal || !subj || !body) { toast('Email drafting not available', 'err'); return; }
+
+  subj.value = '';
+  body.value = 'Drafting personalized cold email…';
+  modal.style.display = 'flex';
+  document.getElementById('pros-email-to').value = p.contactEmail || '';
+
+  const dmName = p.decisionMaker ? p.decisionMaker.replace(/,.*$/, '').trim().split(' ')[0] : 'there';
+  const prompt = `You are an elite B2B sales rep at Stephen Gould, a global custom packaging company. Write a SHORT, punchy cold email to ${p.decisionMaker || 'the procurement/operations team'} at ${p.company} in ${p.location}.
+
+Context:
+- Company: ${p.company} (${IND_LABEL[p.industry] || p.industry}, ${p.employees ? p.employees + ' employees' : 'mid-size company'}, ${p.location})
+- Why they need us: ${p.whyCallThem || 'Custom packaging solutions'}
+${p.packagingNeed ? '- Packaging need: ' + p.packagingNeed : ''}
+- Website: ${p.website || 'N/A'}
+
+Rules:
+- Subject line: specific, no fluff, references their product/industry
+- Opening: 1 sentence that shows you know their business (no "I hope this email finds you well")
+- Value prop: what Stephen Gould does that's relevant to THEM specifically
+- CTA: single, low-friction ask (15-min call or quick question)
+- Total length: under 100 words for the body
+- Tone: confident, direct, peer-to-peer — NOT salesy or desperate
+
+Format your response as:
+SUBJECT: [subject line here]
+---
+[email body here]`;
+
+  try {
+    const draft = await callClaude([{ role: 'user', content: prompt }], 'claude-opus-4-6', 600);
+    const subjMatch = draft.match(/^SUBJECT:\s*(.+)/m);
+    const bodyPart  = draft.replace(/^SUBJECT:.*
+---
+?/m, '').trim();
+    subj.value = subjMatch ? subjMatch[1].trim() : `Custom Packaging for ${p.company}`;
+    body.value = bodyPart || draft;
+  } catch (e) {
+    body.value = `Hi ${dmName},\n\nI noticed ${p.company} works in the ${IND_LABEL[p.industry] || p.industry} space and wanted to reach out. At Stephen Gould, we help companies like yours with custom packaging solutions — from ${p.packagingNeed || 'bottles to boxes'} — with competitive pricing and fast turnaround.\n\nWorth a quick 15-minute call this week?\n\nBrian Blakeslee\nStephen Gould Corporation`;
+  }
+}
+
+function exportProspectsCSV() {
+  const prosData      = getProsData();
+  const savedKeys     = new Set(Object.keys(prosData.saved     || {}));
+  const contactedKeys = new Set(Object.keys(prosData.contacted || {}));
+  const prosNotes     = prosData.notes || {};
+  const { indFilter, regionFilter, scoreFilter } = prospectsState;
+
+  const rows = getMergedProspects().filter(p => {
+    const key = proKey(p);
+    if (scoreFilter === 'saved')     return savedKeys.has(key);
+    if (scoreFilter === 'contacted') return contactedKeys.has(key);
+    if (contactedKeys.has(key)) return false;
+    if (indFilter !== 'all' && p.industry !== indFilter) return false;
+    if (regionFilter !== 'all' && (p._region || '') !== regionFilter) return false;
+    if (scoreFilter !== 'all' && p.score !== scoreFilter) return false;
+    return true;
+  });
+
+  if (!rows.length) { toast('No prospects to export', 'err'); return; }
+
+  const headers = ['Company','Industry','Location','Address','Score','Employees','Decision Maker','Email','Phone','Website','Why Call Them','Packaging Need','Notes'];
+  const csv = [headers, ...rows.map(p => [
+    p.company || '', IND_LABEL[p.industry] || p.industry || '',
+    p.location || '', p.address || '', p.score || '', p.employees || '',
+    p.decisionMaker || '', p.contactEmail || '', p.contactPhone || '',
+    p.website || '', p.whyCallThem || '', p.packagingNeed || '',
+    prosNotes[proKey(p)] || ''
+  ])].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `prospects-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  toast(`Exported ${rows.length} prospects`, 'ok');
 }
 
 function showAddProspect(idx) {
