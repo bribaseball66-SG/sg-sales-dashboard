@@ -3762,7 +3762,445 @@ boot();
 </script>
 
 <script id="sg-li-apollo">
-(function(){'use strict';var s=document.createElement('style');s.textContent='.li-apollo-panel{background:#0a0a0a;border:1px solid #1f2937;border-radius:12px;padding:16px;margin:0 0 16px}.li-apollo-panel h4{font-size:13px;font-weight:700;color:#e5e7eb;margin:0 0 12px;display:flex;align-items:center;gap:8px}.li-search-row{display:flex;gap:8px;flex-wrap:wrap}.li-search-input{flex:1;min-width:180px;background:#111;border:1px solid #2d3748;border-radius:8px;padding:8px 12px;color:#e5e7eb;font-size:13px;font-family:inherit}.li-search-input:focus{outline:none;border-color:#0077b5}.li-search-input::placeholder{color:#4b5563}.li-type-select{background:#111;border:1px solid #2d3748;border-radius:8px;padding:8px 12px;color:#e5e7eb;font-size:13px;font-family:inherit;cursor:pointer}.li-search-btn{background:#0077b5;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;font-family:inherit}.li-search-btn:hover{background:#005f8a}.li-search-btn:disabled{opacity:.5;cursor:default}.li-results{display:none;margin-top:14px}.li-results.visible{display:block}.li-results-meta{font-size:11px;color:#6b7280;margin-bottom:10px}.li-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}.li-card{background:#111;border:1px solid #1f2937;border-radius:10px;padding:14px;cursor:pointer;transition:border-color .15s,background .15s}.li-card:hover{border-color:#0077b5;background:#111824}.li-card-top{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px}.li-avatar-img{width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0}.li-avatar-ph{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#1e3a5f,#0d2035);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#4fa3d1}.li-cn{font-size:13px;font-weight:600;color:#e5e7eb;margin:0;line-height:1.3}.li-ct{font-size:11px;color:#9ca3af;margin:2px 0 0;line-height:1.3}.li-cc{font-size:11px;color:#6b7280;margin:1px 0 0}.li-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}.li-tag{font-size:10px;padding:2px 7px;border-radius:4px;background:#0d1f30;color:#4fa3d1;white-space:nowrap}.li-btns{display:flex;gap:5px;flex-wrap:wrap}.li-btn-sm{font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid #2d3748;background:#0d0d0d;color:#9ca3af;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:4px;font-family:inherit;white-space:nowrap}.li-btn-sm:hover{border-color:#4b5563;color:#e5e7eb}.li-btn-sm.blue{border-color:#0077b5;color:#4fa3d1}.li-btn-sm.blue:hover{background:#0077b510}.li-btn-sm.green{border-color:#059669;color:#34d399}.li-btn-sm.green:hover{background:#05966910}.sg-intel-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:10000;backdrop-filter:blur(4px);align-items:center;justify-content:center}.sg-intel-overlay.open{display:flex}.sg-intel-modal{background:#0d0d0d;border:1px solid #1f2937;border-radius:16px;width:620px;max-width:94vw;max-height:86vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 25px 60px rgba(0,0,0,.6)}.sg-intel-hd{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid #1a1a1a;flex-shrink:0}.sg-intel-av{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#1e3a5f,#0d2035);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#4fa3d1;flex-shrink:0;overflow:hidden}.sg-intel-av img{width:100%;height:100%;object-fit:cover}.sg-intel-hd-info{flex:1;min-width:0}.sg-intel-name{font-size:16px;font-weight:700;color:#f3f4f6;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sg-intel-sub{font-size:12px;color:#6b7280;margin:3px 0 0}.sg-intel-x{background:none;border:none;color:#6b7280;font-size:22px;cursor:pointer;padding:4px;line-height:1;flex-shrink:0}.sg-intel-x:hover{color:#e5e7eb}.sg-intel-tabs{display:flex;padding:0 20px;border-bottom:1px solid #1a1a1a;flex-shrink:0;overflow-x:auto}.sg-intel-tab{padding:10px 14px;font-size:12px;font-weight:600;color:#6b7280;cursor:pointer;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;background:none;white-space:nowrap;font-family:inherit}.sg-intel-tab.on{color:#0077b5;border-bottom-color:#0077b5}.sg-intel-tab:hover:not(.on){color:#9ca3af}.sg-intel-body{flex:1;overflow-y:auto;padding:18px 20px}.sg-intel-sec{margin-bottom:20px}.sg-intel-sec-title{font-size:10px;font-weight:700;color:#4b5563;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}.sg-intel-row{display:flex;gap:8px;margin-bottom:7px;font-size:12px}.sg-intel-lbl{color:#6b7280;width:95px;flex-shrink:0}.sg-intel-val{color:#d1d5db;flex:1;word-break:break-word}.sg-intel-link{color:#4fa3d1;text-decoration:none}.sg-intel-link:hover{text-decoration:underline}.sg-intel-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}.sg-intel-btn{padding:8px 14px;border-radius:8px;border:1px solid #2d3748;background:#111;color:#9ca3af;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;font-family:inherit;white-space:nowrap}.sg-intel-btn:hover{border-color:#4b5563;color:#e5e7eb}.sg-intel-btn.primary{background:#0077b5;border-color:#0077b5;color:#fff}.sg-intel-btn.primary:hover{background:#005f8a}.sg-intel-empty{color:#4b5563;font-size:12px;text-align:center;padding:24px 0}.sg-intel-loading{color:#6b7280;font-size:13px;text-align:center;padding:24px 0}.sg-intel-note{background:#111;border:1px solid #1f2937;border-radius:8px;padding:10px 12px;margin-bottom:8px}.sg-intel-note-date{font-size:10px;color:#4b5563;margin-bottom:4px}.sg-intel-note-text{font-size:12px;color:#d1d5db;line-height:1.5}.sg-divider{height:1px;background:#1a1a1a;margin:16px 0}';document.head.appendChild(s);var pt=document.getElementById('tab-prospects');if(!pt)return;if(!document.getElementById('li-apollo-panel')){var p=document.createElement('div');p.className='li-apollo-panel';p.id='li-apollo-panel';p.innerHTML='<h4><svg width="15" height="15" viewBox="0 0 24 24" fill="#0077b5"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg> LinkedIn + Apollo Prospect Search</h4><div class="li-search-row"><input class="li-search-input" id="li-query" type="text" placeholder="Name, company, or city…" onkeydown="if(event.key===\'Enter\')sgLiSearch()"><select class="li-type-select" id="li-type"><option value="people">People</option><option value="companies">Companies</option></select><button class="li-search-btn" id="li-search-btn" onclick="sgLiSearch()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> Search</button></div><div class="li-results" id="li-results"><div class="li-results-meta" id="li-meta"></div><div class="li-cards-grid" id="li-cards"></div></div>';pt.insertBefore(p,pt.firstChild);}if(!document.getElementById('sg-intel-overlay')){var ov=document.createElement('div');ov.className='sg-intel-overlay';ov.id='sg-intel-overlay';ov.innerHTML='<div class="sg-intel-modal"><div class="sg-intel-hd"><div class="sg-intel-av" id="sg-intel-av"></div><div class="sg-intel-hd-info"><div class="sg-intel-name" id="sg-intel-name">—</div><div class="sg-intel-sub" id="sg-intel-sub"></div></div><button class="sg-intel-x" onclick="sgCloseIntel()">✕</button></div><div class="sg-intel-tabs"><button class="sg-intel-tab on" onclick="sgSwitchTab(\'linkedin\',this)">🔗 LinkedIn</button><button class="sg-intel-tab" onclick="sgSwitchTab(\'apollo\',this)">🚀 Apollo Data</button><button class="sg-intel-tab" onclick="sgSwitchTab(\'hubspot\',this)">📋 HubSpot</button><button class="sg-intel-tab" onclick="sgSwitchTab(\'quotes\',this)">💰 Quotes</button></div><div class="sg-intel-body" id="sg-intel-body"></div></div>';document.body.appendChild(ov);ov.addEventListener('click',function(e){if(e.target===ov)sgCloseIntel();});}var _ci=null;window.sgCloseIntel=function(){document.getElementById('sg-intel-overlay').classList.remove('open');};window.sgSwitchTab=function(t,b){document.querySelectorAll('.sg-intel-tab').forEach(function(x){x.classList.remove('on');});b.classList.add('on');_sgRT(t,_ci);};window.sgOpenIntel=function(ds){try{var d=JSON.parse(decodeURIComponent(ds));_ci=d;var nm=d.name||'Unknown';document.getElementById('sg-intel-name').textContent=nm;document.getElementById('sg-intel-sub').textContent=[d.title,d.organization&&d.organization.name?d.organization.name:d.primary_domain].filter(Boolean).join(' · ');var av=document.getElementById('sg-intel-av');if(d.photo_url){av.innerHTML='<img src="'+d.photo_url+'" onerror="this.parentElement.textContent=\''+nm[0].toUpperCase()+'\'" alt="">';}else{av.textContent=(nm[0]||'?').toUpperCase();}document.querySelectorAll('.sg-intel-tab').forEach(function(t,i){t.classList.toggle('on',i===0);});_sgRT('linkedin',d);document.getElementById('sg-intel-overlay').classList.add('open');}catch(e){console.error('sgOpenIntel:',e);}};window._sgRT=function(tab,data){var body=document.getElementById('sg-intel-body');if(!data){body.innerHTML='<div class="sg-intel-loading">No data</div>';return;}if(tab==='linkedin'){var li=data.linkedin_url||'';var nm=data.name||'';var co=(data.organization&&data.organization.name)||nm;var np='https://www.linkedin.com/sales/search/people?query='+encodeURIComponent(JSON.stringify({keywords:nm}));var nc='https://www.linkedin.com/sales/search/company?query='+encodeURIComponent(JSON.stringify({keywords:co}));var loc=[data.city,data.state,data.country].filter(Boolean).join(', ');body.innerHTML='<div class="sg-intel-actions">'+(li?'<a href="'+li+'" target="_blank" class="sg-intel-btn primary"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg> LinkedIn Profile</a>':'')+'<a href="'+np+'" target="_blank" class="sg-intel-btn">🎯 Sales Nav – People</a><a href="'+nc+'" target="_blank" class="sg-intel-btn">🎯 Sales Nav – Company</a></div><div class="sg-intel-sec"><div class="sg-intel-sec-title">LinkedIn</div>'+(li?'<div class="sg-intel-row"><span class="sg-intel-lbl">Profile</span><span class="sg-intel-val"><a href="'+li+'" target="_blank" class="sg-intel-link">'+li+'</a></span></div>':'<div class="sg-intel-empty" style="text-align:left;padding:6px 0">No LinkedIn URL in Apollo. Use Sales Navigator to find them.</div>')+(data.headline?'<div class="sg-intel-row"><span class="sg-intel-lbl">Headline</span><span class="sg-intel-val">'+data.headline+'</span></div>':'')+(loc?'<div class="sg-intel-row"><span class="sg-intel-lbl">Location</span><span class="sg-intel-val">'+loc+'</span></div>':'')+'</div><div class="sg-divider"></div><div class="sg-intel-sec"><div class="sg-intel-sec-title">Sales Navigator</div><div class="sg-intel-actions" style="margin-bottom:0"><a href="https://www.linkedin.com/sales/search/people" target="_blank" class="sg-intel-btn">👤 People Search</a><a href="https://www.linkedin.com/sales/search/company" target="_blank" class="sg-intel-btn">🏢 Company Search</a><a href="https://www.linkedin.com/sales/lists" target="_blank" class="sg-intel-btn">📋 My Lists</a></div></div>';}else if(tab==='apollo'){var em=data.email?[{email:data.email}]:(data.emails||[]);var ph=data.phone_numbers||[];var org=data.organization||{};body.innerHTML='<div class="sg-intel-sec"><div class="sg-intel-sec-title">Contact</div>'+(em.length?em.map(function(e){return'<div class="sg-intel-row"><span class="sg-intel-lbl">Email</span><span class="sg-intel-val"><a href="mailto:'+(e.email||e)+'" class="sg-intel-link">'+(e.email||e)+'</a></span></div>';}).join(''):'<div class="sg-intel-row"><span class="sg-intel-lbl">Email</span><span class="sg-intel-val" style="color:#4b5563">Not in Apollo</span></div>')+ph.map(function(p){return'<div class="sg-intel-row"><span class="sg-intel-lbl">Phone</span><span class="sg-intel-val"><a href="tel:'+(p.sanitized_number||p)+'" class="sg-intel-link">'+(p.raw_number||p)+'</a></span></div>';}).join('')+(data.title?'<div class="sg-intel-row"><span class="sg-intel-lbl">Title</span><span class="sg-intel-val">'+data.title+'</span></div>':'')+(data.seniority?'<div class="sg-intel-row"><span class="sg-intel-lbl">Seniority</span><span class="sg-intel-val" style="text-transform:capitalize">'+data.seniority+'</span></div>':'')+'</div><div class="sg-divider"></div><div class="sg-intel-sec"><div class="sg-intel-sec-title">Company</div>'+(org.name?'<div class="sg-intel-row"><span class="sg-intel-lbl">Company</span><span class="sg-intel-val">'+org.name+'</span></div>':'')+(org.website_url?'<div class="sg-intel-row"><span class="sg-intel-lbl">Website</span><span class="sg-intel-val"><a href="'+org.website_url+'" target="_blank" class="sg-intel-link">'+org.website_url+'</a></span></div>':'')+(org.industry?'<div class="sg-intel-row"><span class="sg-intel-lbl">Industry</span><span class="sg-intel-val">'+org.industry+'</span></div>':'')+(org.estimated_num_employees?'<div class="sg-intel-row"><span class="sg-intel-lbl">Employees</span><span class="sg-intel-val">'+org.estimated_num_employees.toLocaleString()+'</span></div>':'')+(org.annual_revenue_printed?'<div class="sg-intel-row"><span class="sg-intel-lbl">Revenue</span><span class="sg-intel-val">'+org.annual_revenue_printed+'</span></div>':'')+(org.city?'<div class="sg-intel-row"><span class="sg-intel-lbl">HQ</span><span class="sg-intel-val">'+[org.city,org.state].filter(Boolean).join(', ')+'</span></div>':'')+'</div>';}else if(tab==='hubspot'){body.innerHTML='<div class="sg-intel-loading">🔍 Searching HubSpot…</div>';_sgHS(data.name||'',(data.organization&&data.organization.name)||'');}else if(tab==='quotes'){var hits=_sgMQ(data.name,(data.organization&&data.organization.name)||'');body.innerHTML=hits.length?'<div class="sg-intel-sec"><div class="sg-intel-sec-title">'+hits.length+' Quote'+(hits.length>1?'s':'')+' Found</div>'+hits.map(function(q){return'<div class="sg-intel-note"><div class="sg-intel-note-date">'+(q.date||q.created||'')+'</div><div class="sg-intel-note-text">'+(q.company||q.account||'')+' · '+(q.item||q.description||'Quote')+'</div></div>';}).join('')+'</div>':'<div class="sg-intel-empty">No saved quotes for this prospect yet.</div>';}};async function _sgHS(n,c){var b=document.getElementById('sg-intel-body');try{var t=localStorage.getItem('hs_token');if(!t){b.innerHTML='<div class="sg-intel-empty">HubSpot not connected.</div>';return;}var r=await fetch('https://api.hubapi.com/crm/v3/objects/contacts/search',{method:'POST',headers:{Authorization:'Bearer '+t,'Content-Type':'application/json'},body:JSON.stringify({query:n,limit:3,properties:['firstname','lastname','email','company','phone']})});var d=await r.json();if(!d.results||!d.results.length){b.innerHTML='<div class="sg-intel-empty">Not found in HubSpot.</div><div class="sg-intel-actions"><a href="https://app.hubspot.com/contacts/new" target="_blank" class="sg-intel-btn primary">+ Add to HubSpot</a></div>';return;}var c2=d.results[0],p=c2.properties;var fn=[p.firstname,p.lastname].filter(Boolean).join(' ');b.innerHTML='<div class="sg-intel-sec"><div class="sg-intel-sec-title">HubSpot Contact</div><div class="sg-intel-row"><span class="sg-intel-lbl">Name</span><span class="sg-intel-val">'+(fn||'—')+'</span></div><div class="sg-intel-row"><span class="sg-intel-lbl">Company</span><span class="sg-intel-val">'+(p.company||'—')+'</span></div>'+(p.email?'<div class="sg-intel-row"><span class="sg-intel-lbl">Email</span><span class="sg-intel-val"><a href="mailto:'+p.email+'" class="sg-intel-link">'+p.email+'</a></span></div>':'')+(p.phone?'<div class="sg-intel-row"><span class="sg-intel-lbl">Phone</span><span class="sg-intel-val"><a href="tel:'+p.phone+'" class="sg-intel-link">'+p.phone+'</a></span></div>':'')+'</div><div class="sg-intel-actions"><a href="https://app.hubspot.com/contacts/'+c2.id+'" target="_blank" class="sg-intel-btn primary">Open in HubSpot →</a><a href="https://app.hubspot.com/contacts/'+c2.id+'#notes" target="_blank" class="sg-intel-btn">View Notes</a></div>';}catch(e){b.innerHTML='<div class="sg-intel-empty">Error: '+e.message+'</div>';}}function _sgMQ(pn,cn){try{var e=JSON.parse(localStorage.getItem('events_data')||'[]');var p=(pn||'').toLowerCase(),c=(cn||'').toLowerCase();return e.filter(function(x){var s=JSON.stringify(x).toLowerCase();return(p&&s.includes(p))||(c&&s.includes(c));}).slice(0,8);}catch(e){return[];}}window.sgLiSearch=async function(){var q=(document.getElementById('li-query').value||'').trim();var tp=document.getElementById('li-type').value;if(!q)return;var btn=document.getElementById('li-search-btn');var res=document.getElementById('li-results');var cards=document.getElementById('li-cards');var meta=document.getElementById('li-meta');btn.disabled=true;btn.innerHTML='⏳ Searching…';cards.innerHTML='<div style="color:#6b7280;font-size:13px;grid-column:1/-1;padding:8px">Querying Apollo…</div>';meta.textContent='';res.classList.add('visible');try{var ak=localStorage.getItem('sg_apollo_key')||'';var h={'Content-Type':'application/json','Cache-Control':'no-cache'};if(ak)h['x-api-key']=ak;var ep=tp==='people'?'https://api.apollo.io/v1/mixed_people/search':'https://api.apollo.io/v1/mixed_companies/search';var pl=tp==='people'?{q_keywords:q,page:1,per_page:10}:{q_organization_name:q,page:1,per_page:10};var r=await fetch(ep,{method:'POST',headers:h,body:JSON.stringify(pl)});if(!r.ok)throw new Error('Apollo '+r.status+' — add your API key below');var d=await r.json();var results=(tp==='people'?(d.people||[]):(d.organizations||[])).map(function(x){return Object.assign({},x,{_type:tp==='people'?'person':'company'});});if(!results.length){cards.innerHTML='<div style="color:#6b7280;font-size:13px;grid-column:1/-1;padding:8px">No results. Try broader terms.</div>';meta.textContent='0 results';}else{meta.textContent=results.length+' result'+(results.length>1?'s':'')+' from Apollo · Click a card for full LinkedIn + HubSpot intel';cards.innerHTML=results.map(function(x){return _sgBC(x,tp);}).join('');}}catch(err){cards.innerHTML='<div style="color:#f87171;font-size:13px;grid-column:1/-1;padding:8px">'+err.message+'</div>'+(err.message.includes('401')||err.message.includes('key')?'<div style="color:#6b7280;font-size:11px;grid-column:1/-1;padding:2px 8px">Get your key at <a href=\'https://developer.apollo.io\' target=\'_blank\' style=\'color:#4fa3d1\'>developer.apollo.io</a> → store it in browser: localStorage.setItem(\'sg_apollo_key\',\'YOUR_KEY\')</div>':'');}btn.disabled=false;btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> Search';};function _sgBC(r,tp){var ip=tp==='people';var nm=r.name||'Unknown';var ini=nm.split(' ').map(function(n){return n[0];}).filter(Boolean).join('').substring(0,2).toUpperCase();var av=r.photo_url?'<img src="'+r.photo_url+'" class="li-avatar-img" onerror="this.outerHTML=\'<div class=li-avatar-ph>'+ini+'</div>\'" alt="">':'<div class="li-avatar-ph">'+ini+'</div>';var s1=ip?(r.title||''):(r.primary_domain||'');var s2=ip?((r.organization&&r.organization.name)||r.organization_name||')':'';var loc=[r.city,r.state||r.country].filter(Boolean).join(', ');var emp=r.estimated_num_employees?(r.estimated_num_employees>=1000?(r.estimated_num_employees/1000).toFixed(0)+'k':r.estimated_num_employees)+' emp.':'';var ind=r.industry||(r.organization&&r.organization.industry)||'';var li=r.linkedin_url||'';var nav='https://www.linkedin.com/sales/search/'+(ip?'people':'company')+'?query='+encodeURIComponent(JSON.stringify({keywords:nm}));var sf=encodeURIComponent(JSON.stringify(r)).replace(/'/g,'%27');return'<div class="li-card" onclick="sgOpenIntel(\''+sf+'\')"><div class="li-card-top">'+av+'<div style="min-width:0;flex:1"><div class="li-cn">'+nm+'</div>'+(s1?'<div class="li-ct">'+s1+'</div>':'')+(s2?'<div class="li-cc">'+s2+'</div>':'')+'</div></div><div class="li-tags">'+(loc?'<span class="li-tag">📍 '+loc+'</span>':'')+(ind?'<span class="li-tag">'+ind+'</span>':'')+(emp?'<span class="li-tag">'+emp+'</span>':'')+'</div><div class="li-btns" onclick="event.stopPropagation()">'+(li?'<a href="'+li+'" target="_blank" class="li-btn-sm blue"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg> LinkedIn</a>':'<a href="https://www.linkedin.com/search/results/all/?keywords='+encodeURIComponent(nm)+'" target="_blank" class="li-btn-sm">Find on LinkedIn</a>')+'<a href="'+nav+'" target="_blank" class="li-btn-sm">🎯 Sales Nav</a><button class="li-btn-sm green" onclick="event.stopPropagation();sgOpenIntel(\''+sf+'\')">Full Intel →</button></div></div>';}console.log('✅ SG LinkedIn+Apollo loaded');})();
+
+// ====================================================
+// SG Sales Dashboard — LinkedIn + Apollo Integration
+// Injected enhancement: Full prospect intel panel
+// ====================================================
+
+(function() {
+  'use strict';
+
+  // ─── STYLES ─────────────────────────────────────────
+  const style = document.createElement('style');
+  style.textContent = `
+    .li-apollo-panel{background:#0a0a0a;border:1px solid #1f2937;border-radius:12px;padding:16px;margin:0 0 16px}
+    .li-apollo-panel h4{font-size:13px;font-weight:700;color:#e5e7eb;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+    .li-search-row{display:flex;gap:8px;flex-wrap:wrap}
+    .li-search-input{flex:1;min-width:180px;background:#111;border:1px solid #2d3748;border-radius:8px;padding:8px 12px;color:#e5e7eb;font-size:13px;font-family:inherit}
+    .li-search-input:focus{outline:none;border-color:#0077b5}
+    .li-search-input::placeholder{color:#4b5563}
+    .li-type-select{background:#111;border:1px solid #2d3748;border-radius:8px;padding:8px 12px;color:#e5e7eb;font-size:13px;font-family:inherit;cursor:pointer}
+    .li-search-btn{background:#0077b5;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;font-family:inherit}
+    .li-search-btn:hover{background:#005f8a}
+    .li-search-btn:disabled{opacity:0.5;cursor:default}
+    .li-results{display:none;margin-top:14px}
+    .li-results.visible{display:block}
+    .li-results-meta{font-size:11px;color:#6b7280;margin-bottom:10px}
+    .li-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+    .li-card{background:#111;border:1px solid #1f2937;border-radius:10px;padding:14px;cursor:pointer;transition:border-color .15s,background .15s}
+    .li-card:hover{border-color:#0077b5;background:#111824}
+    .li-card-top{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px}
+    .li-avatar-img{width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0}
+    .li-avatar-ph{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#1e3a5f,#0d2035);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#4fa3d1}
+    .li-cn{font-size:13px;font-weight:600;color:#e5e7eb;margin:0;line-height:1.3}
+    .li-ct{font-size:11px;color:#9ca3af;margin:2px 0 0;line-height:1.3}
+    .li-cc{font-size:11px;color:#6b7280;margin:1px 0 0}
+    .li-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+    .li-tag{font-size:10px;padding:2px 7px;border-radius:4px;background:#0d1f30;color:#4fa3d1;white-space:nowrap}
+    .li-btns{display:flex;gap:5px;flex-wrap:wrap}
+    .li-btn-sm{font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid #2d3748;background:#0d0d0d;color:#9ca3af;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:4px;font-family:inherit;white-space:nowrap}
+    .li-btn-sm:hover{border-color:#4b5563;color:#e5e7eb}
+    .li-btn-sm.blue{border-color:#0077b5;color:#4fa3d1}
+    .li-btn-sm.blue:hover{background:#0077b510}
+    .li-btn-sm.green{border-color:#059669;color:#34d399}
+    .li-btn-sm.green:hover{background:#05966910}
+    /* ─── Intel Modal ─── */
+    .sg-intel-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:10000;backdrop-filter:blur(4px);align-items:center;justify-content:center}
+    .sg-intel-overlay.open{display:flex}
+    .sg-intel-modal{background:#0d0d0d;border:1px solid #1f2937;border-radius:16px;width:620px;max-width:94vw;max-height:86vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 25px 60px rgba(0,0,0,.6)}
+    .sg-intel-hd{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid #1a1a1a;flex-shrink:0}
+    .sg-intel-av{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#1e3a5f,#0d2035);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#4fa3d1;flex-shrink:0;overflow:hidden}
+    .sg-intel-av img{width:100%;height:100%;object-fit:cover}
+    .sg-intel-hd-info{flex:1;min-width:0}
+    .sg-intel-name{font-size:16px;font-weight:700;color:#f3f4f6;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sg-intel-sub{font-size:12px;color:#6b7280;margin:3px 0 0}
+    .sg-intel-x{background:none;border:none;color:#6b7280;font-size:22px;cursor:pointer;padding:4px;line-height:1;flex-shrink:0}
+    .sg-intel-x:hover{color:#e5e7eb}
+    .sg-intel-tabs{display:flex;padding:0 20px;border-bottom:1px solid #1a1a1a;flex-shrink:0;overflow-x:auto}
+    .sg-intel-tab{padding:10px 14px;font-size:12px;font-weight:600;color:#6b7280;cursor:pointer;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;background:none;white-space:nowrap;font-family:inherit}
+    .sg-intel-tab.on{color:#0077b5;border-bottom-color:#0077b5}
+    .sg-intel-tab:hover:not(.on){color:#9ca3af}
+    .sg-intel-body{flex:1;overflow-y:auto;padding:18px 20px}
+    .sg-intel-sec{margin-bottom:20px}
+    .sg-intel-sec-title{font-size:10px;font-weight:700;color:#4b5563;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+    .sg-intel-row{display:flex;gap:8px;margin-bottom:7px;font-size:12px}
+    .sg-intel-lbl{color:#6b7280;width:95px;flex-shrink:0}
+    .sg-intel-val{color:#d1d5db;flex:1;word-break:break-word}
+    .sg-intel-link{color:#4fa3d1;text-decoration:none}
+    .sg-intel-link:hover{text-decoration:underline}
+    .sg-intel-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+    .sg-intel-btn{padding:8px 14px;border-radius:8px;border:1px solid #2d3748;background:#111;color:#9ca3af;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;font-family:inherit;white-space:nowrap}
+    .sg-intel-btn:hover{border-color:#4b5563;color:#e5e7eb}
+    .sg-intel-btn.primary{background:#0077b5;border-color:#0077b5;color:#fff}
+    .sg-intel-btn.primary:hover{background:#005f8a}
+    .sg-intel-empty{color:#4b5563;font-size:12px;text-align:center;padding:24px 0}
+    .sg-intel-loading{color:#6b7280;font-size:13px;text-align:center;padding:24px 0}
+    .sg-intel-note{background:#111;border:1px solid #1f2937;border-radius:8px;padding:10px 12px;margin-bottom:8px}
+    .sg-intel-note-date{font-size:10px;color:#4b5563;margin-bottom:4px}
+    .sg-intel-note-text{font-size:12px;color:#d1d5db;line-height:1.5}
+    .sg-divider{height:1px;background:#1a1a1a;margin:16px 0}
+  `;
+  document.head.appendChild(style);
+
+  // ─── INJECT SEARCH PANEL INTO PROSPECTS TAB ──────────
+  const prosTab = document.getElementById('tab-prospects');
+  if (!prosTab) { console.warn('li-apollo: tab-prospects not found'); return; }
+
+  const panel = document.createElement('div');
+  panel.className = 'li-apollo-panel';
+  panel.id = 'li-apollo-panel';
+  panel.innerHTML = `
+    <h4>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="#0077b5"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      LinkedIn + Apollo Prospect Search
+    </h4>
+    <div class="li-search-row">
+      <input class="li-search-input" id="li-query" type="text" placeholder="Name, company, or city…" onkeydown="if(event.key==='Enter')sgLiSearch()">
+      <select class="li-type-select" id="li-type">
+        <option value="people">People</option>
+        <option value="companies">Companies</option>
+      </select>
+      <button class="li-search-btn" id="li-search-btn" onclick="sgLiSearch()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        Search
+      </button>
+    </div>
+    <div class="li-results" id="li-results">
+      <div class="li-results-meta" id="li-meta"></div>
+      <div class="li-cards-grid" id="li-cards"></div>
+    </div>
+  `;
+  prosTab.insertBefore(panel, prosTab.firstChild);
+
+  // ─── INTEL MODAL ─────────────────────────────────────
+  const overlay = document.createElement('div');
+  overlay.className = 'sg-intel-overlay';
+  overlay.id = 'sg-intel-overlay';
+  overlay.innerHTML = `
+    <div class="sg-intel-modal">
+      <div class="sg-intel-hd">
+        <div class="sg-intel-av" id="sg-intel-av"></div>
+        <div class="sg-intel-hd-info">
+          <div class="sg-intel-name" id="sg-intel-name">—</div>
+          <div class="sg-intel-sub" id="sg-intel-sub"></div>
+        </div>
+        <button class="sg-intel-x" onclick="sgCloseIntel()">✕</button>
+      </div>
+      <div class="sg-intel-tabs">
+        <button class="sg-intel-tab on" data-tab="linkedin" onclick="sgSwitchTab('linkedin',this)">🔗 LinkedIn</button>
+        <button class="sg-intel-tab" data-tab="apollo" onclick="sgSwitchTab('apollo',this)">🚀 Apollo Data</button>
+        <button class="sg-intel-tab" data-tab="hubspot" onclick="sgSwitchTab('hubspot',this)">📋 HubSpot</button>
+        <button class="sg-intel-tab" data-tab="quotes" onclick="sgSwitchTab('quotes',this)">💰 Quotes</button>
+      </div>
+      <div class="sg-intel-body" id="sg-intel-body"></div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', e => { if (e.target === overlay) sgCloseIntel(); });
+
+  // ─── STATE ───────────────────────────────────────────
+  let _currentIntel = null;
+  let _currentTab = 'linkedin';
+
+  // ─── GLOBAL FUNCTIONS ────────────────────────────────
+  window.sgCloseIntel = function() {
+    document.getElementById('sg-intel-overlay').classList.remove('open');
+  };
+
+  window.sgSwitchTab = function(tab, btn) {
+    _currentTab = tab;
+    document.querySelectorAll('.sg-intel-tab').forEach(t => t.classList.remove('on'));
+    btn.classList.add('on');
+    _renderIntelTab(tab, _currentIntel);
+  };
+
+  window.sgOpenIntel = function(dataStr) {
+    try {
+      const data = JSON.parse(decodeURIComponent(dataStr));
+      _currentIntel = data;
+      _currentTab = 'linkedin';
+
+      // Set header
+      const nm = data.name || 'Unknown';
+      document.getElementById('sg-intel-name').textContent = nm;
+      document.getElementById('sg-intel-sub').textContent =
+        [data.title, data.organization?.name || data.primary_domain].filter(Boolean).join(' · ');
+
+      const av = document.getElementById('sg-intel-av');
+      if (data.photo_url) {
+        av.innerHTML = `<img src="${data.photo_url}" onerror="this.parentElement.textContent='${nm[0]?.toUpperCase() || '?'}'" alt="">`;
+      } else {
+        av.textContent = nm[0]?.toUpperCase() || '?';
+      }
+
+      // Reset tabs
+      document.querySelectorAll('.sg-intel-tab').forEach((t, i) => t.classList.toggle('on', i === 0));
+
+      _renderIntelTab('linkedin', data);
+      document.getElementById('sg-intel-overlay').classList.add('open');
+    } catch(e) {
+      console.error('sgOpenIntel error:', e);
+    }
+  };
+
+  function _renderIntelTab(tab, data) {
+    const body = document.getElementById('sg-intel-body');
+    if (!data) { body.innerHTML = '<div class="sg-intel-loading">No data loaded</div>'; return; }
+
+    if (tab === 'linkedin') {
+      const liUrl = data.linkedin_url || '';
+      const coName = data.organization?.name || data.name || '';
+      const navPeopleUrl = `https://www.linkedin.com/sales/search/people?query=${encodeURIComponent(JSON.stringify({keywords: data.name || ''}))}`;
+      const navCompanyUrl = `https://www.linkedin.com/sales/search/company?query=${encodeURIComponent(JSON.stringify({keywords: coName}))}`;
+      const liCoUrl = `https://www.linkedin.com/search/results/companies/?keywords=${encodeURIComponent(coName)}`;
+      const loc = [data.city, data.state, data.country].filter(Boolean).join(', ');
+
+      body.innerHTML = `
+        <div class="sg-intel-actions">
+          ${liUrl ? `<a href="${liUrl}" target="_blank" class="sg-intel-btn primary">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            LinkedIn Profile
+          </a>` : ''}
+          <a href="${navPeopleUrl}" target="_blank" class="sg-intel-btn">🎯 Sales Nav — People</a>
+          <a href="${navCompanyUrl}" target="_blank" class="sg-intel-btn">🎯 Sales Nav — Company</a>
+        </div>
+        <div class="sg-intel-sec">
+          <div class="sg-intel-sec-title">LinkedIn Profile</div>
+          ${liUrl
+            ? `<div class="sg-intel-row"><span class="sg-intel-lbl">Profile URL</span><span class="sg-intel-val"><a href="${liUrl}" target="_blank" class="sg-intel-link">${liUrl}</a></span></div>`
+            : `<div class="sg-intel-empty" style="text-align:left;padding:8px 0">No LinkedIn URL in Apollo data.<br>Use Sales Navigator search to find them manually.</div>`
+          }
+          ${data.headline ? `<div class="sg-intel-row"><span class="sg-intel-lbl">Headline</span><span class="sg-intel-val">${data.headline}</span></div>` : ''}
+          ${loc ? `<div class="sg-intel-row"><span class="sg-intel-lbl">Location</span><span class="sg-intel-val">${loc}</span></div>` : ''}
+          ${data.twitter_url ? `<div class="sg-intel-row"><span class="sg-intel-lbl">Twitter/X</span><span class="sg-intel-val"><a href="${data.twitter_url}" target="_blank" class="sg-intel-link">${data.twitter_url}</a></span></div>` : ''}
+        </div>
+        <div class="sg-divider"></div>
+        <div class="sg-intel-sec">
+          <div class="sg-intel-sec-title">Sales Navigator Quick Actions</div>
+          <div class="sg-intel-actions" style="margin-bottom:0">
+            <a href="https://www.linkedin.com/sales/search/people" target="_blank" class="sg-intel-btn">👤 Search People</a>
+            <a href="https://www.linkedin.com/sales/search/company" target="_blank" class="sg-intel-btn">🏢 Search Companies</a>
+            <a href="https://www.linkedin.com/sales/lists" target="_blank" class="sg-intel-btn">📋 My Lists</a>
+            <a href="${liCoUrl}" target="_blank" class="sg-intel-btn">LinkedIn Co. Search →</a>
+          </div>
+        </div>`;
+    }
+
+    else if (tab === 'apollo') {
+      const emails = data.email ? [{email: data.email}] : (data.emails || []);
+      const phones = data.phone_numbers || [];
+      const org = data.organization || {};
+      body.innerHTML = `
+        <div class="sg-intel-sec">
+          <div class="sg-intel-sec-title">Contact Details</div>
+          ${emails.length
+            ? emails.map(e => `<div class="sg-intel-row"><span class="sg-intel-lbl">Email</span><span class="sg-intel-val"><a href="mailto:${e.email || e}" class="sg-intel-link">${e.email || e}</a></span></div>`).join('')
+            : `<div class="sg-intel-row"><span class="sg-intel-lbl">Email</span><span class="sg-intel-val" style="color:#4b5563">Not available in Apollo</span></div>`
+          }
+          ${phones.map(p => `<div class="sg-intel-row"><span class="sg-intel-lbl">Phone</span><span class="sg-intel-val"><a href="tel:${p.sanitized_number||p}" class="sg-intel-link">${p.raw_number||p}</a></span></div>`).join('')}
+          ${data.title ? `<div class="sg-intel-row"><span class="sg-intel-lbl">Title</span><span class="sg-intel-val">${data.title}</span></div>` : ''}
+          ${data.seniority ? `<div class="sg-intel-row"><span class="sg-intel-lbl">Seniority</span><span class="sg-intel-val" style="text-transform:capitalize">${data.seniority}</span></div>` : ''}
+          ${data.departments?.length ? `<div class="sg-intel-row"><span class="sg-intel-lbl">Department</span><span class="sg-intel-val">${data.departments.join(', ')}</span></div>` : ''}
+        </div>
+        <div class="sg-divider"></div>
+        <div class="sg-intel-sec">
+          <div class="sg-intel-sec-title">Company Intelligence</div>
+          ${org.name ? `<div class="sg-intel-row"><span class="sg-intel-lbl">Company</span><span class="sg-intel-val">${org.name}</span></div>` : ''}
+          ${org.website_url ? `<div class="sg-intel-row"><span class="sg-intel-lbl">Website</span><span class="sg-intel-val"><a href="${org.website_url}" target="_blank" class="sg-intel-link">${org.website_url}</a></span></div>` : ''}
+          ${org.industry ? `<div class="sg-intel-row"><span class="sg-intel-lbl">Industry</span><span class="sg-intel-val">${org.industry}</span></div>` : ''}
+          ${org.estimated_num_employees ? `<div class="sg-intel-row"><span class="sg-intel-lbl">Employees</span><span class="sg-intel-val">${org.estimated_num_employees?.toLocaleString()}</span></div>` : ''}
+          ${org.annual_revenue_printed ? `<div class="sg-intel-row"><span class="sg-intel-lbl">Revenue</span><span class="sg-intel-val">${org.annual_revenue_printed}</span></div>` : ''}
+          ${org.city ? `<div class="sg-intel-row"><span class="sg-intel-lbl">HQ</span><span class="sg-intel-val">${[org.city, org.state].filter(Boolean).join(', ')}</span></div>` : ''}
+          ${org.keywords?.length ? `<div class="sg-intel-row"><span class="sg-intel-lbl">Keywords</span><span class="sg-intel-val">${org.keywords.slice(0,6).join(', ')}</span></div>` : ''}
+        </div>`;
+    }
+
+    else if (tab === 'hubspot') {
+      body.innerHTML = '<div class="sg-intel-loading">🔍 Searching HubSpot CRM…</div>';
+      _loadHubSpot(data.name, data.organization?.name || '');
+    }
+
+    else if (tab === 'quotes') {
+      const hits = _matchQuotes(data.name, data.organization?.name);
+      if (!hits.length) {
+        body.innerHTML = `<div class="sg-intel-empty">No saved quotes for this prospect yet.</div>`;
+      } else {
+        body.innerHTML = `<div class="sg-intel-sec"><div class="sg-intel-sec-title">${hits.length} Quote${hits.length>1?'s':''} Found</div>
+          ${hits.map(q => `<div class="sg-intel-note">
+            <div class="sg-intel-note-date">${q.date || ''}</div>
+            <div class="sg-intel-note-text">${q.company || q.account || ''} · ${q.item || q.description || 'Quote'}</div>
+          </div>`).join('')}
+        </div>`;
+      }
+    }
+  }
+
+  async function _loadHubSpot(name, company) {
+    const body = document.getElementById('sg-intel-body');
+    try {
+      const tok = localStorage.getItem('hs_token');
+      if (!tok) {
+        body.innerHTML = '<div class="sg-intel-empty">HubSpot not connected. Add your token in Settings.</div>';
+        return;
+      }
+      const resp = await fetch('https://api.hubapi.com/crm/v3/objects/contacts/search', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${tok}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: name, limit: 3, properties: ['firstname','lastname','email','company','phone','hs_last_sales_activity_timestamp','notes_last_updated'] })
+      });
+      const d = await resp.json();
+      if (!d.results?.length) {
+        body.innerHTML = `<div class="sg-intel-empty">"${name}" not found in HubSpot.</div>
+          <div class="sg-intel-actions"><a href="https://app.hubspot.com/contacts/new" target="_blank" class="sg-intel-btn primary">+ Add to HubSpot</a></div>`;
+        return;
+      }
+      const c = d.results[0], p = c.properties;
+      const fullName = [p.firstname, p.lastname].filter(Boolean).join(' ');
+      body.innerHTML = `
+        <div class="sg-intel-sec">
+          <div class="sg-intel-sec-title">HubSpot Contact</div>
+          <div class="sg-intel-row"><span class="sg-intel-lbl">Name</span><span class="sg-intel-val">${fullName || '—'}</span></div>
+          <div class="sg-intel-row"><span class="sg-intel-lbl">Company</span><span class="sg-intel-val">${p.company || '—'}</span></div>
+          ${p.email ? `<div class="sg-intel-row"><span class="sg-intel-lbl">Email</span><span class="sg-intel-val"><a href="mailto:${p.email}" class="sg-intel-link">${p.email}</a></span></div>` : ''}
+          ${p.phone ? `<div class="sg-intel-row"><span class="sg-intel-lbl">Phone</span><span class="sg-intel-val"><a href="tel:${p.phone}" class="sg-intel-link">${p.phone}</a></span></div>` : ''}
+        </div>
+        <div class="sg-intel-actions">
+          <a href="https://app.hubspot.com/contacts/${c.id}" target="_blank" class="sg-intel-btn primary">Open in HubSpot →</a>
+          <a href="https://app.hubspot.com/contacts/${c.id}#notes" target="_blank" class="sg-intel-btn">View Notes</a>
+        </div>`;
+    } catch(e) {
+      body.innerHTML = `<div class="sg-intel-empty">HubSpot error: ${e.message}</div>`;
+    }
+  }
+
+  function _matchQuotes(personName, companyName) {
+    try {
+      const evts = JSON.parse(localStorage.getItem('events_data') || '[]');
+      const pn = (personName || '').toLowerCase();
+      const cn = (companyName || '').toLowerCase();
+      return evts.filter(e => {
+        const s = JSON.stringify(e).toLowerCase();
+        return (pn && s.includes(pn)) || (cn && s.includes(cn));
+      }).slice(0, 8);
+    } catch { return []; }
+  }
+
+  // ─── APOLLO SEARCH ───────────────────────────────────
+  window.sgLiSearch = async function() {
+    const q = document.getElementById('li-query').value.trim();
+    const type = document.getElementById('li-type').value;
+    if (!q) return;
+
+    const btn = document.getElementById('li-search-btn');
+    const resultsEl = document.getElementById('li-results');
+    const cardsEl = document.getElementById('li-cards');
+    const metaEl = document.getElementById('li-meta');
+
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Searching…';
+    cardsEl.innerHTML = '<div style="color:#6b7280;font-size:13px;grid-column:1/-1">Querying Apollo + building LinkedIn links…</div>';
+    metaEl.textContent = '';
+    resultsEl.classList.add('visible');
+
+    try {
+      const ak = window.proKey || window.apolloKey || '';
+      let results = [];
+      if (type === 'people') {
+        results = await _apolloPeople(q, ak);
+      } else {
+        results = await _apolloCompanies(q, ak);
+      }
+      if (!results.length) {
+        cardsEl.innerHTML = '<div style="color:#6b7280;font-size:13px;grid-column:1/-1">No results from Apollo. Try a broader term.</div>';
+        metaEl.textContent = '0 results';
+      } else {
+        metaEl.textContent = `${results.length} result${results.length > 1 ? 's' : ''} from Apollo · Click card for full LinkedIn + HubSpot intel`;
+        cardsEl.innerHTML = results.map(r => _buildCard(r, type)).join('');
+      }
+    } catch(err) {
+      cardsEl.innerHTML = `<div style="color:#f87171;font-size:13px;grid-column:1/-1">Apollo error: ${err.message}. Check your API key is active.</div>`;
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> Search';
+  };
+
+  async function _apolloPeople(q, ak) {
+    const h = { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' };
+    if (ak) h['x-api-key'] = ak;
+    const r = await fetch('https://api.apollo.io/v1/mixed_people/search', {
+      method: 'POST', headers: h,
+      body: JSON.stringify({ q_keywords: q, page: 1, per_page: 10 })
+    });
+    if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
+    const d = await r.json();
+    return (d.people || []).map(p => ({ ...p, _type: 'person' }));
+  }
+
+  async function _apolloCompanies(q, ak) {
+    const h = { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' };
+    if (ak) h['x-api-key'] = ak;
+    const r = await fetch('https://api.apollo.io/v1/mixed_companies/search', {
+      method: 'POST', headers: h,
+      body: JSON.stringify({ q_organization_name: q, page: 1, per_page: 10 })
+    });
+    if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
+    const d = await r.json();
+    return (d.organizations || []).map(o => ({ ...o, _type: 'company' }));
+  }
+
+  function _buildCard(r, type) {
+    const isPerson = type === 'people';
+    const nm = r.name || 'Unknown';
+    const initials = nm.split(' ').map(n => n[0]).filter(Boolean).join('').substring(0, 2).toUpperCase();
+    const avatar = r.photo_url
+      ? `<img src="${r.photo_url}" class="li-avatar-img" onerror="this.outerHTML='<div class=li-avatar-ph>${initials}</div>'" alt="">`
+      : `<div class="li-avatar-ph">${initials}</div>`;
+    const sub1 = isPerson ? (r.title || '') : (r.primary_domain || r.website_url || '');
+    const sub2 = isPerson ? (r.organization?.name || r.organization_name || '') : '';
+    const loc = [r.city, r.state || r.country].filter(Boolean).join(', ');
+    const emp = r.estimated_num_employees
+      ? (r.estimated_num_employees >= 1000 ? (r.estimated_num_employees / 1000).toFixed(1) + 'k' : r.estimated_num_employees) + ' emp.'
+      : '';
+    const industry = r.industry || r.organization?.industry || '';
+    const liUrl = r.linkedin_url || '';
+    const navUrl = `https://www.linkedin.com/sales/search/${isPerson ? 'people' : 'company'}?query=${encodeURIComponent(JSON.stringify({ keywords: nm }))}`;
+
+    // Encode data for onclick
+    const safe = encodeURIComponent(JSON.stringify(r)).replace(/'/g, '%27');
+
+    return `
+      <div class="li-card" onclick="sgOpenIntel('${safe}')">
+        <div class="li-card-top">
+          ${avatar}
+          <div style="min-width:0;flex:1">
+            <div class="li-cn">${nm}</div>
+            ${sub1 ? `<div class="li-ct">${sub1}</div>` : ''}
+            ${sub2 ? `<div class="li-cc">${sub2}</div>` : ''}
+          </div>
+        </div>
+        <div class="li-tags">
+          ${loc ? `<span class="li-tag">📍 ${loc}</span>` : ''}
+          ${industry ? `<span class="li-tag">${industry}</span>` : ''}
+          ${emp ? `<span class="li-tag">${emp}</span>` : ''}
+        </div>
+        <div class="li-btns" onclick="event.stopPropagation()">
+          ${liUrl ? `<a href="${liUrl}" target="_blank" class="li-btn-sm blue">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            LinkedIn
+          </a>` : `<a href="https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(nm)}" target="_blank" class="li-btn-sm">Search LinkedIn</a>`}
+          <a href="${navUrl}" target="_blank" class="li-btn-sm">🎯 Sales Nav</a>
+          <button class="li-btn-sm green" onclick="event.stopPropagation();sgOpenIntel('${safe}')">Full Intel →</button>
+        </div>
+      </div>`;
+  }
+
+  console.log('✅ SG LinkedIn + Apollo integration loaded');
+})();
 </script>
 </body>
 </html>
+Claude is active in this tab group
+Open chat
+Dismiss
