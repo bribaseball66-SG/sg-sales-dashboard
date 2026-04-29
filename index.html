@@ -37,7 +37,7 @@
       overflow: hidden; /* tabs scroll internally */
     }
 
-    /* ── Header ─────────────────────────────────────────── */
+    /* ââ Header âââââââââââââââââââââââââââââââââââââââââââ */
     #hdr {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       background: var(--navy);
@@ -64,7 +64,7 @@
     .icon-btn.spin svg { animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── Bottom nav ──────────────────────────────────────── */
+    /* ââ Bottom nav ââââââââââââââââââââââââââââââââââââââââ */
     #bottom-nav {
       position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
       background: var(--navy); border-top: 1px solid var(--border);
@@ -80,7 +80,7 @@
     .nav-btn.active { color: var(--accent); }
     .nav-btn svg { width: 19px; height: 19px; }
 
-    /* ── Tabs ────────────────────────────────────────────── */
+    /* ââ Tabs ââââââââââââââââââââââââââââââââââââââââââââââ */
     .tab {
       position: fixed; top: var(--hdr-h); bottom: var(--nav-h);
       left: 0; right: 0; overflow-y: auto; overflow-x: hidden;
@@ -88,7 +88,7 @@
     }
     .tab.active { display: block; }
 
-    /* ── FAB ─────────────────────────────────────────────── */
+    /* ââ FAB âââââââââââââââââââââââââââââââââââââââââââââââ */
     #fab {
       position: fixed; bottom: calc(var(--nav-h) + 14px); right: 16px; z-index: 90;
       width: 50px; height: 50px; border-radius: 50%;
@@ -99,7 +99,7 @@
     #fab:active { transform: scale(.93); }
     #fab.hidden { opacity: 0; pointer-events: none; }
 
-    /* ── Contacts tab ────────────────────────────────────── */
+    /* ââ Contacts tab ââââââââââââââââââââââââââââââââââââââ */
     #toolbar {
       background: var(--navy); padding: 10px 16px;
       position: sticky; top: 0; z-index: 50;
@@ -203,7 +203,7 @@
     .empty svg { margin-bottom: 14px; opacity: .35; }
     .empty p { font-size: 15px; }
 
-    /* ── Quotes & Projects tabs ──────────────────────────── */
+    /* ââ Quotes & Projects tabs ââââââââââââââââââââââââââââ */
     .page-body { padding: 20px 16px 24px; max-width: 720px; margin: 0 auto; }
     .page-title { font-size: 20px; font-weight: 800; margin-bottom: 2px; }
     .page-sub   { font-size: 13px; color: var(--dim); margin-bottom: 20px; line-height: 1.5; }
@@ -253,7 +253,7 @@
     }
     .copy-btn:active { opacity: .7; }
     .missing-item { font-size: 13px; color: var(--amber); padding: 4px 0; }
-    .missing-item::before { content: '• '; }
+    .missing-item::before { content: 'â¢ '; }
     .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
 
     /* Project cards */
@@ -297,7 +297,7 @@
     .card-email-btn:active { opacity: .75; }
     #draft-email-out { white-space: pre-wrap; font-size: 13px; line-height: 1.65; color: var(--text); word-break: break-word; }
 
-    /* ── Sheets ──────────────────────────────────────────── */
+    /* ââ Sheets ââââââââââââââââââââââââââââââââââââââââââââ */
     #overlay {
       display: none; position: fixed; inset: 0;
       background: rgba(0,0,0,.55); z-index: 200; backdrop-filter: blur(3px);
@@ -333,7 +333,7 @@
     .nd { font-size: 11px; color: var(--dim); margin-bottom: 4px; }
     .nb { font-size: 13px; color: var(--text); line-height: 1.55; white-space: pre-wrap; word-break: break-word; }
 
-    /* ── Toast ───────────────────────────────────────────── */
+    /* ââ Toast âââââââââââââââââââââââââââââââââââââââââââââ */
     #toast {
       position: fixed; bottom: calc(var(--nav-h) + 10px); left: 50%;
       transform: translateX(-50%) translateY(40px);
@@ -347,7 +347,7 @@
     #toast.ok  { border-color: var(--green); color: var(--green); }
     #toast.err { border-color: var(--red);   color: var(--red);   }
 
-    /* ── Quote mode toggle ──────────────────────────────────── */
+    /* ââ Quote mode toggle ââââââââââââââââââââââââââââââââââââ */
     .mode-toggle {
       display: flex; background: var(--navyLL); border-radius: 10px;
       padding: 3px; gap: 3px; margin-bottom: 18px;
@@ -359,7 +359,7 @@
     }
     .mtog.on { background: var(--blue); color: #fff; }
 
-    /* ── Compare layout ─────────────────────────────────────── */
+    /* ââ Compare layout âââââââââââââââââââââââââââââââââââââââ */
     .compare-cols {
       display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;
     }
@@ -372,7 +372,7 @@
     .badge-a { background: rgba(59,130,246,.15); color: #60a5fa; }
     .badge-b { background: rgba(139,92,246,.15);  color: #a78bfa; }
 
-    /* ── Comparison result table ────────────────────────────── */
+    /* ââ Comparison result table ââââââââââââââââââââââââââââââ */
     .cmp-table { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 20px 0 14px; }
     .cmp-thead {
       display: grid; grid-template-columns: 1.6fr 1fr 1fr;
@@ -391,9 +391,9 @@
     .cmp-val    { font-weight: 600; line-height: 1.3; }
     .cmp-val.win-a { color: #60a5fa; }
     .cmp-val.win-b { color: #a78bfa; }
-    .cmp-val.win-mark::after { content: ' ✓'; font-size: 11px; }
+    .cmp-val.win-mark::after { content: ' â'; font-size: 11px; }
 
-    /* ── Recommendation block ───────────────────────────────── */
+    /* ââ Recommendation block âââââââââââââââââââââââââââââââââ */
     .rec-block {
       background: var(--navyLL); border-radius: 12px; padding: 16px;
       margin-bottom: 14px; border-left: 3px solid var(--accent);
@@ -402,9 +402,9 @@
     .rec-text   { font-size: 13px; line-height: 1.65; color: var(--text); }
     .rec-caveats { margin-top: 10px; }
     .rec-caveat  { font-size: 12px; color: var(--amber); padding: 2px 0; }
-    .rec-caveat::before { content: '⚠ '; }
+    .rec-caveat::before { content: 'â  '; }
 
-    /* ── PDF Upload ─────────────────────────────────────────── */
+    /* ââ PDF Upload âââââââââââââââââââââââââââââââââââââââââââ */
     .quote-label-row {
       display: flex; align-items: center; justify-content: space-between;
       margin-bottom: 5px;
@@ -426,7 +426,7 @@
     #pdf-status.ok  { background: rgba(16,185,129,.1);  color: var(--green); border: 1px solid rgba(16,185,129,.25); }
     #pdf-status.err { background: rgba(239,68,68,.1);   color: var(--red);   border: 1px solid rgba(239,68,68,.25); }
 
-    /* ── Quote Calculator ─────────────────────────────────────── */
+    /* ââ Quote Calculator âââââââââââââââââââââââââââââââââââââââ */
     .qc-rate-box  { background: var(--navyLL); border-radius: 10px; padding: 12px 13px; margin-bottom: 14px; }
     .qc-rate-hdr  { font-size: 10px; text-transform: uppercase; letter-spacing: .8px; color: var(--dim); font-weight: 700; margin-bottom: 10px; }
     .qc-rate-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
@@ -548,7 +548,7 @@
     .qc-notes-section textarea:focus { border-color: var(--accent); }
     .qc-notes-section textarea::placeholder { color: #475569; }
 
-    /* ── Quick Call Logger ──────────────────────────────────── */
+    /* ââ Quick Call Logger ââââââââââââââââââââââââââââââââââââ */
     #ql-dropdown {
       display: none; position: absolute; left: 0; right: 0;
       background: var(--navyL); border: 1px solid var(--border);
@@ -572,7 +572,7 @@
     #ql-selected.on { display: flex; }
     .qc-clear { background: none; border: none; color: var(--dim); cursor: pointer; font-size: 16px; padding: 2px 4px; }
 
-    /* ── Prospects tab ──────────────────────────────────────── */
+    /* ââ Prospects tab ââââââââââââââââââââââââââââââââââââââââ */
     #prospects-toolbar {
       background: var(--navy); padding: 10px 16px 8px;
       position: sticky; top: 0; z-index: 50;
@@ -637,7 +637,7 @@
     .pros-add-btn:disabled { opacity: .45; cursor: not-allowed; }
     .pros-add-btn.added { background: rgba(16,185,129,.15); color: var(--green); border: 1px solid rgba(16,185,129,.3); }
 
-    /* ── Route Planner ─────────────────────────────────────── */
+    /* ââ Route Planner âââââââââââââââââââââââââââââââââââââââ */
     .rp-hint { font-size: 12px; color: #475569; margin-bottom: 14px; }
     .rp-card {
       background: var(--navyL); border: 1px solid var(--border);
@@ -699,7 +699,7 @@
 </head>
 <body>
 
-<!-- ── Header ─────────────────────────────────────────────── -->
+<!-- ââ Header âââââââââââââââââââââââââââââââââââââââââââââââ -->
 <div id="hdr">
   <div class="logo">
     <div class="logo-mark">SG</div>
@@ -717,17 +717,17 @@
   </div>
 </div>
 
-<!-- ── Tab: Contacts ─────────────────────────────────────── -->
+<!-- ââ Tab: Contacts âââââââââââââââââââââââââââââââââââââââ -->
 <div class="tab active" id="tab-contacts">
   <div id="toolbar">
     <div class="search-wrap">
       <svg class="ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <input id="search" type="search" placeholder="Search contacts or companies…" oninput="render()" autocorrect="off" autocapitalize="none">
+      <input id="search" type="search" placeholder="Search contacts or companiesâ¦" oninput="render()" autocorrect="off" autocapitalize="none">
     </div>
     <div id="chips">
       <div class="chip on" data-f="all"      onclick="setFilter(this)">All</div>
-      <div class="chip"    data-f="stale"    onclick="setFilter(this)">⏰ Stale 7d+</div>
-      <div class="chip"    data-f="overdue"  onclick="setFilter(this)">⚠ Overdue</div>
+      <div class="chip"    data-f="stale"    onclick="setFilter(this)">â° Stale 7d+</div>
+      <div class="chip"    data-f="overdue"  onclick="setFilter(this)">â  Overdue</div>
       <div class="chip"    data-f="engaged"  onclick="setFilter(this)">Engaged</div>
       <div class="chip"    data-f="active"   onclick="setFilter(this)">Active</div>
       <div class="chip"    data-f="followup" onclick="setFilter(this)">Follow Up</div>
@@ -736,15 +736,15 @@
   </div>
   <div id="followup-banner"></div>
   <div id="stats">
-    <div class="stat"><div class="sn r" id="s-overdue">—</div><div class="sl">Overdue</div></div>
-    <div class="stat"><div class="sn a" id="s-soon">—</div><div class="sl">This Week</div></div>
-    <div class="stat"><div class="sn g" id="s-engaged">—</div><div class="sl">Engaged</div></div>
-    <div class="stat"><div class="sn"   id="s-total">—</div><div class="sl">Total</div></div>
+    <div class="stat"><div class="sn r" id="s-overdue">â</div><div class="sl">Overdue</div></div>
+    <div class="stat"><div class="sn a" id="s-soon">â</div><div class="sl">This Week</div></div>
+    <div class="stat"><div class="sn g" id="s-engaged">â</div><div class="sl">Engaged</div></div>
+    <div class="stat"><div class="sn"   id="s-total">â</div><div class="sl">Total</div></div>
   </div>
   <div id="list"></div>
 </div>
 
-<!-- ── Tab: Quote Calculator ─────────────────────────────── -->
+<!-- ââ Tab: Quote Calculator âââââââââââââââââââââââââââââââ -->
 <div class="tab" id="tab-quotes">
   <div class="page-body">
     <div class="page-title">Quote Calculator</div>
@@ -755,7 +755,7 @@
       <button class="mtog"    id="mtog-compare" onclick="setQuoteMode('compare')">Compare Quotes</button>
     </div>
 
-    <!-- ── Calculator mode ── -->
+    <!-- ââ Calculator mode ââ -->
     <div id="qmode-calc">
       <div class="drop-zone" id="calc-drop-zone">
         <input type="file" id="calc-pdf-input" accept=".pdf,application/pdf,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onchange="handleCalcUpload(this)">
@@ -821,7 +821,7 @@
       </div>
       <div class="qc-notes-section">
         <label class="fl">Notes</label>
-        <textarea id="qc-notes" rows="3" placeholder="Freight details, lead time, special instructions, follow-up actions…"></textarea>
+        <textarea id="qc-notes" rows="3" placeholder="Freight details, lead time, special instructions, follow-up actionsâ¦"></textarea>
       </div>
       <div id="qc-result" style="display:none">
         <hr class="divider" style="margin-top:0">
@@ -833,7 +833,7 @@
       </div>
     </div>
 
-    <!-- ── Compare mode ── -->
+    <!-- ââ Compare mode ââ -->
     <div id="qmode-compare" style="display:none">
       <div class="form-row" style="margin-bottom:12px">
         <div class="fg" style="margin:0">
@@ -858,7 +858,7 @@
             <input type="file" id="pdf-input-cmp-a" accept=".pdf,application/pdf,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display:none" onchange="handleDocUpload(this,'q-quote-a','pdf-status-cmp-a')">
           </div>
           <div id="pdf-status-cmp-a" style="display:none"></div>
-          <textarea id="q-quote-a" rows="8" placeholder="Paste Quote A here…"></textarea>
+          <textarea id="q-quote-a" rows="8" placeholder="Paste Quote A hereâ¦"></textarea>
         </div>
         <!-- Quote B -->
         <div class="fg" style="margin:0">
@@ -871,7 +871,7 @@
             <input type="file" id="pdf-input-cmp-b" accept=".pdf,application/pdf,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display:none" onchange="handleDocUpload(this,'q-quote-b','pdf-status-cmp-b')">
           </div>
           <div id="pdf-status-cmp-b" style="display:none"></div>
-          <textarea id="q-quote-b" rows="8" placeholder="Paste Quote B here…"></textarea>
+          <textarea id="q-quote-b" rows="8" placeholder="Paste Quote B hereâ¦"></textarea>
         </div>
       </div>
       <button class="wide-btn primary" id="compare-btn" onclick="compareQuotes()">
@@ -880,7 +880,7 @@
       </button>
     </div>
 
-    <!-- ── Compare result ── -->
+    <!-- ââ Compare result ââ -->
     <div id="compare-result" style="display:none">
       <hr class="divider">
       <div class="cmp-table">
@@ -889,16 +889,16 @@
           <div class="th-a" id="cr-head-a">Quote A</div>
           <div class="th-b" id="cr-head-b">Quote B</div>
         </div>
-        <div class="cmp-row"><div class="cmp-metric">Unit Price</div><div class="cmp-val" id="cr-price-a">—</div><div class="cmp-val" id="cr-price-b">—</div></div>
-        <div class="cmp-row"><div class="cmp-metric">MOQ</div><div class="cmp-val" id="cr-moq-a">—</div><div class="cmp-val" id="cr-moq-b">—</div></div>
-        <div class="cmp-row"><div class="cmp-metric">Lead Time</div><div class="cmp-val" id="cr-lead-a">—</div><div class="cmp-val" id="cr-lead-b">—</div></div>
-        <div class="cmp-row"><div class="cmp-metric">Payment Terms</div><div class="cmp-val" id="cr-pay-a">—</div><div class="cmp-val" id="cr-pay-b">—</div></div>
-        <div class="cmp-row"><div class="cmp-metric">Shipping Terms</div><div class="cmp-val" id="cr-ship-a">—</div><div class="cmp-val" id="cr-ship-b">—</div></div>
-        <div class="cmp-row"><div class="cmp-metric">Est. Landed Cost</div><div class="cmp-val" id="cr-landed-a">—</div><div class="cmp-val" id="cr-landed-b">—</div></div>
-        <div class="cmp-row"><div class="cmp-metric">Margin vs Target</div><div class="cmp-val" id="cr-margin-a">—</div><div class="cmp-val" id="cr-margin-b">—</div></div>
+        <div class="cmp-row"><div class="cmp-metric">Unit Price</div><div class="cmp-val" id="cr-price-a">â</div><div class="cmp-val" id="cr-price-b">â</div></div>
+        <div class="cmp-row"><div class="cmp-metric">MOQ</div><div class="cmp-val" id="cr-moq-a">â</div><div class="cmp-val" id="cr-moq-b">â</div></div>
+        <div class="cmp-row"><div class="cmp-metric">Lead Time</div><div class="cmp-val" id="cr-lead-a">â</div><div class="cmp-val" id="cr-lead-b">â</div></div>
+        <div class="cmp-row"><div class="cmp-metric">Payment Terms</div><div class="cmp-val" id="cr-pay-a">â</div><div class="cmp-val" id="cr-pay-b">â</div></div>
+        <div class="cmp-row"><div class="cmp-metric">Shipping Terms</div><div class="cmp-val" id="cr-ship-a">â</div><div class="cmp-val" id="cr-ship-b">â</div></div>
+        <div class="cmp-row"><div class="cmp-metric">Est. Landed Cost</div><div class="cmp-val" id="cr-landed-a">â</div><div class="cmp-val" id="cr-landed-b">â</div></div>
+        <div class="cmp-row"><div class="cmp-metric">Margin vs Target</div><div class="cmp-val" id="cr-margin-a">â</div><div class="cmp-val" id="cr-margin-b">â</div></div>
       </div>
       <div class="rec-block">
-        <div class="rec-winner" id="cr-winner-label">—</div>
+        <div class="rec-winner" id="cr-winner-label">â</div>
         <div class="rec-text" id="cr-rec"></div>
         <div class="rec-caveats" id="cr-caveats"></div>
       </div>
@@ -916,7 +916,7 @@
     <div class="page-sub">Saved quote analyses organized by client.</div>
     <div id="new-folder-form" style="display:none;margin:8px 0 12px">
       <div style="display:flex;gap:8px">
-        <input type="text" id="new-folder-name" placeholder="Folder name…"
+        <input type="text" id="new-folder-name" placeholder="Folder nameâ¦"
                style="flex:1;background:var(--navyL);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;padding:10px 13px;font-family:inherit;outline:none"
                onkeydown="if(event.key==='Enter')createProjectFolder();if(event.key==='Escape')toggleNewFolder()">
         <button class="btn btn-p" style="white-space:nowrap" onclick="createProjectFolder()">Create</button>
@@ -926,20 +926,20 @@
   </div>
 </div>
 
-<!-- ── Tab: Quick Call ────────────────────────────────────── -->
+<!-- ââ Tab: Quick Call ââââââââââââââââââââââââââââââââââââââ -->
 <div class="tab" id="tab-calls">
   <div class="page-body">
     <div class="page-title">Quick Call Logger</div>
-    <div class="page-sub">Log a call fast — no need to search through contacts first.</div>
+    <div class="page-sub">Log a call fast â no need to search through contacts first.</div>
 
     <div class="fg" style="position:relative">
       <label class="fl">Contact *</label>
-      <input type="text" id="ql-search" placeholder="Search name or company…" oninput="filterQCContacts()" autocorrect="off" autocapitalize="none">
+      <input type="text" id="ql-search" placeholder="Search name or companyâ¦" oninput="filterQCContacts()" autocorrect="off" autocapitalize="none">
       <div id="ql-dropdown"></div>
     </div>
     <div id="ql-selected">
       <span id="ql-sel-name" style="font-weight:600"></span>
-      <button class="qc-clear" onclick="clearQCContact()">✕</button>
+      <button class="qc-clear" onclick="clearQCContact()">â</button>
     </div>
 
     <div class="fg" style="margin-top:14px">
@@ -964,12 +964,12 @@
   </div>
 </div>
 
-<!-- ── Tab: Prospects ─────────────────────────────────────── -->
+<!-- ââ Tab: Prospects âââââââââââââââââââââââââââââââââââââââ -->
 <div class="tab" id="tab-prospects">
   <div id="prospects-toolbar">
     <div class="search-wrap" style="margin-bottom:8px">
       <svg class="ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <input id="pros-search" type="search" placeholder="Search company, contact, email, city…" oninput="renderProspects()" autocorrect="off" autocapitalize="none">
+      <input id="pros-search" type="search" placeholder="Search company, contact, email, cityâ¦" oninput="renderProspects()" autocorrect="off" autocapitalize="none">
     </div>
     <div class="pros-filters" id="pros-industry-chips">
       <div class="chip on" data-ind="all"           ontouchend="setProsFilter('ind',this,event)" onclick="setProsFilter('ind',this,event)">All Industries</div>
@@ -1003,7 +1003,7 @@
         <div class="chip"    data-score="High"      ontouchend="setProsFilter('score',this,event)" onclick="setProsFilter('score',this,event)">High</div>
         <div class="chip"    data-score="Medium"    ontouchend="setProsFilter('score',this,event)" onclick="setProsFilter('score',this,event)">Medium</div>
         <div class="chip"    data-score="Low"       ontouchend="setProsFilter('score',this,event)" onclick="setProsFilter('score',this,event)">Low</div>
-        <div class="chip"    data-score="saved"     ontouchend="setProsFilter('score',this,event)" onclick="setProsFilter('score',this,event)">⭐ Saved</div>
+        <div class="chip"    data-score="saved"     ontouchend="setProsFilter('score',this,event)" onclick="setProsFilter('score',this,event)">â­ Saved</div>
         <div class="chip"    data-score="contacted" ontouchend="setProsFilter('score',this,event)" onclick="setProsFilter('score',this,event)">Contacted</div>
       </div>
       <div style="display:flex;gap:6px;flex-shrink:0;margin-left:6px;align-items:center">
@@ -1034,11 +1034,11 @@
   </div>
 </div>
 
-<!-- ── Tab: AI Project Manager ───────────────────────────── -->
+<!-- ââ Tab: AI Project Manager âââââââââââââââââââââââââââââ -->
 <div class="tab" id="tab-ai-pm">
   <div class="page-body">
     <div class="page-title">AI Project Manager</div>
-    <div class="page-sub">Drop a quote PDF — AI extracts the details and builds a project card.</div>
+    <div class="page-sub">Drop a quote PDF â AI extracts the details and builds a project card.</div>
 
     <div class="drop-zone" id="aipm-drop-zone">
       <input type="file" id="aipm-pdf-input" accept=".pdf,application/pdf,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onchange="handleAIPMUpload(this)">
@@ -1058,7 +1058,7 @@
   </div>
 </div>
 
-<!-- ── Bottom nav ────────────────────────────────────────── -->
+<!-- ââ Bottom nav ââââââââââââââââââââââââââââââââââââââââââ -->
 <nav id="bottom-nav">
   <button class="nav-btn active" data-t="contacts" onclick="setTab('contacts')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -1086,19 +1086,19 @@
   </button>
 </nav>
 
-<!-- ── FAB ───────────────────────────────────────────────── -->
+<!-- ââ FAB âââââââââââââââââââââââââââââââââââââââââââââââââ -->
 <button id="fab" onclick="showAddContact()" title="Add contact">+</button>
 
-<!-- ── Sheet ─────────────────────────────────────────────── -->
+<!-- ââ Sheet âââââââââââââââââââââââââââââââââââââââââââââââ -->
 <div id="overlay" onclick="closeSheet()"></div>
 <div id="sheet"><div class="sh-pull"></div><div id="sheet-inner"></div></div>
 
-<!-- ── Prospect Email Draft Modal ────────────────────────── -->
+<!-- ââ Prospect Email Draft Modal ââââââââââââââââââââââââââ -->
 <div id="pros-email-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;align-items:flex-end;justify-content:center" onclick="if(event.target===this)closeProsEmailModal()">
   <div style="background:var(--navy);border-radius:16px 16px 0 0;width:100%;max-width:600px;padding:20px 20px 32px;box-sizing:border-box;max-height:90vh;overflow-y:auto">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
       <div style="font-size:15px;font-weight:800;color:var(--text)">Cold Email Draft</div>
-      <button onclick="closeProsEmailModal()" style="background:none;border:none;color:var(--dim);cursor:pointer;font-size:20px;line-height:1;padding:0 4px">✕</button>
+      <button onclick="closeProsEmailModal()" style="background:none;border:none;color:var(--dim);cursor:pointer;font-size:20px;line-height:1;padding:0 4px">â</button>
     </div>
     <div class="fg" style="margin-bottom:10px">
       <label class="fl">To</label>
@@ -1106,11 +1106,11 @@
     </div>
     <div class="fg" style="margin-bottom:10px">
       <label class="fl">Subject</label>
-      <input type="text" id="pros-email-subject" placeholder="Generating…" style="width:100%;box-sizing:border-box">
+      <input type="text" id="pros-email-subject" placeholder="Generatingâ¦" style="width:100%;box-sizing:border-box">
     </div>
     <div class="fg" style="margin-bottom:14px">
       <label class="fl">Body</label>
-      <textarea id="pros-email-body" rows="9" placeholder="Drafting personalized email…" style="width:100%;box-sizing:border-box;resize:vertical"></textarea>
+      <textarea id="pros-email-body" rows="9" placeholder="Drafting personalized emailâ¦" style="width:100%;box-sizing:border-box;resize:vertical"></textarea>
     </div>
     <div style="display:flex;gap:8px">
       <button onclick="copyProsEmail()" style="flex:1;padding:12px;background:var(--navyLL);color:var(--text);border:1px solid var(--border);border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">
@@ -1125,7 +1125,7 @@
   </div>
 </div>
 
-<!-- ── Toast ─────────────────────────────────────────────── -->
+<!-- ââ Toast âââââââââââââââââââââââââââââââââââââââââââââââ -->
 <div id="toast"></div>
 
 <script>
@@ -1136,7 +1136,7 @@ let S = { contacts: [], tasks: {}, filter: 'all', loading: false };
 let activeId = null;
 let lastCalcQuote = null;
 
-// ── Boot ──────────────────────────────────────────────────
+// ââ Boot ââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 function boot() {
   loadData();
@@ -1147,7 +1147,7 @@ function boot() {
   }
 }
 
-// ── Navigation ────────────────────────────────────────────
+// ââ Navigation ââââââââââââââââââââââââââââââââââââââââââââ
 
 function setTab(name) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -1168,7 +1168,7 @@ function setTab(name) {
   if (name === 'ai-pm')     { initAIPMDropZone(); renderAIPMCards(); }
 }
 
-// ── API helpers ───────────────────────────────────────────
+// ââ API helpers âââââââââââââââââââââââââââââââââââââââââââ
 
 async function hs(method, path, body) {
   const r = await fetch(BASE + path, {
@@ -1179,7 +1179,7 @@ async function hs(method, path, body) {
   if (r.status === 204) return null;
   const json = await r.json();
   if (!r.ok) {
-    if (r.status === 401) toast('HubSpot auth error — check Worker secret', 'err');
+    if (r.status === 401) toast('HubSpot auth error â check Worker secret', 'err');
     throw new Error(json.message || r.status);
   }
   return json;
@@ -1202,7 +1202,7 @@ function chunk(arr, n) {
   return out;
 }
 
-// ── Load contacts ─────────────────────────────────────────
+// ââ Load contacts âââââââââââââââââââââââââââââââââââââââââ
 
 async function loadData() {
   if (S.loading) return;
@@ -1270,7 +1270,7 @@ async function loadData() {
   }
 }
 
-// ── Render contacts ───────────────────────────────────────
+// ââ Render contacts âââââââââââââââââââââââââââââââââââââââ
 
 function render() {
   const q = (document.getElementById('search')?.value || '').toLowerCase();
@@ -1331,7 +1331,7 @@ const BADGE = {
 
 function cardHtml(c, today, weekOut) {
   const p = c.properties;
-  const name = [p.firstname, p.lastname].filter(Boolean).join(' ') || '—';
+  const name = [p.firstname, p.lastname].filter(Boolean).join(' ') || 'â';
   const co   = p.company || 'Unknown Company';
   const st   = (p.hs_lead_status||'').toUpperCase();
   const [bClass, bLabel] = BADGE[st] || ['b-def', st || 'No Status'];
@@ -1345,7 +1345,7 @@ function cardHtml(c, today, weekOut) {
     const label = over ? (daysAgo <= 0 ? 'Today' : daysAgo + 'd overdue')
       : (new Date(task.ms).toDateString() === today.toDateString() ? 'Today'
           : new Date(task.ms).toLocaleDateString('en-US', { month:'short', day:'numeric' }));
-    dateHtml = `<span class="fd ${over?'r':soon?'a':'ok'}">${over?'⚠ ':''}${label}</span>`;
+    dateHtml = `<span class="fd ${over?'r':soon?'a':'ok'}">${over?'â  ':''}${label}</span>`;
     cardClass = over ? 'overdue' : soon ? 'soon' : (st === 'CONNECTED' ? 'engaged' : 'neutral');
   } else if (st === 'CONNECTED') cardClass = 'engaged';
 
@@ -1394,13 +1394,13 @@ function updateStats() {
   renderFollowUpAlerts();
 }
 
-// ── Follow-Up Alerts banner ───────────────────────────────
+// ââ Follow-Up Alerts banner âââââââââââââââââââââââââââââââ
 let followupDismissedAt = 0; // session-only; resets on reload
 
 function isStaleContact(c, weekAgoMs) {
   const p = c.properties || {};
   // Only flag as stale when HubSpot has a recorded last-contacted date AND it's >= 7 days old.
-  // Deliberately ignore createdate — using it as a fallback would mark every contact in your
+  // Deliberately ignore createdate â using it as a fallback would mark every contact in your
   // CRM as stale the moment they're more than 7 days old, even if you just called them.
   if (!p.notes_last_contacted) return false;
   const last = new Date(p.notes_last_contacted).getTime();
@@ -1429,7 +1429,7 @@ function renderFollowUpAlerts() {
     </div>
     <div class="fub-actions">
       <button class="fub-btn fub-view" onclick="showFollowUpList()">View</button>
-      <button class="fub-btn fub-dismiss" onclick="dismissFollowUpBanner()" title="Snooze 4h">×</button>
+      <button class="fub-btn fub-dismiss" onclick="dismissFollowUpBanner()" title="Snooze 4h">Ã</button>
     </div>
   `;
 }
@@ -1457,14 +1457,14 @@ function setFilter(el) {
   render();
 }
 
-// ── Contact sheet ─────────────────────────────────────────
+// ââ Contact sheet âââââââââââââââââââââââââââââââââââââââââ
 
 async function openContact(id) {
   activeId = id;
   const c = S.contacts.find(x => x.id === id);
   if (!c) return;
   const p = c.properties;
-  const name = [p.firstname, p.lastname].filter(Boolean).join(' ') || '—';
+  const name = [p.firstname, p.lastname].filter(Boolean).join(' ') || 'â';
   const st   = (p.hs_lead_status||'').toUpperCase();
   const [bClass, bLabel] = BADGE[st] || ['b-def', st || 'No Status'];
   const task = S.tasks[id];
@@ -1472,25 +1472,25 @@ async function openContact(id) {
 
   document.getElementById('sheet-inner').innerHTML = `
     <div class="sh-hdr">
-      <div class="sh-co">${esc(p.company||'—')}</div>
+      <div class="sh-co">${esc(p.company||'â')}</div>
       <div class="sh-nm"><span>${esc(name)}</span><span class="badge ${bClass}">${bLabel}</span></div>
       ${p.jobtitle ? `<div class="sh-task" style="color:var(--dim);font-style:italic">${esc(p.jobtitle)}</div>` : ''}
-      ${p.phone ? `<div class="sh-task"><a href="tel:${esc(p.phone)}" style="color:var(--accent);text-decoration:none">📞 ${esc(p.phone)}</a></div>` : ''}
-      ${p.email ? `<div class="sh-task"><a href="mailto:${esc(p.email)}" style="color:var(--accent);text-decoration:none">✉️ ${esc(p.email)}</a></div>` : ''}
-      ${taskStr ? `<div class="sh-task">📅 Follow-up: ${taskStr}</div>` : ''}
+      ${p.phone ? `<div class="sh-task"><a href="tel:${esc(p.phone)}" style="color:var(--accent);text-decoration:none">ð ${esc(p.phone)}</a></div>` : ''}
+      ${p.email ? `<div class="sh-task"><a href="mailto:${esc(p.email)}" style="color:var(--accent);text-decoration:none">âï¸ ${esc(p.email)}</a></div>` : ''}
+      ${taskStr ? `<div class="sh-task">ð Follow-up: ${taskStr}</div>` : ''}
     </div>
     <div class="sh-body">
       <div class="slbl">Actions</div>
       <div class="acts">
-        <button class="btn btn-p" onclick="showForm('call')">📞 Log Call</button>
-        <button class="btn btn-s" onclick="showForm('note')">📝 Add Note</button>
-        <button class="btn btn-s" onclick="showForm('status')">🏷 Update Status</button>
-        <button class="btn btn-s" onclick="showForm('followup')">📅 Set Follow-Up</button>
-        <button class="btn btn-s" onclick="showForm('edit')">✏️ Edit Contact</button>
-        <button class="btn btn-w" style="background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.25)" onclick="deleteContact()">🗑 Delete Contact</button>
+        <button class="btn btn-p" onclick="showForm('call')">ð Log Call</button>
+        <button class="btn btn-s" onclick="showForm('note')">ð Add Note</button>
+        <button class="btn btn-s" onclick="showForm('status')">ð· Update Status</button>
+        <button class="btn btn-s" onclick="showForm('followup')">ð Set Follow-Up</button>
+        <button class="btn btn-s" onclick="showForm('edit')">âï¸ Edit Contact</button>
+        <button class="btn btn-w" style="background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.25)" onclick="deleteContact()">ð Delete Contact</button>
       </div>
       <div class="slbl">Recent Notes</div>
-      <div id="notes-area"><div style="color:var(--dim);font-size:13px">Loading…</div></div>
+      <div id="notes-area"><div style="color:var(--dim);font-size:13px">Loadingâ¦</div></div>
     </div>`;
 
   document.getElementById('overlay').classList.add('on');
@@ -1540,7 +1540,7 @@ async function deleteContact(id) {
   }
 }
 
-// ── Draft Email ───────────────────────────────────────────
+// ââ Draft Email âââââââââââââââââââââââââââââââââââââââââââ
 
 async function showDraftEmail(id) {
   await openContact(id);
@@ -1557,7 +1557,7 @@ async function doGenerateEmail() {
 
   const btn = document.getElementById('gen-email-btn');
   btn.disabled = true;
-  btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 1s linear infinite"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Drafting…`;
+  btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 1s linear infinite"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Draftingâ¦`;
   document.getElementById('email-result').style.display = 'none';
 
   try {
@@ -1568,7 +1568,7 @@ Context: ${ctx}
 Rules:
 - 3-5 sentences max
 - No filler openers ("Hope this finds you well", "I wanted to reach out", etc.)
-- Direct and human — sounds like a real person, not a template
+- Direct and human â sounds like a real person, not a template
 - End with exactly: Brian Blakeslee | Stephen Gould
 - First line must be the subject formatted as: Subject: [subject]
 - Blank line between subject and body`;
@@ -1587,10 +1587,10 @@ Rules:
 
 function copyDraftEmail() {
   const text = document.getElementById('draft-email-out')?.textContent || '';
-  navigator.clipboard.writeText(text).then(() => toast('Email copied ✓', 'ok')).catch(() => toast('Copy failed', 'err'));
+  navigator.clipboard.writeText(text).then(() => toast('Email copied â', 'ok')).catch(() => toast('Copy failed', 'err'));
 }
 
-// ── In-sheet forms ────────────────────────────────────────
+// ââ In-sheet forms ââââââââââââââââââââââââââââââââââââââââ
 
 function showForm(type) {
   const body = document.querySelector('#sheet .sh-body');
@@ -1605,7 +1605,7 @@ function showForm(type) {
       <button class="btn btn-p btn-w" onclick="doLogCall()">Save Call</button>`;
   } else if (type === 'note') {
     div.innerHTML = `<div class="slbl">Add Note</div>
-      <div class="fg"><textarea id="f-notes" rows="5" placeholder="Enter note…"></textarea></div>
+      <div class="fg"><textarea id="f-notes" rows="5" placeholder="Enter noteâ¦"></textarea></div>
       <button class="btn btn-p btn-w" onclick="doNote()">Save Note</button>`;
   } else if (type === 'status') {
     div.innerHTML = `<div class="slbl">Update Status</div>
@@ -1634,7 +1634,7 @@ function showForm(type) {
   } else if (type === 'email') {
     div.innerHTML = `<div class="slbl">Draft Follow-Up Email</div>
       <div class="fg">
-        <label class="fl">Context — one sentence</label>
+        <label class="fl">Context â one sentence</label>
         <textarea id="f-email-ctx" rows="2" placeholder="e.g. followed up on box pricing, waiting on samples"></textarea>
       </div>
       <button class="btn btn-p btn-w" id="gen-email-btn" onclick="doGenerateEmail()">
@@ -1687,7 +1687,7 @@ async function doLogCall() {
       const c = S.contacts.find(x => x.id === activeId); if (c) c.properties.hs_lead_status = status;
     }
     if (dateV) await createTask(dateV);
-    toast('Call logged ✓', 'ok'); closeSheet(); render();
+    toast('Call logged â', 'ok'); closeSheet(); render();
     setTimeout(loadData, 1500); // re-sync notes_last_contacted so stale banner updates
   } catch(e) { toast('Error: ' + e.message, 'err'); }
 }
@@ -1698,7 +1698,7 @@ async function doNote() {
   try {
     const note = await hs('POST', '/crm/v3/objects/notes', { properties:{ hs_note_body:text, hs_timestamp:Date.now() }});
     await hs('PUT', `/crm/v4/objects/notes/${note.id}/associations/default/contacts/${activeId}`, null);
-    toast('Note saved ✓', 'ok'); closeSheet();
+    toast('Note saved â', 'ok'); closeSheet();
   } catch(e) { toast('Error: ' + e.message, 'err'); }
 }
 
@@ -1708,7 +1708,7 @@ async function doStatus() {
   try {
     await hs('PATCH', `/crm/v3/objects/contacts/${activeId}`, { properties:{ hs_lead_status:status }});
     const c = S.contacts.find(x => x.id === activeId); if (c) c.properties.hs_lead_status = status;
-    toast('Status updated ✓', 'ok'); closeSheet(); render();
+    toast('Status updated â', 'ok'); closeSheet(); render();
   } catch(e) { toast('Error: ' + e.message, 'err'); }
 }
 
@@ -1717,7 +1717,7 @@ async function doFollowUp() {
   if (!dateV) { toast('Pick a date', 'err'); return; }
   try {
     await createTask(dateV, document.getElementById('f-notes')?.value.trim());
-    toast('Follow-up set ✓', 'ok'); closeSheet(); render();
+    toast('Follow-up set â', 'ok'); closeSheet(); render();
   } catch(e) { toast('Error: ' + e.message, 'err'); }
 }
 
@@ -1744,7 +1744,7 @@ async function doEditContact() {
     const c = S.contacts.find(x => x.id === activeId);
     if (c) Object.assign(c.properties, props);
 
-    toast('Contact updated ✓', 'ok');
+    toast('Contact updated â', 'ok');
     closeSheet();
     render();
   } catch(e) { toast('Update failed: ' + e.message, 'err'); }
@@ -1773,7 +1773,7 @@ async function createTask(dateStr, subject) {
   }
 }
 
-// ── Add Contact ───────────────────────────────────────────
+// ââ Add Contact âââââââââââââââââââââââââââââââââââââââââââ
 
 function showAddContact() {
   activeId = null;
@@ -1811,7 +1811,7 @@ function showAddContact() {
         ${[['IN_PROGRESS','Active'],['CONNECTED','Engaged'],['OPEN','Follow Up'],['NEW','New']]
           .map(([v,l],i) => `<button class="sopt${i===0?' on':''}" data-v="${v}">${l}</button>`).join('')}
       </div></div>
-      <div class="fg"><label class="fl">Note (optional)</label><textarea id="ac-note" rows="3" placeholder="Initial note about this contact…"></textarea></div>
+      <div class="fg"><label class="fl">Note (optional)</label><textarea id="ac-note" rows="3" placeholder="Initial note about this contactâ¦"></textarea></div>
       <div class="fg"><label class="fl">Follow-up date (optional)</label><input type="date" id="ac-date" value="${nextDate(7)}"></div>
       <button class="btn btn-p btn-w" onclick="submitNewContact()">Create Contact in HubSpot</button>
     </div>`;
@@ -1862,7 +1862,7 @@ async function submitNewContact() {
     }
     if (dateV) await createTask(dateV);
 
-    toast(`${[first, last].filter(Boolean).join(' ')} added ✓`, 'ok');
+    toast(`${[first, last].filter(Boolean).join(' ')} added â`, 'ok');
     closeSheet();
     if (window._prosSubmitIdx !== undefined) {
       prospectsState.added.add(window._prosSubmitIdx); // now a company key string
@@ -1874,7 +1874,7 @@ async function submitNewContact() {
   } catch(e) { toast('Error: ' + e.message, 'err'); }
 }
 
-// ── Screenshot OCR → auto-fill contact ───────────────────
+// ââ Screenshot OCR â auto-fill contact âââââââââââââââââââ
 
 async function handleContactScreenshot(inp) {
   const file = inp?.files?.[0];
@@ -1888,15 +1888,15 @@ async function handleContactScreenshot(inp) {
 
   try {
     if (!file.type.startsWith('image/')) {
-      setStatus('err', '⚠ File must be an image');
+      setStatus('err', 'â  File must be an image');
       return;
     }
     if (file.size > 8 * 1024 * 1024) {
-      setStatus('err', '⚠ Image must be under 8MB');
+      setStatus('err', 'â  Image must be under 8MB');
       return;
     }
 
-    setStatus('loading', `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.22-8.56" class="spin-ico"/></svg> Reading image…`);
+    setStatus('loading', `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.22-8.56" class="spin-ico"/></svg> Reading imageâ¦`);
 
     // Read file as base64 data URL
     const dataUrl = await new Promise((resolve, reject) => {
@@ -1908,7 +1908,7 @@ async function handleContactScreenshot(inp) {
     const [, mediaType, b64] = dataUrl.match(/^data:([^;]+);base64,(.+)$/) || [];
     if (!b64) throw new Error('Could not parse image');
 
-    setStatus('loading', `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.22-8.56" class="spin-ico"/></svg> Extracting contact info…`);
+    setStatus('loading', `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.22-8.56" class="spin-ico"/></svg> Extracting contact infoâ¦`);
 
     const messages = [{
       role: 'user',
@@ -1973,19 +1973,19 @@ Rules:
     const filled = ['first','last','company','email','phone','street','city','state','zip']
       .filter(k => data[k] && String(data[k]).trim()).length;
     if (filled === 0) {
-      setStatus('err', '⚠ Nothing extracted — fill manually');
+      setStatus('err', 'â  Nothing extracted â fill manually');
     } else {
-      setStatus('ok', `✓ Auto-filled ${filled} field${filled === 1 ? '' : 's'} — review before saving`);
+      setStatus('ok', `â Auto-filled ${filled} field${filled === 1 ? '' : 's'} â review before saving`);
     }
   } catch (e) {
-    setStatus('err', '⚠ ' + (e.message || 'Extraction failed'));
+    setStatus('err', 'â  ' + (e.message || 'Extraction failed'));
   } finally {
     // reset so same file can trigger change again
     inp.value = '';
   }
 }
 
-// ── AI Project Manager ───────────────────────────────────
+// ââ AI Project Manager âââââââââââââââââââââââââââââââââââ
 
 const AIPM_KEY = 'sg_aipm_cards';
 function loadAIPMCards() {
@@ -2026,13 +2026,13 @@ async function processAIPMFile(file) {
     statusEl.innerHTML = msg;
   };
   try {
-    setStatus('loading', `Reading ${esc(file.name)}…`);
+    setStatus('loading', `Reading ${esc(file.name)}â¦`);
     const buf = await file.arrayBuffer();
     let text;
     if (ext === 'pdf') {
       const r = await extractPDF(buf);
       text = r.text;
-      if (!text) throw new Error('No extractable text — PDF may be scanned');
+      if (!text) throw new Error('No extractable text â PDF may be scanned');
     } else if (ext === 'docx') {
       const r = await extractDOCX(buf);
       text = r.text;
@@ -2041,7 +2041,7 @@ async function processAIPMFile(file) {
       throw new Error('Use PDF or DOCX');
     }
 
-    setStatus('loading', 'AI extracting project details…');
+    setStatus('loading', 'AI extracting project detailsâ¦');
 
     const prompt = `You are a sales project assistant for a custom packaging sales rep at Stephen Gould Corporation. Extract structured project details from this supplier quote document.
 
@@ -2054,7 +2054,7 @@ Return ONLY JSON, no markdown, no prose:
   "contact": "buyer's contact person name if shown, else null",
   "contactEmail": "buyer's email if shown, else null",
   "contactPhone": "buyer's phone if shown, else null",
-  "product": "product description — material, size, color, finish, specs",
+  "product": "product description â material, size, color, finish, specs",
   "quantity": "quantity as string (e.g. '10,000 units' or '5K / 10K / 25K')",
   "unitPrice": "unit price as shown (e.g. '$0.38' or '$0.38 @ 10K')",
   "totalValue": "extended / total quote value if shown, else null",
@@ -2065,7 +2065,7 @@ Return ONLY JSON, no markdown, no prose:
 
 Rules:
 - company: the CLIENT being quoted to, not the supplier issuing the quote.
-- Use null only when truly absent — don't guess.
+- Use null only when truly absent â don't guess.
 - nextSteps: must be a concrete action, not a summary.`;
 
     const raw = await callClaude([{ role: 'user', content: prompt }], 'claude-opus-4-6', 1200);
@@ -2094,10 +2094,10 @@ Rules:
     cards.unshift(card);
     saveAIPMCards(cards);
     renderAIPMCards();
-    setStatus('ok', `✓ Project card created for ${esc(card.company)}`);
+    setStatus('ok', `â Project card created for ${esc(card.company)}`);
     if (titleEl) titleEl.textContent = 'Drop another quote PDF or DOCX';
   } catch (e) {
-    setStatus('err', '⚠ ' + (e.message || 'Failed to process file'));
+    setStatus('err', 'â  ' + (e.message || 'Failed to process file'));
   }
 }
 
@@ -2116,7 +2116,7 @@ function renderAIPMCards() {
       <div class="aipm-head">
         <div style="min-width:0;flex:1">
           <div class="aipm-co">${esc(c.company)}</div>
-          ${(c.contact || c.contactEmail || c.contactPhone) ? `<div class="aipm-contact">${[c.contact, c.contactEmail, c.contactPhone].filter(Boolean).map(esc).join(' · ')}</div>` : ''}
+          ${(c.contact || c.contactEmail || c.contactPhone) ? `<div class="aipm-contact">${[c.contact, c.contactEmail, c.contactPhone].filter(Boolean).map(esc).join(' Â· ')}</div>` : ''}
         </div>
         <button class="aipm-del" onclick="deleteAIPMCard('${c.id}')" title="Delete">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
@@ -2127,8 +2127,8 @@ function renderAIPMCards() {
         ${c.quantity    ? `<span class="aipm-chip qty">${esc(c.quantity)}</span>` : ''}
         ${c.unitPrice   ? `<span class="aipm-chip money">${esc(c.unitPrice)}</span>` : ''}
         ${c.totalValue  ? `<span class="aipm-chip money">Total: ${esc(c.totalValue)}</span>` : ''}
-        ${c.leadTime    ? `<span class="aipm-chip">⏱ ${esc(c.leadTime)}</span>` : ''}
-        ${c.quoteDate   ? `<span class="aipm-chip">📅 ${esc(c.quoteDate)}</span>` : ''}
+        ${c.leadTime    ? `<span class="aipm-chip">â± ${esc(c.leadTime)}</span>` : ''}
+        ${c.quoteDate   ? `<span class="aipm-chip">ð ${esc(c.quoteDate)}</span>` : ''}
       </div>
       ${c.nextSteps ? `<div class="aipm-next"><b>Next:</b> ${esc(c.nextSteps)}</div>` : ''}
       <div class="aipm-foot">
@@ -2150,15 +2150,15 @@ function clearAllAIPMCards() {
   renderAIPMCards();
 }
 
-// ── Quote Calculator ────────────────────────────────────────
+// ââ Quote Calculator ââââââââââââââââââââââââââââââââââââââââ
 
 function fd(n) { // format dollar amount (no cents for large, 2dp for small)
-  if (!isFinite(n)) return '—';
+  if (!isFinite(n)) return 'â';
   if (Math.abs(n) >= 100) return n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
   return n.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 function fu(n) { // format unit price (strip trailing zeros but keep min 2dp)
-  if (!isFinite(n)) return '—';
+  if (!isFinite(n)) return 'â';
   const s = n.toFixed(4).replace(/0+$/, '').replace(/\.$/, '');
   const parts = s.split('.');
   if (!parts[1] || parts[1].length < 2) return '$' + n.toFixed(2);
@@ -2234,7 +2234,7 @@ function renderCalcResults(q) {
         <span class="qc-det-val">${fd(t.unitExtSell)}</span>
       </div>
       ${hasTariff ? `<div class="qc-det-row">
-        <span class="qc-det-lbl">— Tariff (${tariffPct}%)</span>
+        <span class="qc-det-lbl">â Tariff (${tariffPct}%)</span>
         <span class="qc-det-sub">${fu(tariffPerUnit)}/unit</span>
         <span class="qc-det-val">${fd(tariffPerUnit * t.qty)}</span>
       </div>` : ''}
@@ -2280,11 +2280,11 @@ function saveCalcQuote() {
   if (!projects[account]) projects[account] = [];
   projects[account].unshift(lastCalcQuote);
   saveProjects(projects);
-  toast(`Saved to ${account} ✓`, 'ok');
+  toast(`Saved to ${account} â`, 'ok');
   setTab('projects');
 }
 
-// ── Projects ──────────────────────────────────────────────
+// ââ Projects ââââââââââââââââââââââââââââââââââââââââââââââ
 
 function getProjects() {
   try { return JSON.parse(localStorage.getItem('sg_projects') || '{}'); } catch { return {}; }
@@ -2336,7 +2336,7 @@ function renderProjects() {
     const quotes = projects[client];
     const latest = quotes[0];
     const meta = quotes.length
-      ? `${quotes.length} quote${quotes.length > 1 ? 's' : ''} · Last: ${esc(latest.date)}`
+      ? `${quotes.length} quote${quotes.length > 1 ? 's' : ''} Â· Last: ${esc(latest.date)}`
       : 'Empty folder';
     return `
     <div class="proj-card">
@@ -2347,7 +2347,7 @@ function renderProjects() {
         </div>
         <div style="display:flex;align-items:center;gap:8px">
           <span class="proj-count">${quotes.length}</span>
-          <button class="pq-del" style="flex-shrink:0" onclick="event.stopPropagation();deleteProjectFolder('${esc(client)}')" title="Delete folder">✕</button>
+          <button class="pq-del" style="flex-shrink:0" onclick="event.stopPropagation();deleteProjectFolder('${esc(client)}')" title="Delete folder">â</button>
         </div>
       </div>
       <div class="proj-body">
@@ -2360,12 +2360,12 @@ function renderProjects() {
                 return `<div class="pq-row" onclick="viewQuote('${esc(client)}',${i})">
                 <div class="pq-left">
                   <span class="pq-date">${esc(q.date)}</span>
-                  <span class="pq-price">${esc(q.itemDesc || 'Quote')}${tierSummary ? ` · ${tierSummary}` : ''}</span>
+                  <span class="pq-price">${esc(q.itemDesc || 'Quote')}${tierSummary ? ` Â· ${tierSummary}` : ''}</span>
                   ${q.notes ? `<span style="font-size:11px;color:#475569;display:block;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px">${esc(q.notes)}</span>` : ''}
                 </div>
                 <div class="pq-right">
                   ${t0 ? `<span class="pq-margin" style="color:var(--green)">GP ${fd(t0.grossProfit)}</span>` : ''}
-                  <button class="pq-del" onclick="event.stopPropagation();deleteQuote('${esc(client)}',${i})">✕</button>
+                  <button class="pq-del" onclick="event.stopPropagation();deleteQuote('${esc(client)}',${i})">â</button>
                 </div>
               </div>`;
               }
@@ -2373,11 +2373,11 @@ function renderProjects() {
               return `<div class="pq-row" onclick="viewQuote('${esc(client)}',${i})">
                 <div class="pq-left">
                   <span class="pq-date">${esc(q.date)}</span>
-                  <span class="pq-price">Target: $${esc(q.targetPrice)}/unit${q.markup ? ` · Supplier: $${q.markup.cost}` : ''}</span>
+                  <span class="pq-price">Target: $${esc(q.targetPrice)}/unit${q.markup ? ` Â· Supplier: $${q.markup.cost}` : ''}</span>
                 </div>
                 <div class="pq-right">
                   ${q.markup ? `<span class="pq-margin" style="color:${mColor}">${q.markup.margin}% ${q.markup.health}</span>` : ''}
-                  <button class="pq-del" onclick="event.stopPropagation();deleteQuote('${esc(client)}',${i})">✕</button>
+                  <button class="pq-del" onclick="event.stopPropagation();deleteQuote('${esc(client)}',${i})">â</button>
                 </div>
               </div>`;
             }).join('')
@@ -2419,7 +2419,7 @@ function viewQuote(clientName, idx) {
     document.getElementById('qc-result').style.display = '';
     setTimeout(() => document.getElementById('qc-result').scrollIntoView({ behavior:'smooth', block:'start' }), 100);
   } else {
-    toast('Legacy quote — open-ended analysis format', 'ok');
+    toast('Legacy quote â open-ended analysis format', 'ok');
   }
 }
 
@@ -2433,7 +2433,7 @@ function deleteQuote(clientName, idx) {
   toast('Quote deleted', 'ok');
 }
 
-// ── Document Upload (PDF + DOCX) ──────────────────────────
+// ââ Document Upload (PDF + DOCX) ââââââââââââââââââââââââââ
 
 async function loadPDFJS() {
   if (window.pdfjsLib) return;
@@ -2491,7 +2491,7 @@ async function handleDocUpload(input, textareaId, statusId) {
   statusEl.style.display = '';
   statusEl.className = 'loading';
   const ext = file.name.split('.').pop().toLowerCase();
-  statusEl.textContent = `Extracting text from ${ext.toUpperCase()}…`;
+  statusEl.textContent = `Extracting text from ${ext.toUpperCase()}â¦`;
 
   try {
     const buf = await file.arrayBuffer();
@@ -2499,14 +2499,14 @@ async function handleDocUpload(input, textareaId, statusId) {
 
     if (ext === 'pdf') {
       ({ text, pages } = await extractPDF(buf));
-      if (!text) throw new Error('No extractable text — PDF may be image-based (scanned)');
-      statusEl.textContent = `Extracted from "${file.name}" (${pages} page${pages > 1 ? 's' : ''}) — review below.`;
+      if (!text) throw new Error('No extractable text â PDF may be image-based (scanned)');
+      statusEl.textContent = `Extracted from "${file.name}" (${pages} page${pages > 1 ? 's' : ''}) â review below.`;
     } else if (ext === 'docx') {
       ({ text } = await extractDOCX(buf));
       if (!text) throw new Error('No text found in DOCX');
-      statusEl.textContent = `Extracted from "${file.name}" — review below.`;
+      statusEl.textContent = `Extracted from "${file.name}" â review below.`;
     } else {
-      throw new Error('Unsupported file type — use PDF or DOCX');
+      throw new Error('Unsupported file type â use PDF or DOCX');
     }
 
     document.getElementById(textareaId).value = text;
@@ -2520,7 +2520,7 @@ async function handleDocUpload(input, textareaId, statusId) {
   input.value = '';
 }
 
-// ── Calc PDF Upload ───────────────────────────────────────────
+// ââ Calc PDF Upload âââââââââââââââââââââââââââââââââââââââââââ
 
 function initDropZone() {
   const zone = document.getElementById('calc-drop-zone');
@@ -2556,7 +2556,7 @@ async function processCalcFile(file) {
 
   statusEl.style.display = '';
   statusEl.className     = 'calc-status loading';
-  statusEl.textContent   = `Reading ${file.name}…`;
+  statusEl.textContent   = `Reading ${file.name}â¦`;
   if (zone)  zone.classList.remove('drag-over');
 
   try {
@@ -2565,24 +2565,24 @@ async function processCalcFile(file) {
     if (ext === 'pdf') {
       let pages;
       ({ text, pages } = await extractPDF(buf));
-      if (!text) throw new Error('No extractable text — PDF may be image-based (scanned)');
+      if (!text) throw new Error('No extractable text â PDF may be image-based (scanned)');
     } else if (ext === 'docx') {
       ({ text } = await extractDOCX(buf));
       if (!text) throw new Error('No text found in DOCX');
     } else {
-      throw new Error('Unsupported file type — use PDF or DOCX');
+      throw new Error('Unsupported file type â use PDF or DOCX');
     }
 
-    statusEl.textContent = 'Analyzing with AI…';
+    statusEl.textContent = 'Analyzing with AIâ¦';
 
-    const prompt = `You are a packaging procurement analyst. Extract structured data from this supplier quote and return ONLY valid JSON — no markdown, no explanation.
+    const prompt = `You are a packaging procurement analyst. Extract structured data from this supplier quote and return ONLY valid JSON â no markdown, no explanation.
 
 SUPPLIER QUOTE:
 ${text}
 
 Return exactly this JSON (use null for any field not found):
 {
-  "itemDesc": "full product description — material, size, color, neck finish, quantity unit, etc.",
+  "itemDesc": "full product description â material, size, color, neck finish, quantity unit, etc.",
   "accountName": "buyer/client company name if shown in the quote header or ship-to field, otherwise null",
   "unitCost": 0.38,
   "freightCost": null,
@@ -2594,9 +2594,9 @@ Rules:
 - unitCost: supplier unit price as a plain number. If tiered pricing exists, use the first/lowest-qty tier.
 - freightCost: only include if an explicit freight or shipping dollar amount is stated; otherwise null.
 - toolingCost: only include if an explicit tooling, mold, setup, dies, or plates dollar amount is stated; otherwise null.
-- qtys: array of exactly 3 elements — up to 3 quantity tiers from the quote (smallest to largest), pad remaining with null.
+- qtys: array of exactly 3 elements â up to 3 quantity tiers from the quote (smallest to largest), pad remaining with null.
 - All dollar values: plain numbers only, no $ signs or commas.
-- itemDesc: be specific — include all specs (material, size, color, finish, neck size, wall thickness, etc.).`;
+- itemDesc: be specific â include all specs (material, size, color, finish, neck size, wall thickness, etc.).`;
 
     const raw = await callClaude([{ role: 'user', content: prompt }]);
     const jsonStr = raw.startsWith('{') ? raw : (raw.match(/\{[\s\S]*\}/) || [])[0];
@@ -2617,20 +2617,20 @@ Rules:
 
     if (data.unitCost && qtys.length) calcQuote();
 
-    const shortName = file.name.length > 28 ? file.name.slice(0, 25) + '…' : file.name;
+    const shortName = file.name.length > 28 ? file.name.slice(0, 25) + 'â¦' : file.name;
     if (titleEl) titleEl.textContent = shortName;
     if (zone)    zone.classList.add('has-file');
 
     const summary = filled.length ? filled.join(', ') : 'no fields recognized';
     statusEl.className   = 'calc-status ok';
-    statusEl.textContent = `✓ Filled: ${summary}. Review and add any missing fields.`;
+    statusEl.textContent = `â Filled: ${summary}. Review and add any missing fields.`;
   } catch(e) {
     statusEl.className   = 'calc-status err';
     statusEl.textContent = 'Error: ' + e.message;
   }
 }
 
-// ── Quote mode toggle ─────────────────────────────────────
+// ââ Quote mode toggle âââââââââââââââââââââââââââââââââââââ
 
 function setQuoteMode(mode) {
   const isCalc = mode === 'calc';
@@ -2642,7 +2642,7 @@ function setQuoteMode(mode) {
   if (isCmp) document.getElementById('compare-result').style.display = 'none';
 }
 
-// ── Quote Comparison ──────────────────────────────────────
+// ââ Quote Comparison ââââââââââââââââââââââââââââââââââââââ
 
 async function compareQuotes() {
   const clientName  = document.getElementById('q-client').value.trim();
@@ -2657,11 +2657,11 @@ async function compareQuotes() {
 
   const btn = document.getElementById('compare-btn');
   btn.disabled = true;
-  btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 1s linear infinite"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Comparing…`;
+  btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 1s linear infinite"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Comparingâ¦`;
   document.getElementById('compare-result').style.display = 'none';
 
   try {
-    const prompt = `You are an expert packaging procurement analyst at Stephen Gould. Compare these two supplier quotes and return ONLY valid JSON — no markdown, no explanation.
+    const prompt = `You are an expert packaging procurement analyst at Stephen Gould. Compare these two supplier quotes and return ONLY valid JSON â no markdown, no explanation.
 
 QUOTE A:
 ${quoteA}
@@ -2710,7 +2710,7 @@ Return exactly this JSON structure:
     "overall": "A"
   },
   "recommendation": "2-3 sentence plain-English recommendation. Direct, no fluff. State clearly which quote wins and the 1-2 key reasons why.",
-  "caveats": ["any important caveats — missing data, risks, or things to verify before deciding"]
+  "caveats": ["any important caveats â missing data, risks, or things to verify before deciding"]
 }
 
 Winner values must be exactly "A", "B", or "tie". For moq winner, lower MOQ is better (more flexible). For leadTime winner, shorter is better. For paymentTerms winner, better terms for the buyer is better. For shippingTerms, DDP is generally better than FOB (removes customs risk). For landedCost winner, lower landed cost wins.`;
@@ -2729,11 +2729,11 @@ Winner values must be exactly "A", "B", or "tie". For moq winner, lower MOQ is b
 }
 
 function calcMarginDisplay(landedCost, targetPrice) {
-  if (!landedCost || !targetPrice || targetPrice <= 0) return '—';
+  if (!landedCost || !targetPrice || targetPrice <= 0) return 'â';
   const margin = ((targetPrice - landedCost) / targetPrice) * 100;
-  const health = margin >= 35 ? '✓ Strong' : margin >= 25 ? '~ Acceptable' : margin >= 15 ? '⚠ Thin' : '⚠ Low';
+  const health = margin >= 35 ? 'â Strong' : margin >= 25 ? '~ Acceptable' : margin >= 15 ? 'â  Thin' : 'â  Low';
   const color  = margin >= 35 ? 'g' : margin >= 25 ? 'a' : 'r';
-  return { text: `${margin.toFixed(1)}% — ${health}`, color };
+  return { text: `${margin.toFixed(1)}% â ${health}`, color };
 }
 
 function renderCompareResult(data, targetPrice) {
@@ -2741,15 +2741,15 @@ function renderCompareResult(data, targetPrice) {
   const ow = winner.overall; // "A" or "B"
 
   // Header labels with supplier name
-  document.getElementById('cr-head-a').textContent = quoteA.supplier && quoteA.supplier !== 'Unknown' ? `Quote A — ${quoteA.supplier}` : 'Quote A';
-  document.getElementById('cr-head-b').textContent = quoteB.supplier && quoteB.supplier !== 'Unknown' ? `Quote B — ${quoteB.supplier}` : 'Quote B';
+  document.getElementById('cr-head-a').textContent = quoteA.supplier && quoteA.supplier !== 'Unknown' ? `Quote A â ${quoteA.supplier}` : 'Quote A';
+  document.getElementById('cr-head-b').textContent = quoteB.supplier && quoteB.supplier !== 'Unknown' ? `Quote B â ${quoteB.supplier}` : 'Quote B';
 
   function setCell(idA, idB, valA, valB, winKey) {
     const w = winner[winKey];
     const elA = document.getElementById(idA);
     const elB = document.getElementById(idB);
-    elA.textContent = valA || '—';
-    elB.textContent = valB || '—';
+    elA.textContent = valA || 'â';
+    elB.textContent = valB || 'â';
     elA.className = 'cmp-val' + (w === 'A' ? ' win-a win-mark' : '');
     elB.className = 'cmp-val' + (w === 'B' ? ' win-b win-mark' : '');
   }
@@ -2773,8 +2773,8 @@ function renderCompareResult(data, targetPrice) {
 
   // Recommendation
   const winLabel = ow === 'A'
-    ? `Winner: Quote A${quoteA.supplier && quoteA.supplier !== 'Unknown' ? ' — ' + quoteA.supplier : ''}`
-    : `Winner: Quote B${quoteB.supplier && quoteB.supplier !== 'Unknown' ? ' — ' + quoteB.supplier : ''}`;
+    ? `Winner: Quote A${quoteA.supplier && quoteA.supplier !== 'Unknown' ? ' â ' + quoteA.supplier : ''}`
+    : `Winner: Quote B${quoteB.supplier && quoteB.supplier !== 'Unknown' ? ' â ' + quoteB.supplier : ''}`;
   document.getElementById('cr-winner-label').textContent = winLabel;
   document.getElementById('cr-winner-label').style.color = ow === 'A' ? '#60a5fa' : '#a78bfa';
   document.getElementById('cr-rec').textContent = recommendation || '';
@@ -2785,7 +2785,7 @@ function renderCompareResult(data, targetPrice) {
   document.getElementById('compare-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-// ── Quick Call Logger ──────────────────────────────────────
+// ââ Quick Call Logger ââââââââââââââââââââââââââââââââââââââ
 
 let qcContactId = null;
 
@@ -2820,7 +2820,7 @@ function filterQCContacts() {
 
   dd.innerHTML = matches.map(c => {
     const p = c.properties;
-    const name = [p.firstname, p.lastname].filter(Boolean).join(' ') || '—';
+    const name = [p.firstname, p.lastname].filter(Boolean).join(' ') || 'â';
     return `<div class="qc-opt" onclick="selectQCContact('${c.id}')">
       <strong>${esc(name)}</strong><span>${esc(p.company||'')}</span>
     </div>`;
@@ -2833,10 +2833,10 @@ function selectQCContact(id) {
   if (!c) return;
   qcContactId = id;
   const p = c.properties;
-  const name = [p.firstname, p.lastname].filter(Boolean).join(' ') || '—';
+  const name = [p.firstname, p.lastname].filter(Boolean).join(' ') || 'â';
   document.getElementById('ql-search').value = '';
   document.getElementById('ql-dropdown').style.display = 'none';
-  document.getElementById('ql-sel-name').textContent = `${name} — ${p.company||''}`;
+  document.getElementById('ql-sel-name').textContent = `${name} â ${p.company||''}`;
   document.getElementById('ql-selected').classList.add('on');
 
   // Pre-select current status
@@ -2883,7 +2883,7 @@ async function doQuickCall() {
     }
     if (dateV) await createTask(dateV);
 
-    toast('Call logged ✓', 'ok');
+    toast('Call logged â', 'ok');
     document.getElementById('ql-notes').value = '';
     document.getElementById('ql-date').value  = nextDate(7);
     clearQCContact();
@@ -2897,7 +2897,7 @@ async function doQuickCall() {
   }
 }
 
-// ── Prospects ─────────────────────────────────────────────
+// ââ Prospects âââââââââââââââââââââââââââââââââââââââââââââ
 
 const prospectsState = {
   all: [], indFilter: 'all', regionFilter: 'all', scoreFilter: 'all',
@@ -2964,7 +2964,7 @@ function setProsFilter(type, el, evt) {
 
   document.querySelectorAll('#' + cid + ' .chip').forEach(c => c.classList.remove('on'));
 
-  // Tap active (non-All) chip again → reset to All
+  // Tap active (non-All) chip again â reset to All
   if (wasOn && el.dataset[attr] !== 'all') {
     document.querySelector('#' + cid + ' [data-' + attr + '="all"]').classList.add('on');
     if (type === 'ind')    prospectsState.indFilter    = 'all';
@@ -2981,7 +2981,7 @@ function setProsFilter(type, el, evt) {
 
 const PROSPECTS_JSON_URL = 'https://raw.githubusercontent.com/bribaseball66-SG/hubspot-sales/main/prospects.json';
 
-// ── Apollo-powered prospect fetch (via Worker proxy) ─────
+// ââ Apollo-powered prospect fetch (via Worker proxy) âââââ
 // Expects Worker routes:
 //   POST {BASE}/apollo/companies   body: { industries, location, perPage }
 //   POST {BASE}/apollo/people      body: { company_id / organization_id, titles }
@@ -3012,7 +3012,7 @@ async function fetchApolloProspects({ industries, location, perPage = 12 }) {
     }),
   });
   if (!res.ok) {
-    // 404 = route not configured, 501 = Apollo key missing → signal fallback
+    // 404 = route not configured, 501 = Apollo key missing â signal fallback
     if (res.status === 404 || res.status === 501) throw new Error('APOLLO_UNAVAILABLE');
     const txt = await res.text().catch(() => '');
     throw new Error('Apollo error ' + res.status + ' ' + txt.slice(0, 120));
@@ -3168,13 +3168,13 @@ async function fetchProspectBatch(region, existing, industry) {
 CRITICAL: Only use companies that actually exist. Use their real street address. Do not invent or make up company names.
 
 Ideal customer profile:
-- Employee count: 50–1,000 employees
-- Annual packaging spend: $50,000–$1,000,000+
-- Vary the industry each call — pick from: fitness supplements, sports nutrition, cosmetics/beauty, food & beverage, craft breweries, snack brands, CBD/cannabis, nutraceuticals, vitamins/supplements, health & wellness, CPG brands, pet food/treats, e-commerce/DTC brands, medical supply, dental supply, automotive accessories, contract manufacturing
+- Employee count: 50â1,000 employees
+- Annual packaging spend: $50,000â$1,000,000+
+- Vary the industry each call â pick from: fitness supplements, sports nutrition, cosmetics/beauty, food & beverage, craft breweries, snack brands, CBD/cannabis, nutraceuticals, vitamins/supplements, health & wellness, CPG brands, pet food/treats, e-commerce/DTC brands, medical supply, dental supply, automotive accessories, contract manufacturing
 
 Target decision makers: VP of Procurement, Purchasing Manager, Director of Supply Chain, Operations Manager, Procurement Specialist, VP of Operations
 
-Return ONLY a JSON array of exactly 3 objects — no markdown, no explanation:
+Return ONLY a JSON array of exactly 3 objects â no markdown, no explanation:
 [
   {
     "company": "Exact Legal Company Name",
@@ -3191,8 +3191,8 @@ Return ONLY a JSON array of exactly 3 objects — no markdown, no explanation:
 ]
 
 Scoring:
-- High = 200–1,000 employees, $250k+ annual packaging spend, active brand growth or product launches
-- Medium = 50–200 employees, $50k–$250k packaging spend, established buying cycle
+- High = 200â1,000 employees, $250k+ annual packaging spend, active brand growth or product launches
+- Medium = 50â200 employees, $50kâ$250k packaging spend, established buying cycle
 - Low = under 50 employees or niche, worth a cold call but lower volume`;
 
   const raw = await callClaude([{ role: 'user', content: prompt }], 'claude-opus-4-6', 1500);
@@ -3208,7 +3208,7 @@ Scoring:
   return parsed.map(p => ({ ...p, _region: region }));
 }
 
-// Five region sets — each set always spans all corners of Michigan so no run clusters
+// Five region sets â each set always spans all corners of Michigan so no run clusters
 const PROS_REGION_SETS = [
   ['Metro Detroit',  'Grand Rapids',  'Lansing',       'Traverse City'],
   ['Ann Arbor',      'Kalamazoo',     'Flint',          'Muskegon'],
@@ -3234,7 +3234,7 @@ async function generateProspects(append = false) {
     const nextIdx = (PROS_REGION_SETS.findIndex(s => s[0] === cur[0]) + 1) % PROS_REGION_SETS.length;
     regions = PROS_REGION_SETS[nextIdx];
   } else if (prospectsState.regionFilter !== 'all') {
-    // User has a region filter active — use that region for all 4 batches
+    // User has a region filter active â use that region for all 4 batches
     regions = Array(BATCHES).fill(prospectsState.regionFilter);
   } else {
     const dayIdx = new Date().getDay() % PROS_REGION_SETS.length;
@@ -3249,7 +3249,7 @@ async function generateProspects(append = false) {
   banner.style.cssText = 'padding:20px 0 16px;text-align:center';
   banner.innerHTML = `
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 1.5s linear infinite;opacity:.5"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-    <p style="margin-top:8px;font-size:13px;color:var(--dim)">Loading new prospects… <strong id="pros-count" style="color:var(--text)">0</strong> / ${TOTAL}</p>
+    <p style="margin-top:8px;font-size:13px;color:var(--dim)">Loading new prospectsâ¦ <strong id="pros-count" style="color:var(--text)">0</strong> / ${TOTAL}</p>
     <p style="font-size:11px;color:#475569;margin-top:2px">Regions: ${regions.join(', ')}</p>`;
 
   // If list is empty, show only the banner; otherwise insert at top
@@ -3262,7 +3262,7 @@ async function generateProspects(append = false) {
 
   if (append) {
     const btn = document.getElementById('load-more-btn');
-    if (btn) { btn.disabled = true; btn.textContent = 'Loading…'; }
+    if (btn) { btn.disabled = true; btn.textContent = 'Loadingâ¦'; }
   }
 
   let completed = 0;
@@ -3271,7 +3271,7 @@ async function generateProspects(append = false) {
   const existingNames = prospectsState.all.slice(0, 60).map(p => p.company).filter(Boolean);
   const activeIndustry = prospectsState.indFilter;
 
-  // Fire all 4 batches in parallel — each targets a different region
+  // Fire all 4 batches in parallel â each targets a different region
   const results = await Promise.allSettled(
     regions.map(region =>
       fetchProspectBatch(region, existingNames, activeIndustry).then(batch => {
@@ -3309,7 +3309,7 @@ async function generateProspects(append = false) {
 
   if (prospectsState.all.length === 0 && newProspects.length === 0) {
     list.innerHTML = `<div class="empty" style="padding-top:32px">
-      <p style="color:var(--red);margin-bottom:16px">Could not generate prospects — tap Retry or check connection.</p>
+      <p style="color:var(--red);margin-bottom:16px">Could not generate prospects â tap Retry or check connection.</p>
       <button class="wide-btn primary" style="max-width:160px;margin:0 auto" onclick="generateProspects(false)">Retry</button>
     </div>`;
   } else {
@@ -3319,9 +3319,9 @@ async function generateProspects(append = false) {
       const retryDiv = document.createElement('div');
       retryDiv.style.cssText = 'text-align:center;padding:12px 0 18px';
       retryDiv.innerHTML = failures === BATCHES
-        ? `<p style="font-size:13px;color:var(--red);margin-bottom:10px">All batches failed — check connection.</p>
+        ? `<p style="font-size:13px;color:var(--red);margin-bottom:10px">All batches failed â check connection.</p>
            <button class="wide-btn primary" style="max-width:180px;margin:0 auto" onclick="generateProspects(false)">Retry</button>`
-        : `<p style="font-size:12px;color:#475569;margin-bottom:8px">${failures} batch${failures > 1 ? 'es' : ''} failed — ${newProspects.length} loaded.</p>
+        : `<p style="font-size:12px;color:#475569;margin-bottom:8px">${failures} batch${failures > 1 ? 'es' : ''} failed â ${newProspects.length} loaded.</p>
            <button class="wide-btn" style="max-width:160px;margin:0 auto;background:var(--navyLL);color:var(--dim);border:1px solid var(--border)" onclick="loadProspects(true)">Load More</button>`;
       list.appendChild(retryDiv);
     }
@@ -3390,25 +3390,25 @@ function renderProspects() {
     const note        = notes[key] || '';
     const scoreClass  = p.score === 'High' ? 'score-high' : p.score === 'Medium' ? 'score-med' : 'score-low';
     return `<div class="pros-card${isContacted ? ' contacted' : ''}">
-      ${p._pinned ? `<div class="pros-saved-badge">⭐ Saved</div>` : ''}
+      ${p._pinned ? `<div class="pros-saved-badge">â­ Saved</div>` : ''}
       <div class="pros-top">
         <div class="pros-company">${esc(p.company)}</div>
         <span class="pros-score ${scoreClass}">${esc(p.score)}</span>
-        <button class="pros-dismiss-btn" onclick="dismissProspect('${key}')" title="Remove card">✕</button>
+        <button class="pros-dismiss-btn" onclick="dismissProspect('${key}')" title="Remove card">â</button>
       </div>
       <div class="pros-meta">
         <span class="pros-industry">${esc(IND_LABEL[p.industry] || p.industry)}</span>
         <span class="pros-location">${esc(p.location)}</span>
         ${p.employees ? `<span class="pros-location">${esc(p.employees)} emp.</span>` : ''}
       </div>
-      ${p.address ? `<div class="pros-need" style="font-size:12px;color:var(--dim);margin-bottom:4px">📍 ${esc(p.address)}</div>` : ''}
-      ${p.decisionMaker ? `<div class="pros-dm" style="margin-bottom:5px">👤 ${esc(p.decisionMaker)}</div>` : ''}
-      ${(p.contactEmail || p.contactPhone) ? `<div class="pros-dm" style="margin-bottom:5px;font-size:12px">${p.contactEmail ? `✉️ <a href="mailto:${esc(p.contactEmail)}" style="color:var(--accent);text-decoration:none">${esc(p.contactEmail)}</a>` : ''}${(p.contactEmail && p.contactPhone) ? ' &middot; ' : ''}${p.contactPhone ? `☎ <a href="tel:${esc(p.contactPhone)}" style="color:var(--accent);text-decoration:none">${esc(p.contactPhone)}</a>` : ''}</div>` : ''}
-      ${p.website ? `<div class="pros-need" style="font-size:11px;margin-bottom:5px">🌐 <a href="https://${esc((p.website || '').replace(/^https?:\/\//, ''))}" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none">${esc((p.website || '').replace(/^https?:\/\//, ''))}</a></div>` : ''}
-      <div class="pros-need" style="font-size:11px;margin-bottom:5px">🔗 <a href="https://www.linkedin.com/search/results/companies/?keywords=${encodeURIComponent(p.company)}" target="_blank" rel="noopener" style="color:#0a66c2;text-decoration:none">LinkedIn →</a>${p.decisionMaker ? ` &middot; <a href="https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(p.decisionMaker.replace(/,.*$/,'').trim() + ' ' + p.company)}" target="_blank" rel="noopener" style="color:#0a66c2;text-decoration:none">Find Contact</a>` : ''}</div>
+      ${p.address ? `<div class="pros-need" style="font-size:12px;color:var(--dim);margin-bottom:4px">ð ${esc(p.address)}</div>` : ''}
+      ${p.decisionMaker ? `<div class="pros-dm" style="margin-bottom:5px">ð¤ ${esc(p.decisionMaker)}</div>` : ''}
+      ${(p.contactEmail || p.contactPhone) ? `<div class="pros-dm" style="margin-bottom:5px;font-size:12px">${p.contactEmail ? `âï¸ <a href="mailto:${esc(p.contactEmail)}" style="color:var(--accent);text-decoration:none">${esc(p.contactEmail)}</a>` : ''}${(p.contactEmail && p.contactPhone) ? ' &middot; ' : ''}${p.contactPhone ? `â <a href="tel:${esc(p.contactPhone)}" style="color:var(--accent);text-decoration:none">${esc(p.contactPhone)}</a>` : ''}</div>` : ''}
+      ${p.website ? `<div class="pros-need" style="font-size:11px;margin-bottom:5px">ð <a href="https://${esc((p.website || '').replace(/^https?:\/\//, ''))}" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none">${esc((p.website || '').replace(/^https?:\/\//, ''))}</a></div>` : ''}
+      <div class="pros-need" style="font-size:11px;margin-bottom:5px">ð <a href="https://www.linkedin.com/search/results/companies/?keywords=${encodeURIComponent(p.company)}" target="_blank" rel="noopener" style="color:#0a66c2;text-decoration:none">LinkedIn â</a>${p.decisionMaker ? ` &middot; <a href="https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(p.decisionMaker.replace(/,.*$/,'').trim() + ' ' + p.company)}" target="_blank" rel="noopener" style="color:#0a66c2;text-decoration:none">Find Contact</a>` : ''}</div>
       <div class="pros-why">${esc(p.whyCallThem || '')}</div>
       ${p.packagingNeed ? `<div class="pros-need">Packaging: ${esc(p.packagingNeed)}</div>` : ''}
-      <textarea class="pros-notes-area" rows="2" placeholder="Notes…" onblur="saveProsNote(${i},this.value)">${esc(note)}</textarea>
+      <textarea class="pros-notes-area" rows="2" placeholder="Notesâ¦" onblur="saveProsNote(${i},this.value)">${esc(note)}</textarea>
       <div class="pros-actions">
         <button class="pros-icon-btn${isSaved ? ' saved' : ''}" onclick="toggleSaveProspect(${i})" title="${isSaved ? 'Remove from saved' : 'Save prospect'}">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="${isSaved ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
@@ -3441,7 +3441,7 @@ function toggleSaveProspect(idx) {
   const d = getProsData();
   if (!d.saved) d.saved = {};
   if (d.saved[key]) { delete d.saved[key]; toast('Removed from saved', 'ok'); }
-  else              { d.saved[key] = { ...p }; toast('Prospect saved ⭐', 'ok'); }
+  else              { d.saved[key] = { ...p }; toast('Prospect saved â­', 'ok'); }
   saveProsData(d);
   renderProspects();
 }
@@ -3453,7 +3453,7 @@ function markContacted(idx) {
   const d = getProsData();
   if (!d.contacted) d.contacted = {};
   if (d.contacted[key]) { delete d.contacted[key]; toast('Unmarked as contacted', 'ok'); }
-  else { d.contacted[key] = true; toast('Hidden — view under Contacted filter', 'ok'); }
+  else { d.contacted[key] = true; toast('Hidden â view under Contacted filter', 'ok'); }
   saveProsData(d);
   renderProspects();
 }
@@ -3469,7 +3469,7 @@ function saveProsNote(idx, text) {
   saveProsData(d);
 }
 
-// ── Cold Call Route Planner ───────────────────────────────
+// ââ Cold Call Route Planner âââââââââââââââââââââââââââââââ
 let routeState = { loading: false, stops: [] };
 // Restore persisted route stops
 try {
@@ -3506,18 +3506,18 @@ async function planRoute() {
   const loadDiv = document.createElement('div');
   loadDiv.id    = loadId;
   loadDiv.style.cssText = 'padding:24px 0;text-align:center';
-  loadDiv.innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 1.5s linear infinite;opacity:.5"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg><p style="margin-top:8px;font-size:13px;color:var(--dim)">Finding 15 stops near ${esc(city)}…</p>`;
+  loadDiv.innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 1.5s linear infinite;opacity:.5"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg><p style="margin-top:8px;font-size:13px;color:var(--dim)">Finding 15 stops near ${esc(city)}â¦</p>`;
   results.appendChild(loadDiv);
 
   const prompt = `You are a B2B sales route planner for Stephen Gould, a custom packaging company. Find 15 REAL Michigan businesses in the ${city} area for a cold call driving route.
 
 CRITICAL: Only use companies that actually exist and have a real street address in Michigan. Do not invent company names.
 
-Spread stops geographically across the broader region — include nearby cities and suburbs, not just ${city} itself. Cover a practical day-trip radius (60–90 miles). Mix industries: fitness supplements, cosmetics/beauty, food & beverage, cannabis/CBD, nutraceuticals, pet products, health & wellness, CPG, e-commerce, medical/dental supply, manufacturing, automotive accessories.
+Spread stops geographically across the broader region â include nearby cities and suburbs, not just ${city} itself. Cover a practical day-trip radius (60â90 miles). Mix industries: fitness supplements, cosmetics/beauty, food & beverage, cannabis/CBD, nutraceuticals, pet products, health & wellness, CPG, e-commerce, medical/dental supply, manufacturing, automotive accessories.
 
-Ideal customer: 50–1,000 employees, $50k–$1M+ annual packaging spend.
+Ideal customer: 50â1,000 employees, $50kâ$1M+ annual packaging spend.
 
-Order the 15 stops geographically to minimize total driving distance (nearest-neighbor routing). No markdown, no explanation — return ONLY a JSON array of exactly 15 objects:
+Order the 15 stops geographically to minimize total driving distance (nearest-neighbor routing). No markdown, no explanation â return ONLY a JSON array of exactly 15 objects:
 [
   {
     "company": "Exact Legal Company Name",
@@ -3557,7 +3557,7 @@ Order the 15 stops geographically to minimize total driving distance (nearest-ne
     const errDiv = document.createElement('div');
     errDiv.className = 'empty';
     errDiv.style.paddingTop = '16px';
-    errDiv.innerHTML = `<p style="color:var(--red);margin-bottom:10px">Failed — ${esc(e.message)}</p><button class="wide-btn primary" style="max-width:140px;margin:0 auto" onclick="planRoute()">Retry</button>`;
+    errDiv.innerHTML = `<p style="color:var(--red);margin-bottom:10px">Failed â ${esc(e.message)}</p><button class="wide-btn primary" style="max-width:140px;margin:0 auto" onclick="planRoute()">Retry</button>`;
     results.appendChild(errDiv);
   } finally {
     document.getElementById(loadId)?.remove();
@@ -3581,7 +3581,7 @@ function renderRoute() {
         <div class="rp-why" style="margin-top:6px">${esc(c.whyCallThem || '')}</div>
         ${c.website ? `<div class="rp-website">${esc(c.website)}</div>` : ''}
       </div>
-      <button class="rp-dismiss" onclick="removeRouteStop(${i})" title="Remove stop">✕</button>
+      <button class="rp-dismiss" onclick="removeRouteStop(${i})" title="Remove stop">â</button>
     </div>`).join('')
   + `<div class="rp-btns">
       <button class="rp-btn-map" onclick="openMapsRoute()">
@@ -3636,7 +3636,7 @@ function copyProsEmail() {
   const subj = document.getElementById('pros-email-subject')?.value || '';
   const body = document.getElementById('pros-email-body')?.value || '';
   const full = subj ? `Subject: ${subj}\n\n${body}` : body;
-  navigator.clipboard.writeText(full).then(() => toast('Email copied ✓', 'ok')).catch(() => toast('Copy failed', 'err'));
+  navigator.clipboard.writeText(full).then(() => toast('Email copied â', 'ok')).catch(() => toast('Copy failed', 'err'));
 }
 function openMailtoFromPros() {
   const to   = encodeURIComponent(document.getElementById('pros-email-to')?.value || '');
@@ -3654,7 +3654,7 @@ async function draftProspectEmail(idx) {
   if (!modal || !subj || !body) { toast('Email drafting not available', 'err'); return; }
 
   subj.value = '';
-  body.value = 'Drafting personalized cold email…';
+  body.value = 'Drafting personalized cold emailâ¦';
   modal.style.display = 'flex';
   document.getElementById('pros-email-to').value = p.contactEmail || '';
 
@@ -3673,7 +3673,7 @@ Rules:
 - Value prop: what Stephen Gould does that's relevant to THEM specifically
 - CTA: single, low-friction ask (15-min call or quick question)
 - Total length: under 100 words for the body
-- Tone: confident, direct, peer-to-peer — NOT salesy or desperate
+- Tone: confident, direct, peer-to-peer â NOT salesy or desperate
 
 Format your response as:
 SUBJECT: [subject line here]
@@ -3687,7 +3687,7 @@ SUBJECT: [subject line here]
     subj.value = subjMatch ? subjMatch[1].trim() : `Custom Packaging for ${p.company}`;
     body.value = bodyPart || draft;
   } catch (e) {
-    body.value = `Hi ${dmName},\n\nI noticed ${p.company} works in the ${IND_LABEL[p.industry] || p.industry} space and wanted to reach out. At Stephen Gould, we help companies like yours with custom packaging solutions — from ${p.packagingNeed || 'bottles to boxes'} — with competitive pricing and fast turnaround.\n\nWorth a quick 15-minute call this week?\n\nBrian Blakeslee\nStephen Gould Corporation`;
+    body.value = `Hi ${dmName},\n\nI noticed ${p.company} works in the ${IND_LABEL[p.industry] || p.industry} space and wanted to reach out. At Stephen Gould, we help companies like yours with custom packaging solutions â from ${p.packagingNeed || 'bottles to boxes'} â with competitive pricing and fast turnaround.\n\nWorth a quick 15-minute call this week?\n\nBrian Blakeslee\nStephen Gould Corporation`;
   }
 }
 
@@ -3743,7 +3743,7 @@ function showAddProspect(idx) {
   window._prosSubmitIdx = proKey(p); // store company key, not index
 }
 
-// ── Utilities ─────────────────────────────────────────────
+// ââ Utilities âââââââââââââââââââââââââââââââââââââââââââââ
 
 function toast(msg, type='') {
   const el = document.getElementById('toast');
@@ -3759,6 +3759,10 @@ function esc(s) {
 }
 
 boot();
+</script>
+
+<script id="sg-li-apollo">
+(function(){'use strict';var s=document.createElement('style');s.textContent='.li-apollo-panel{background:#0a0a0a;border:1px solid #1f2937;border-radius:12px;padding:16px;margin:0 0 16px}.li-apollo-panel h4{font-size:13px;font-weight:700;color:#e5e7eb;margin:0 0 12px;display:flex;align-items:center;gap:8px}.li-search-row{display:flex;gap:8px;flex-wrap:wrap}.li-search-input{flex:1;min-width:180px;background:#111;border:1px solid #2d3748;border-radius:8px;padding:8px 12px;color:#e5e7eb;font-size:13px;font-family:inherit}.li-search-input:focus{outline:none;border-color:#0077b5}.li-search-input::placeholder{color:#4b5563}.li-type-select{background:#111;border:1px solid #2d3748;border-radius:8px;padding:8px 12px;color:#e5e7eb;font-size:13px;font-family:inherit;cursor:pointer}.li-search-btn{background:#0077b5;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;font-family:inherit}.li-search-btn:hover{background:#005f8a}.li-search-btn:disabled{opacity:.5;cursor:default}.li-results{display:none;margin-top:14px}.li-results.visible{display:block}.li-results-meta{font-size:11px;color:#6b7280;margin-bottom:10px}.li-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}.li-card{background:#111;border:1px solid #1f2937;border-radius:10px;padding:14px;cursor:pointer;transition:border-color .15s,background .15s}.li-card:hover{border-color:#0077b5;background:#111824}.li-card-top{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px}.li-avatar-img{width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0}.li-avatar-ph{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#1e3a5f,#0d2035);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#4fa3d1}.li-cn{font-size:13px;font-weight:600;color:#e5e7eb;margin:0;line-height:1.3}.li-ct{font-size:11px;color:#9ca3af;margin:2px 0 0;line-height:1.3}.li-cc{font-size:11px;color:#6b7280;margin:1px 0 0}.li-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}.li-tag{font-size:10px;padding:2px 7px;border-radius:4px;background:#0d1f30;color:#4fa3d1;white-space:nowrap}.li-btns{display:flex;gap:5px;flex-wrap:wrap}.li-btn-sm{font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid #2d3748;background:#0d0d0d;color:#9ca3af;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:4px;font-family:inherit;white-space:nowrap}.li-btn-sm:hover{border-color:#4b5563;color:#e5e7eb}.li-btn-sm.blue{border-color:#0077b5;color:#4fa3d1}.li-btn-sm.blue:hover{background:#0077b510}.li-btn-sm.green{border-color:#059669;color:#34d399}.li-btn-sm.green:hover{background:#05966910}.sg-intel-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:10000;backdrop-filter:blur(4px);align-items:center;justify-content:center}.sg-intel-overlay.open{display:flex}.sg-intel-modal{background:#0d0d0d;border:1px solid #1f2937;border-radius:16px;width:620px;max-width:94vw;max-height:86vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 25px 60px rgba(0,0,0,.6)}.sg-intel-hd{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid #1a1a1a;flex-shrink:0}.sg-intel-av{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#1e3a5f,#0d2035);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#4fa3d1;flex-shrink:0;overflow:hidden}.sg-intel-av img{width:100%;height:100%;object-fit:cover}.sg-intel-hd-info{flex:1;min-width:0}.sg-intel-name{font-size:16px;font-weight:700;color:#f3f4f6;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sg-intel-sub{font-size:12px;color:#6b7280;margin:3px 0 0}.sg-intel-x{background:none;border:none;color:#6b7280;font-size:22px;cursor:pointer;padding:4px;line-height:1;flex-shrink:0}.sg-intel-x:hover{color:#e5e7eb}.sg-intel-tabs{display:flex;padding:0 20px;border-bottom:1px solid #1a1a1a;flex-shrink:0;overflow-x:auto}.sg-intel-tab{padding:10px 14px;font-size:12px;font-weight:600;color:#6b7280;cursor:pointer;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;background:none;white-space:nowrap;font-family:inherit}.sg-intel-tab.on{color:#0077b5;border-bottom-color:#0077b5}.sg-intel-tab:hover:not(.on){color:#9ca3af}.sg-intel-body{flex:1;overflow-y:auto;padding:18px 20px}.sg-intel-sec{margin-bottom:20px}.sg-intel-sec-title{font-size:10px;font-weight:700;color:#4b5563;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}.sg-intel-row{display:flex;gap:8px;margin-bottom:7px;font-size:12px}.sg-intel-lbl{color:#6b7280;width:95px;flex-shrink:0}.sg-intel-val{color:#d1d5db;flex:1;word-break:break-word}.sg-intel-link{color:#4fa3d1;text-decoration:none}.sg-intel-link:hover{text-decoration:underline}.sg-intel-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}.sg-intel-btn{padding:8px 14px;border-radius:8px;border:1px solid #2d3748;background:#111;color:#9ca3af;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;font-family:inherit;white-space:nowrap}.sg-intel-btn:hover{border-color:#4b5563;color:#e5e7eb}.sg-intel-btn.primary{background:#0077b5;border-color:#0077b5;color:#fff}.sg-intel-btn.primary:hover{background:#005f8a}.sg-intel-empty{color:#4b5563;font-size:12px;text-align:center;padding:24px 0}.sg-intel-loading{color:#6b7280;font-size:13px;text-align:center;padding:24px 0}.sg-intel-note{background:#111;border:1px solid #1f2937;border-radius:8px;padding:10px 12px;margin-bottom:8px}.sg-intel-note-date{font-size:10px;color:#4b5563;margin-bottom:4px}.sg-intel-note-text{font-size:12px;color:#d1d5db;line-height:1.5}.sg-divider{height:1px;background:#1a1a1a;margin:16px 0}';document.head.appendChild(s);var pt=document.getElementById('tab-prospects');if(!pt)return;if(!document.getElementById('li-apollo-panel')){var p=document.createElement('div');p.className='li-apollo-panel';p.id='li-apollo-panel';p.innerHTML='<h4><svg width="15" height="15" viewBox="0 0 24 24" fill="#0077b5"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg> LinkedIn + Apollo Prospect Search</h4><div class="li-search-row"><input class="li-search-input" id="li-query" type="text" placeholder="Name, company, or city…" onkeydown="if(event.key===\'Enter\')sgLiSearch()"><select class="li-type-select" id="li-type"><option value="people">People</option><option value="companies">Companies</option></select><button class="li-search-btn" id="li-search-btn" onclick="sgLiSearch()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> Search</button></div><div class="li-results" id="li-results"><div class="li-results-meta" id="li-meta"></div><div class="li-cards-grid" id="li-cards"></div></div>';pt.insertBefore(p,pt.firstChild);}if(!document.getElementById('sg-intel-overlay')){var ov=document.createElement('div');ov.className='sg-intel-overlay';ov.id='sg-intel-overlay';ov.innerHTML='<div class="sg-intel-modal"><div class="sg-intel-hd"><div class="sg-intel-av" id="sg-intel-av"></div><div class="sg-intel-hd-info"><div class="sg-intel-name" id="sg-intel-name">—</div><div class="sg-intel-sub" id="sg-intel-sub"></div></div><button class="sg-intel-x" onclick="sgCloseIntel()">✕</button></div><div class="sg-intel-tabs"><button class="sg-intel-tab on" onclick="sgSwitchTab(\'linkedin\',this)">🔗 LinkedIn</button><button class="sg-intel-tab" onclick="sgSwitchTab(\'apollo\',this)">🚀 Apollo Data</button><button class="sg-intel-tab" onclick="sgSwitchTab(\'hubspot\',this)">📋 HubSpot</button><button class="sg-intel-tab" onclick="sgSwitchTab(\'quotes\',this)">💰 Quotes</button></div><div class="sg-intel-body" id="sg-intel-body"></div></div>';document.body.appendChild(ov);ov.addEventListener('click',function(e){if(e.target===ov)sgCloseIntel();});}var _ci=null;window.sgCloseIntel=function(){document.getElementById('sg-intel-overlay').classList.remove('open');};window.sgSwitchTab=function(t,b){document.querySelectorAll('.sg-intel-tab').forEach(function(x){x.classList.remove('on');});b.classList.add('on');_sgRT(t,_ci);};window.sgOpenIntel=function(ds){try{var d=JSON.parse(decodeURIComponent(ds));_ci=d;var nm=d.name||'Unknown';document.getElementById('sg-intel-name').textContent=nm;document.getElementById('sg-intel-sub').textContent=[d.title,d.organization&&d.organization.name?d.organization.name:d.primary_domain].filter(Boolean).join(' · ');var av=document.getElementById('sg-intel-av');if(d.photo_url){av.innerHTML='<img src="'+d.photo_url+'" onerror="this.parentElement.textContent=\''+nm[0].toUpperCase()+'\'" alt="">';}else{av.textContent=(nm[0]||'?').toUpperCase();}document.querySelectorAll('.sg-intel-tab').forEach(function(t,i){t.classList.toggle('on',i===0);});_sgRT('linkedin',d);document.getElementById('sg-intel-overlay').classList.add('open');}catch(e){console.error('sgOpenIntel:',e);}};window._sgRT=function(tab,data){var body=document.getElementById('sg-intel-body');if(!data){body.innerHTML='<div class="sg-intel-loading">No data</div>';return;}if(tab==='linkedin'){var li=data.linkedin_url||'';var nm=data.name||'';var co=(data.organization&&data.organization.name)||nm;var np='https://www.linkedin.com/sales/search/people?query='+encodeURIComponent(JSON.stringify({keywords:nm}));var nc='https://www.linkedin.com/sales/search/company?query='+encodeURIComponent(JSON.stringify({keywords:co}));var loc=[data.city,data.state,data.country].filter(Boolean).join(', ');body.innerHTML='<div class="sg-intel-actions">'+(li?'<a href="'+li+'" target="_blank" class="sg-intel-btn primary"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg> LinkedIn Profile</a>':'')+'<a href="'+np+'" target="_blank" class="sg-intel-btn">🎯 Sales Nav – People</a><a href="'+nc+'" target="_blank" class="sg-intel-btn">🎯 Sales Nav – Company</a></div><div class="sg-intel-sec"><div class="sg-intel-sec-title">LinkedIn</div>'+(li?'<div class="sg-intel-row"><span class="sg-intel-lbl">Profile</span><span class="sg-intel-val"><a href="'+li+'" target="_blank" class="sg-intel-link">'+li+'</a></span></div>':'<div class="sg-intel-empty" style="text-align:left;padding:6px 0">No LinkedIn URL in Apollo. Use Sales Navigator to find them.</div>')+(data.headline?'<div class="sg-intel-row"><span class="sg-intel-lbl">Headline</span><span class="sg-intel-val">'+data.headline+'</span></div>':'')+(loc?'<div class="sg-intel-row"><span class="sg-intel-lbl">Location</span><span class="sg-intel-val">'+loc+'</span></div>':'')+'</div><div class="sg-divider"></div><div class="sg-intel-sec"><div class="sg-intel-sec-title">Sales Navigator</div><div class="sg-intel-actions" style="margin-bottom:0"><a href="https://www.linkedin.com/sales/search/people" target="_blank" class="sg-intel-btn">👤 People Search</a><a href="https://www.linkedin.com/sales/search/company" target="_blank" class="sg-intel-btn">🏢 Company Search</a><a href="https://www.linkedin.com/sales/lists" target="_blank" class="sg-intel-btn">📋 My Lists</a></div></div>';}else if(tab==='apollo'){var em=data.email?[{email:data.email}]:(data.emails||[]);var ph=data.phone_numbers||[];var org=data.organization||{};body.innerHTML='<div class="sg-intel-sec"><div class="sg-intel-sec-title">Contact</div>'+(em.length?em.map(function(e){return'<div class="sg-intel-row"><span class="sg-intel-lbl">Email</span><span class="sg-intel-val"><a href="mailto:'+(e.email||e)+'" class="sg-intel-link">'+(e.email||e)+'</a></span></div>';}).join(''):'<div class="sg-intel-row"><span class="sg-intel-lbl">Email</span><span class="sg-intel-val" style="color:#4b5563">Not in Apollo</span></div>')+ph.map(function(p){return'<div class="sg-intel-row"><span class="sg-intel-lbl">Phone</span><span class="sg-intel-val"><a href="tel:'+(p.sanitized_number||p)+'" class="sg-intel-link">'+(p.raw_number||p)+'</a></span></div>';}).join('')+(data.title?'<div class="sg-intel-row"><span class="sg-intel-lbl">Title</span><span class="sg-intel-val">'+data.title+'</span></div>':'')+(data.seniority?'<div class="sg-intel-row"><span class="sg-intel-lbl">Seniority</span><span class="sg-intel-val" style="text-transform:capitalize">'+data.seniority+'</span></div>':'')+'</div><div class="sg-divider"></div><div class="sg-intel-sec"><div class="sg-intel-sec-title">Company</div>'+(org.name?'<div class="sg-intel-row"><span class="sg-intel-lbl">Company</span><span class="sg-intel-val">'+org.name+'</span></div>':'')+(org.website_url?'<div class="sg-intel-row"><span class="sg-intel-lbl">Website</span><span class="sg-intel-val"><a href="'+org.website_url+'" target="_blank" class="sg-intel-link">'+org.website_url+'</a></span></div>':'')+(org.industry?'<div class="sg-intel-row"><span class="sg-intel-lbl">Industry</span><span class="sg-intel-val">'+org.industry+'</span></div>':'')+(org.estimated_num_employees?'<div class="sg-intel-row"><span class="sg-intel-lbl">Employees</span><span class="sg-intel-val">'+org.estimated_num_employees.toLocaleString()+'</span></div>':'')+(org.annual_revenue_printed?'<div class="sg-intel-row"><span class="sg-intel-lbl">Revenue</span><span class="sg-intel-val">'+org.annual_revenue_printed+'</span></div>':'')+(org.city?'<div class="sg-intel-row"><span class="sg-intel-lbl">HQ</span><span class="sg-intel-val">'+[org.city,org.state].filter(Boolean).join(', ')+'</span></div>':'')+'</div>';}else if(tab==='hubspot'){body.innerHTML='<div class="sg-intel-loading">🔍 Searching HubSpot…</div>';_sgHS(data.name||'',(data.organization&&data.organization.name)||'');}else if(tab==='quotes'){var hits=_sgMQ(data.name,(data.organization&&data.organization.name)||'');body.innerHTML=hits.length?'<div class="sg-intel-sec"><div class="sg-intel-sec-title">'+hits.length+' Quote'+(hits.length>1?'s':'')+' Found</div>'+hits.map(function(q){return'<div class="sg-intel-note"><div class="sg-intel-note-date">'+(q.date||q.created||'')+'</div><div class="sg-intel-note-text">'+(q.company||q.account||'')+' · '+(q.item||q.description||'Quote')+'</div></div>';}).join('')+'</div>':'<div class="sg-intel-empty">No saved quotes for this prospect yet.</div>';}};async function _sgHS(n,c){var b=document.getElementById('sg-intel-body');try{var t=localStorage.getItem('hs_token');if(!t){b.innerHTML='<div class="sg-intel-empty">HubSpot not connected.</div>';return;}var r=await fetch('https://api.hubapi.com/crm/v3/objects/contacts/search',{method:'POST',headers:{Authorization:'Bearer '+t,'Content-Type':'application/json'},body:JSON.stringify({query:n,limit:3,properties:['firstname','lastname','email','company','phone']})});var d=await r.json();if(!d.results||!d.results.length){b.innerHTML='<div class="sg-intel-empty">Not found in HubSpot.</div><div class="sg-intel-actions"><a href="https://app.hubspot.com/contacts/new" target="_blank" class="sg-intel-btn primary">+ Add to HubSpot</a></div>';return;}var c2=d.results[0],p=c2.properties;var fn=[p.firstname,p.lastname].filter(Boolean).join(' ');b.innerHTML='<div class="sg-intel-sec"><div class="sg-intel-sec-title">HubSpot Contact</div><div class="sg-intel-row"><span class="sg-intel-lbl">Name</span><span class="sg-intel-val">'+(fn||'—')+'</span></div><div class="sg-intel-row"><span class="sg-intel-lbl">Company</span><span class="sg-intel-val">'+(p.company||'—')+'</span></div>'+(p.email?'<div class="sg-intel-row"><span class="sg-intel-lbl">Email</span><span class="sg-intel-val"><a href="mailto:'+p.email+'" class="sg-intel-link">'+p.email+'</a></span></div>':'')+(p.phone?'<div class="sg-intel-row"><span class="sg-intel-lbl">Phone</span><span class="sg-intel-val"><a href="tel:'+p.phone+'" class="sg-intel-link">'+p.phone+'</a></span></div>':'')+'</div><div class="sg-intel-actions"><a href="https://app.hubspot.com/contacts/'+c2.id+'" target="_blank" class="sg-intel-btn primary">Open in HubSpot →</a><a href="https://app.hubspot.com/contacts/'+c2.id+'#notes" target="_blank" class="sg-intel-btn">View Notes</a></div>';}catch(e){b.innerHTML='<div class="sg-intel-empty">Error: '+e.message+'</div>';}}function _sgMQ(pn,cn){try{var e=JSON.parse(localStorage.getItem('events_data')||'[]');var p=(pn||'').toLowerCase(),c=(cn||'').toLowerCase();return e.filter(function(x){var s=JSON.stringify(x).toLowerCase();return(p&&s.includes(p))||(c&&s.includes(c));}).slice(0,8);}catch(e){return[];}}window.sgLiSearch=async function(){var q=(document.getElementById('li-query').value||'').trim();var tp=document.getElementById('li-type').value;if(!q)return;var btn=document.getElementById('li-search-btn');var res=document.getElementById('li-results');var cards=document.getElementById('li-cards');var meta=document.getElementById('li-meta');btn.disabled=true;btn.innerHTML='⏳ Searching…';cards.innerHTML='<div style="color:#6b7280;font-size:13px;grid-column:1/-1;padding:8px">Querying Apollo…</div>';meta.textContent='';res.classList.add('visible');try{var ak=localStorage.getItem('sg_apollo_key')||'';var h={'Content-Type':'application/json','Cache-Control':'no-cache'};if(ak)h['x-api-key']=ak;var ep=tp==='people'?'https://api.apollo.io/v1/mixed_people/search':'https://api.apollo.io/v1/mixed_companies/search';var pl=tp==='people'?{q_keywords:q,page:1,per_page:10}:{q_organization_name:q,page:1,per_page:10};var r=await fetch(ep,{method:'POST',headers:h,body:JSON.stringify(pl)});if(!r.ok)throw new Error('Apollo '+r.status+' — add your API key below');var d=await r.json();var results=(tp==='people'?(d.people||[]):(d.organizations||[])).map(function(x){return Object.assign({},x,{_type:tp==='people'?'person':'company'});});if(!results.length){cards.innerHTML='<div style="color:#6b7280;font-size:13px;grid-column:1/-1;padding:8px">No results. Try broader terms.</div>';meta.textContent='0 results';}else{meta.textContent=results.length+' result'+(results.length>1?'s':'')+' from Apollo · Click a card for full LinkedIn + HubSpot intel';cards.innerHTML=results.map(function(x){return _sgBC(x,tp);}).join('');}}catch(err){cards.innerHTML='<div style="color:#f87171;font-size:13px;grid-column:1/-1;padding:8px">'+err.message+'</div>'+(err.message.includes('401')||err.message.includes('key')?'<div style="color:#6b7280;font-size:11px;grid-column:1/-1;padding:2px 8px">Get your key at <a href=\'https://developer.apollo.io\' target=\'_blank\' style=\'color:#4fa3d1\'>developer.apollo.io</a> → store it in browser: localStorage.setItem(\'sg_apollo_key\',\'YOUR_KEY\')</div>':'');}btn.disabled=false;btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> Search';};function _sgBC(r,tp){var ip=tp==='people';var nm=r.name||'Unknown';var ini=nm.split(' ').map(function(n){return n[0];}).filter(Boolean).join('').substring(0,2).toUpperCase();var av=r.photo_url?'<img src="'+r.photo_url+'" class="li-avatar-img" onerror="this.outerHTML=\'<div class=li-avatar-ph>'+ini+'</div>\'" alt="">':'<div class="li-avatar-ph">'+ini+'</div>';var s1=ip?(r.title||''):(r.primary_domain||'');var s2=ip?((r.organization&&r.organization.name)||r.organization_name||')':'';var loc=[r.city,r.state||r.country].filter(Boolean).join(', ');var emp=r.estimated_num_employees?(r.estimated_num_employees>=1000?(r.estimated_num_employees/1000).toFixed(0)+'k':r.estimated_num_employees)+' emp.':'';var ind=r.industry||(r.organization&&r.organization.industry)||'';var li=r.linkedin_url||'';var nav='https://www.linkedin.com/sales/search/'+(ip?'people':'company')+'?query='+encodeURIComponent(JSON.stringify({keywords:nm}));var sf=encodeURIComponent(JSON.stringify(r)).replace(/'/g,'%27');return'<div class="li-card" onclick="sgOpenIntel(\''+sf+'\')"><div class="li-card-top">'+av+'<div style="min-width:0;flex:1"><div class="li-cn">'+nm+'</div>'+(s1?'<div class="li-ct">'+s1+'</div>':'')+(s2?'<div class="li-cc">'+s2+'</div>':'')+'</div></div><div class="li-tags">'+(loc?'<span class="li-tag">📍 '+loc+'</span>':'')+(ind?'<span class="li-tag">'+ind+'</span>':'')+(emp?'<span class="li-tag">'+emp+'</span>':'')+'</div><div class="li-btns" onclick="event.stopPropagation()">'+(li?'<a href="'+li+'" target="_blank" class="li-btn-sm blue"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg> LinkedIn</a>':'<a href="https://www.linkedin.com/search/results/all/?keywords='+encodeURIComponent(nm)+'" target="_blank" class="li-btn-sm">Find on LinkedIn</a>')+'<a href="'+nav+'" target="_blank" class="li-btn-sm">🎯 Sales Nav</a><button class="li-btn-sm green" onclick="event.stopPropagation();sgOpenIntel(\''+sf+'\')">Full Intel →</button></div></div>';}console.log('✅ SG LinkedIn+Apollo loaded');})();
 </script>
 </body>
 </html>
