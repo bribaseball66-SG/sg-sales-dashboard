@@ -1730,13 +1730,16 @@ async function syncHubSpot() {
   if(!state.settings.hubspot) { toast('Add your HubSpot API key in Settings first','error'); showTab('settings'); return; }
   toast('🔄 Syncing HubSpot contacts...','info');
   try {
-    const res = await fetch('https://api.hubapi.com/crm/v3/objects/contacts?limit=100&properties=firstname,lastname,company,jobtitle,email,phone,hs_lead_status', {
-      headers: { Authorization: `Bearer ${state.settings.hubspot}`, 'Content-Type': 'application/json' }
-    });
-    if(!res.ok) { const err=await res.json(); throw new Error(err.message||'HubSpot error'); }
-    const data = await res.json();
-    let added=0, updated=0;
-    (data.results||[]).forEach(r => {
+    let added=0, updated=0, after='', page=0;
+    const BASE = 'https://api.hubapi.com/crm/v3/objects/contacts?limit=100&properties=firstname,lastname,company,jobtitle,email,phone,hs_lead_status';
+    do {
+      const url = after ? `${BASE}&after=${encodeURIComponent(after)}` : BASE;
+      const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${state.settings.hubspot}`, 'Content-Type': 'application/json' }
+      });
+      if(!res.ok) { const err=await res.json(); throw new Error(err.message||'HubSpot error'); }
+      const data = await res.json();
+      (data.results||[]).forEach(r => {
       const p = r.properties;
       const existing = state.contacts.find(c=>c.email&&c.email===p.email);
       if(existing) {
@@ -1750,6 +1753,10 @@ async function syncHubSpot() {
         added++;
       }
     });
+      after = data.paging?.next?.after || '';
+      page++;
+      if(page > 50) break;
+    } while(after);
     saveAll(); renderAll();
     toast(`✅ HubSpot sync done: ${added} added, ${updated} updated`,'success');
   } catch(e) { toast('HubSpot sync failed: '+e.message,'error'); }
@@ -1840,13 +1847,7 @@ Generate a list of 8 realistic emerging Michigan-based brands in the relevant ve
 - Suggested search URL
 
 Format as JSON array: [{"brand":"","vertical":"","city":"","reason":"","url":"","followers":""}]`;
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':state.settings.claude,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:1500, messages:[{role:'user',content:prompt}] })
-    });
-    if(!res.ok) throw new Error('Claude API error '+res.status);
-    const data = await res.json();
+    const data = await callAI({ model:'claude-haiku-4-5-20251001', max_tokens:1500, messages:[{role:'user',content:prompt}] });
     const text = data.content?.[0]?.text||'';
     const jsonMatch = text.match(/\[.*\]/s);
     if(!jsonMatch) throw new Error('Could not parse response');
@@ -1922,15 +1923,22 @@ function dismissAlert(id) {
   updateBadges();
 }
 
+const AI_WORKER = 'https://sg-hubspot-proxy.bribaseball66sg.workers.dev/ai';
+async function callAI(payload) {
+  const res = await fetch(AI_WORKER, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(payload)
+  });
+  if(!res.ok) throw new Error('AI error '+res.status);
+  return res.json();
+}
+
 async function askAI() {
   const question = document.getElementById('ai-question').value.trim();
   if(!question) { toast('Type a question first','error'); return; }
   const el = document.getElementById('ai-answer');
   el.innerHTML = '<div style="display:flex;align-items:center;gap:8px;padding:12px;color:var(--text-muted)"><div class="spinner"></div> Thinking...</div>';
-  if(!state.settings.claude) {
-    el.innerHTML = `<div class="alert-card warning"><span class="alert-icon">🤖</span><div class="alert-content"><strong>Claude API Key Needed</strong><p>Add your Anthropic API key in Settings to use the AI coach. Get one free at console.anthropic.com.</p></div></div>`;
-    return;
-  }
   const context = `You are an elite sales coach for Brian Blakeslee, an outside sales rep at Stephen Gould Corporation specializing in custom packaging and supply chain. Brian focuses on fitness, cosmetics, food & beverage, and nutraceuticals packaging in Michigan.
 
 Current pipeline snapshot:
@@ -1943,13 +1951,7 @@ Current pipeline snapshot:
 
 Brian's goal: Build a book of business, move toward 1099 straight commission. Push him toward action, not analysis. Be direct, punchy, specific.`;
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':state.settings.claude,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:1000, system:context, messages:[{role:'user',content:question}] })
-    });
-    if(!res.ok) throw new Error('API error '+res.status);
-    const data = await res.json();
+    const data = await callAI({ model:'claude-sonnet-4-6', max_tokens:1000, system:context, messages:[{role:'user',content:question}] });
     const text = data.content?.[0]?.text||'No response';
     el.innerHTML = `<div class="card" style="border-left:3px solid var(--red);padding:16px"><div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px">AI Coach says:</div><div style="font-size:14px;line-height:1.7;white-space:pre-wrap">${text}</div></div>`;
   } catch(e) { el.innerHTML=`<div class="alert-card urgent"><span class="alert-icon">❌</span><div class="alert-content"><strong>Error</strong><p>${e.message}</p></div></div>`; }
@@ -1976,25 +1978,15 @@ async function processOCRImage(dataUrl, filename) {
   const results = document.getElementById('ocr-results');
   preview.innerHTML = `<img src="${dataUrl}" style="max-width:100%;max-height:300px;border-radius:8px;border:1px solid var(--border)">`;
   results.innerHTML = '<div class="card" style="text-align:center;padding:24px"><div class="spinner"></div><p style="margin-top:10px;color:var(--text-muted)">AI is reading your image and extracting contact info...</p></div>';
-  if(!state.settings.claude) {
-    results.innerHTML = `<div class="alert-card warning"><span class="alert-icon">🤖</span><div class="alert-content"><strong>Claude API Key Required</strong><p>Add your Anthropic API key in Settings to use Screenshot OCR. The image has been previewed above — extract contacts manually.</p></div></div>`;
-    return;
-  }
   const base64 = dataUrl.split(',')[1];
   const mediaType = dataUrl.split(';')[0].split(':')[1];
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':state.settings.claude,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body: JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:2000,
-        messages:[{ role:'user', content:[
-          { type:'image', source:{ type:'base64', media_type:mediaType, data:base64 } },
-          { type:'text', text:'Extract ALL contact information from this image. Return a JSON array of contacts. Each contact: {"firstName":"","lastName":"","company":"","title":"","email":"","phone":"","notes":""}. Extract every person you can see. If a field is not visible, use empty string. Return ONLY the JSON array, no other text.' }
-        ]}]
-      })
+    const data = await callAI({ model:'claude-haiku-4-5-20251001', max_tokens:2000,
+      messages:[{ role:'user', content:[
+        { type:'image', source:{ type:'base64', media_type:mediaType, data:base64 } },
+        { type:'text', text:'Extract ALL contact information from this image. Return a JSON array of contacts. Each contact: {"firstName":"","lastName":"","company":"","title":"","email":"","phone":"","notes":""}. Extract every person you can see. If a field is not visible, use empty string. Return ONLY the JSON array, no other text.' }
+      ]}]
     });
-    if(!res.ok) throw new Error('API error '+res.status);
-    const data = await res.json();
     const text = data.content?.[0]?.text||'[]';
     const jsonMatch = text.match(/\[.*\]/s);
     if(!jsonMatch) throw new Error('No contacts found in image');
@@ -2072,13 +2064,9 @@ async function scanOutlook() {
     }
     if(!noReplies.length) { status.innerHTML='<div class="alert-card success"><span class="alert-icon">✅</span><div class="alert-content"><strong>Everyone replied!</strong><p>No unreplied cold emails found.</p></div></div>'; return; }
     status.innerHTML = `<div class="alert-card warning"><span class="alert-icon">📬</span><div class="alert-content"><strong>${noReplies.length} unreplied emails found</strong><p>Generating follow-up drafts...</p></div></div>`;
-    if(state.settings.claude) {
+    {
       for(const {email, recipient} of noReplies.slice(0,5)) {
-        const draftRes = await fetch('https://api.anthropic.com/v1/messages', {
-          method:'POST', headers:{'Content-Type':'application/json','x-api-key':state.settings.claude,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-          body:JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:400, messages:[{ role:'user', content:`Write a short ${tone} follow-up email (3-4 sentences) from Brian Blakeslee at Stephen Gould Corporation to ${recipient.name||recipient.address} who hasn't replied to his cold outreach about packaging solutions. Original subject: "${email.subject}". Be natural, not pushy. No subject line needed, just the email body.` }] })
-        });
-        const draftData = await draftRes.json();
+        const draftData = await callAI({ model:'claude-haiku-4-5-20251001', max_tokens:400, messages:[{ role:'user', content:`Write a short ${tone} follow-up email (3-4 sentences) from Brian Blakeslee at Stephen Gould Corporation to ${recipient.name||recipient.address} who hasn't replied to his cold outreach about packaging solutions. Original subject: "${email.subject}". Be natural, not pushy. No subject line needed, just the email body.` }] });
         const draftBody = draftData.content?.[0]?.text||'';
         // Create draft in Outlook
         await fetch('https://graph.microsoft.com/v1.0/me/messages', {
@@ -2087,8 +2075,6 @@ async function scanOutlook() {
         });
       }
       results.innerHTML = `<div class="alert-card success"><span class="alert-icon">✅</span><div class="alert-content"><strong>Follow-up drafts created!</strong><p>${Math.min(noReplies.length,5)} draft emails have been saved to your Outlook Drafts folder. Review and send when ready.</p></div></div>`;
-    } else {
-      results.innerHTML = noReplies.map(({email,recipient})=>`<div class="card"><div class="card-header"><h3>${recipient.name||recipient.address}</h3><span class="badge badge-yellow">No Reply</span></div><div style="font-size:13px;color:var(--text-muted)">Sent: ${new Date(email.sentDateTime).toLocaleDateString()} · Subject: ${email.subject}</div><button class="btn btn-primary btn-sm" style="margin-top:8px" onclick="draftEmailManual('${encodeURIComponent(recipient.address)}','${encodeURIComponent(email.subject)}')">Draft Follow-Up</button></div>`).join('');
     }
     status.innerHTML = '';
   } catch(e) { status.innerHTML=`<div class="alert-card urgent"><span class="alert-icon">❌</span><div class="alert-content"><strong>Error</strong><p>${e.message}</p></div></div>`; }
