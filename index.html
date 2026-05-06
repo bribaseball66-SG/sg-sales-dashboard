@@ -1731,7 +1731,7 @@ async function syncHubSpot() {
   toast('🔄 Syncing HubSpot contacts...','info');
   try {
     let added=0, updated=0, after='', page=0;
-    const BASE = 'https://api.hubapi.com/crm/v3/objects/contacts?limit=100&properties=firstname,lastname,company,jobtitle,email,phone,hs_lead_status';
+    const BASE = 'https://sg-hubspot-proxy.bribaseball66sg.workers.dev/hubspot/crm/v3/objects/contacts?limit=100&properties=firstname,lastname,company,jobtitle,email,phone,hs_lead_status';
     do {
       const url = after ? `${BASE}&after=${encodeURIComponent(after)}` : BASE;
       const res = await fetch(url, {
@@ -2655,7 +2655,7 @@ init();
           </div>`;
         return;
       }
-      const resp = await fetch('https://api.hubapi.com/crm/v3/objects/contacts/search', {
+      const resp = await fetch('https://sg-hubspot-proxy.bribaseball66sg.workers.dev/hubspot/crm/v3/objects/contacts/search', {
         method: 'POST',
         headers: { Authorization: `Bearer ${tok}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: name, limit: 3, properties: ['firstname','lastname','email','company','phone'] })
