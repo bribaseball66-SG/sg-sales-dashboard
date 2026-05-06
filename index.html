@@ -1132,7 +1132,7 @@ function contactCardHTML(c, compact=false) {
     <div class="avatar ${priorityColor(c.priority)}">${initials(c)}</div>
     <div class="contact-info">
       <div class="name">${c.firstName} ${c.lastName||''} ${staleFlag} ${fuFlag}</div>
-      <div class="sub">${c.title||''}${c.title&&c.company?' · ':''}${c.company||''}</div>
+      <div class="sub">${c.title||''}${c.title&&c.company?' · ':''}${c.company||''}</div>${c.email||c.phone||c.city?'<div style="font-size:11px;color:#888;margin-top:2px;line-height:1.4">'+[c.email?'✉️ '+c.email:'',c.phone?'📞 '+c.phone:'',c.city?(c.city+(c.state?', '+c.state:'')):''].filter(Boolean).join(' · ')+'</div>':''}
       ${!compact&&c.email?`<div class="sub" style="font-size:11px;color:var(--text-muted)">${c.email}</div>`:''}
     </div>
     <div class="contact-actions" onclick="event.stopPropagation()">
@@ -1361,7 +1361,7 @@ function logCall() {
   const outcome = document.getElementById('log-outcome').value;
   const notes = document.getElementById('log-notes').value;
   const fu = document.getElementById('log-followup').value;
-  const contact = state.contacts.find(c=>c.id===cid);
+  const contact = state.contacts.find(c=>c.hubspotId===r.id)||state.contacts.find(c=>c.id===cid);
   if(!cid) { toast('Select a contact first','error'); return; }
   const entry = { id:uid(), contactId:cid, contactName:`${contact?.firstName||''} ${contact?.lastName||''}`.trim()+' — '+(contact?.company||''), date:new Date().toISOString(), outcome, notes, followupDate:fu };
   state.calllog.push(entry);
@@ -1731,7 +1731,7 @@ async function syncHubSpot() {
   toast('🔄 Syncing HubSpot contacts...','info');
   try {
     let added=0, updated=0, after='', page=0;
-    const BASE = 'https://sg-hubspot-proxy.bribaseball66sg.workers.dev/hubspot/crm/v3/objects/contacts?limit=100&properties=firstname,lastname,company,jobtitle,email,phone,hs_lead_status';
+    const BASE = 'https://sg-hubspot-proxy.bribaseball66sg.workers.dev/hubspot/crm/v3/objects/contacts?limit=100&properties=firstname,lastname,company,jobtitle,email,phone,hs_lead_status,address,city,state,zip,country';
     do {
       const url = after ? `${BASE}&after=${encodeURIComponent(after)}` : BASE;
       const res = await fetch(url, {
@@ -1749,7 +1749,7 @@ async function syncHubSpot() {
         existing.hubspotId = r.id;
         updated++;
       } else if(p.firstname||p.email) {
-        state.contacts.push({ id:uid(), firstName:p.firstname||'', lastName:p.lastname||'', company:p.company||'', title:p.jobtitle||'', email:p.email||'', phone:p.phone||'', priority:'cold', notes:'Imported from HubSpot', lastContact:new Date().toISOString().split('T')[0], tags:[], calls:[], quotes:[], hubspotId:r.id, createdAt:new Date().toISOString() });
+        state.contacts.push({ id:uid(), firstName:p.firstname||'', lastName:p.lastname||'', company:p.company||'', title:p.jobtitle||'', email:p.email||'', phone:p.phone||'', address:p.address||'', city:p.city||'', state:p.state||'', zip:p.zip||'', country:p.country||'', priority:'cold', notes:'Imported from HubSpot', lastContact:new Date().toISOString().split('T')[0], tags:[], calls:[], quotes:[], hubspotId:r.id, createdAt:new Date().toISOString() });
         added++;
       }
     });
