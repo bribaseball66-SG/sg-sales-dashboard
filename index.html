@@ -605,7 +605,18 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
       <div class="form-group"><label>HubSpot API Key</label><input class="form-control" id="set-hubspot" type="password" placeholder="pat-na1-..."></div>
       <div class="form-group"><label>LinkedIn Sales Navigator</label><input class="form-control" id="set-linkedin-note" type="text" value="Browser-based — no API key needed" disabled style="color:var(--text-muted)"></div>
       <div class="form-group"><label>Claude / Anthropic API Key</label><input class="form-control" id="set-claude" type="password" placeholder="sk-ant-..."></div>
-      <div class="form-group"><label>Microsoft Graph Token (Outlook)</label><input class="form-control" id="set-msgraph" type="password" placeholder="Paste access token..."></div>
+      <div class="form-group">
+  <label>Outlook / Microsoft 365</label>
+  <div style="background:var(--gray-bg);border-radius:var(--radius-sm);padding:12px;margin-top:4px">
+    <input class="form-control" id="set-ms-clientid" placeholder="Azure App Client ID (one-time setup)" style="margin-bottom:8px">
+    <div style="font-size:11px;color:var(--text-muted);margin-bottom:10px">Need a Client ID? Register a free Azure app at portal.azure.com &rarr; App registrations &rarr; New registration. Set Redirect URI type to Single-page application and value to: <strong>https://sg-sales-dashboard.vercel.app/</strong></div>
+    <div id="ms-auth-status" style="margin-bottom:8px;font-size:13px"></div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="btn btn-primary" id="btn-connect-outlook" onclick="connectMSGraph()" style="font-size:13px">🔗 Connect Outlook</button>
+      <button class="btn btn-secondary" id="btn-disconnect-outlook" onclick="disconnectMSGraph()" style="display:none;font-size:13px">&#10005; Disconnect</button>
+    </div>
+  </div>
+</div>
       <button class="btn btn-primary" onclick="saveSettings()">💾 Save Keys</button>
     </div>
     <div class="card">
@@ -2108,13 +2119,96 @@ function importOCRContact(i, encoded) {
 }
 
 // ─── OUTLOOK / MS GRAPH ───────────────────────────────────────
-function connectMSGraph() {
-  const clientId = 'YOUR_AZURE_APP_CLIENT_ID';
-  const redirectUri = encodeURIComponent(window.location.href.split('?')[0]);
-  const scope = encodeURIComponent('Mail.Read Mail.ReadWrite Mail.Send');
-  const authUrl = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${clientId}&response_type=token&redirect_uri=${redirectUri}&scope=${scope}`;
-  toast('Microsoft OAuth requires Azure App registration. See Settings for manual token entry.','warning');
-  window.open('https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade', '_blank');
+function generateCodeVerifier(){
+  const a=new Uint8Array(32);crypto.getRandomValues(a);
+  return btoa(String.fromCharCode(...a)).replace(/\+/g,"-").replace(/\//g,"_").replace(/=/g,"");
+}
+async function generateCodeChallenge(v){
+  const d=new TextEncoder().encode(v);
+  const h=await crypto.subtle.digest("SHA-256",d);
+  return btoa(String.fromCharCode(...new Uint8Array(h))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=/g,"");
+}
+async function connectMSGraph(){
+  const el=document.getElementById("set-ms-clientid");
+  const clientId=(el?.value.trim())||localStorage.getItem("ms_client_id")||"";
+  if(!clientId){alert("Enter your Azure App Client ID first.\n\nQuick setup (3 min, free):\n1. portal.azure.com → App registrations → New registration\n2. Set Redirect URI (Single-page application) to: https://sg-sales-dashboard.vercel.app/\n3. Copy the Application (client) ID and paste it above");return;}
+  localStorage.setItem("ms_client_id",clientId);
+  const verifier=generateCodeVerifier();
+  const challenge=await generateCodeChallenge(verifier);
+  sessionStorage.setItem("ms_pkce_v",verifier);
+  sessionStorage.setItem("ms_client_sess",clientId);
+  const redir=window.location.origin+"/";
+  const p=new URLSearchParams({client_id:clientId,response_type:"code",redirect_uri:redir,
+    scope:"openid profile User.Read Mail.ReadWrite Calendars.Read offline_access",
+    code_challenge:challenge,code_challenge_method:"S256",
+    state:"ms_oauth_"+Date.now(),response_mode:"query"});
+  const popup=window.open("https://login.microsoftonline.com/common/oauth2/v2.0/authorize?"+p,"ms-auth","width=520,height=640,left=200,top=100,scrollbars=yes");
+  if(!popup){alert("Popup blocked — please allow popups for this site and try again.");return;}
+  window.addEventListener("message",async function msHandler(e){
+    if(e.origin!==window.location.origin||e.data?.type!=="ms_auth_code")return;
+    window.removeEventListener("message",msHandler);
+    await exchangeMSToken(e.data.code);
+  });
+}
+async function exchangeMSToken(code){
+  const clientId=sessionStorage.getItem("ms_client_sess")||localStorage.getItem("ms_client_id");
+  const verifier=sessionStorage.getItem("ms_pkce_v");
+  const redir=window.location.origin+"/";
+  try{
+    const resp=await fetch("https://login.microsoftonline.com/common/oauth2/v2.0/token",{
+      method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},
+      body:new URLSearchParams({client_id:clientId,code,redirect_uri:redir,
+        grant_type:"authorization_code",code_verifier:verifier,
+        scope:"openid profile User.Read Mail.ReadWrite Calendars.Read offline_access"})
+    });
+    const data=await resp.json();
+    if(data.access_token){
+      localStorage.setItem("ms_access_token",data.access_token);
+      if(data.refresh_token)localStorage.setItem("ms_refresh_token",data.refresh_token);
+      localStorage.setItem("ms_token_expiry",String(Date.now()+(data.expires_in*1000)));
+      state.keys.msgraph=data.access_token;
+      sessionStorage.removeItem("ms_pkce_v");
+      updateMSAuthStatus(true);
+    } else {
+      alert("Auth failed: "+(data.error_description||data.error||"Unknown error"));
+    }
+  }catch(e){alert("Auth error: "+e.message);}
+}
+async function getMSToken(){
+  const expiry=parseInt(localStorage.getItem("ms_token_expiry")||"0");
+  if(Date.now()<expiry-60000)return localStorage.getItem("ms_access_token");
+  const rt=localStorage.getItem("ms_refresh_token");
+  const cid=localStorage.getItem("ms_client_id");
+  if(!rt||!cid)return null;
+  try{
+    const resp=await fetch("https://login.microsoftonline.com/common/oauth2/v2.0/token",{
+      method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},
+      body:new URLSearchParams({client_id:cid,grant_type:"refresh_token",refresh_token:rt,
+        scope:"openid profile User.Read Mail.ReadWrite Calendars.Read offline_access"})
+    });
+    const data=await resp.json();
+    if(data.access_token){
+      localStorage.setItem("ms_access_token",data.access_token);
+      if(data.refresh_token)localStorage.setItem("ms_refresh_token",data.refresh_token);
+      localStorage.setItem("ms_token_expiry",String(Date.now()+(data.expires_in*1000)));
+      state.keys.msgraph=data.access_token;
+      return data.access_token;
+    }
+  }catch{}
+  return null;
+}
+function disconnectMSGraph(){
+  ["ms_access_token","ms_refresh_token","ms_token_expiry"].forEach(k=>localStorage.removeItem(k));
+  state.keys.msgraph="";
+  updateMSAuthStatus(false);
+}
+function updateMSAuthStatus(connected){
+  const s=document.getElementById("ms-auth-status");
+  const cb=document.getElementById("btn-connect-outlook");
+  const db=document.getElementById("btn-disconnect-outlook");
+  if(s)s.innerHTML=connected?'<span style="color:var(--green);font-weight:600">&#10003; Connected to Outlook</span>':"" ;
+  if(cb)cb.style.display=connected?"none":"" ;
+  if(db)db.style.display=connected?"":"none";
 }
 
 async function scanOutlook() {
@@ -2947,6 +3041,33 @@ init();
   console.log('✅ SG Sales Navigator integration loaded');
 })();
 
+
+// ── Microsoft OAuth init ──
+(function(){
+  // Handle popup OAuth redirect
+  const qp=new URLSearchParams(window.location.search);
+  const authCode=qp.get("code");
+  const authState=qp.get("state");
+  if(authCode&&authState&&authState.startsWith("ms_oauth_")&&window.opener){
+    window.opener.postMessage({type:"ms_auth_code",code:authCode},window.location.origin);
+    window.close();
+    return;
+  }
+  // Restore token and status on page load
+  const stored=localStorage.getItem("ms_access_token");
+  const expiry=parseInt(localStorage.getItem("ms_token_expiry")||"0");
+  if(stored&&Date.now()<expiry){
+    if(typeof state!=="undefined")state.keys.msgraph=stored;
+    setTimeout(()=>updateMSAuthStatus(true),500);
+  }
+  // Restore client ID field
+  const cid=localStorage.getItem("ms_client_id");
+  if(cid)setTimeout(()=>{const el=document.getElementById("set-ms-clientid");if(el&&!el.value)el.value=cid;},400);
+  // Auto-refresh expired token
+  if(stored&&Date.now()>=expiry-60000&&localStorage.getItem("ms_refresh_token")){
+    setTimeout(()=>getMSToken().then(t=>{if(t)updateMSAuthStatus(true);}),600);
+  }
+})();
 </script>
 </body>
 </html>
