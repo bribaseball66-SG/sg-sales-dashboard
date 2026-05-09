@@ -199,7 +199,7 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
     <div class="nav-item" data-tab="projects"><span class="icon">📁</span>Projects</div>
     <div class="nav-item" data-tab="calllog"><span class="icon">📞</span>Call Log</div>
     <div class="nav-section">Growth</div>
-    <div class="nav-item" data-tab="prospecting"><span class="icon">🔍</span>Prospecting</div>
+    <div class="nav-item" data-tab="prospecting" onclick="renderProspects()"><span class="icon">💼</span>Prospects</div>
     <div class="nav-item" data-tab="social"><span class="icon">💬</span>Social</div>
     <div class="nav-item" data-tab="suppliers"><span class="icon">🏭</span>Suppliers</div>
     <div class="nav-section">Tools</div>
@@ -404,57 +404,85 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
 
 <!-- ===== TAB: PROSPECTING ===== -->
 <div class="tab-pane" id="tab-prospecting">
-  <div class="sec-title">Lead Generation</div>
+  <div class="sec-title">LinkedIn Prospecting</div>
   <div class="card">
-    <div class="card-header"><h3>🔍 Apollo Lead Search — Michigan</h3></div>
+    <div class="card-header"><h3>🔍 Sales Navigator Search Launcher</h3></div>
     <div class="form-row">
-      <div class="form-group"><label>Industry Vertical</label>
-        <select class="form-control" id="apollo-industry">
-          <option value="fitness">🏋️ Fitness & Supplements</option>
-          <option value="cosmetics">💄 Cosmetics & Beauty</option>
-          <option value="food_beverage">🥤 Food & Beverage</option>
-          <option value="nutraceuticals">💊 Nutraceuticals</option>
-          <option value="personal_care">🧴 Personal Care</option>
-          <option value="cannabis">🌿 Cannabis & CBD</option>
-        </select>
-      </div>
       <div class="form-group"><label>City / Region</label>
-        <select class="form-control" id="apollo-city">
+        <select class="form-control" id="sn-city">
           <option value="">All Michigan</option>
-          <option value="Detroit">Detroit</option>
-          <option value="Grand Rapids">Grand Rapids</option>
-          <option value="Ann Arbor">Ann Arbor</option>
-          <option value="Lansing">Lansing</option>
-          <option value="Kalamazoo">Kalamazoo</option>
-          <option value="Troy">Troy</option>
-          <option value="Novi">Novi</option>
-          <option value="Rochester Hills">Rochester Hills</option>
+          <option value="Detroit, Michigan">Detroit</option>
+          <option value="Grand Rapids, Michigan">Grand Rapids</option>
+          <option value="Ann Arbor, Michigan">Ann Arbor</option>
+          <option value="Lansing, Michigan">Lansing</option>
+          <option value="Troy, Michigan">Troy</option>
+          <option value="Bloomfield Hills, Michigan">Bloomfield Hills</option>
+          <option value="Birmingham, Michigan">Birmingham</option>
+          <option value="Kalamazoo, Michigan">Kalamazoo</option>
+          <option value="Flint, Michigan">Flint</option>
+          <option value="Dearborn, Michigan">Dearborn</option>
+          <option value="Chicago, Illinois">Chicago</option>
+          <option value="Cleveland, Ohio">Cleveland</option>
+          <option value="Columbus, Ohio">Columbus</option>
+          <option value="Indianapolis, Indiana">Indianapolis</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Industry</label>
+        <select class="form-control" id="sn-industry">
+          <option value="">All Industries</option>
+          <option value="Cosmetics">Cosmetics and Beauty</option>
+          <option value="Food and Beverages">Food and Beverage</option>
+          <option value="Health, Wellness and Fitness">Health and Wellness</option>
+          <option value="Consumer Goods">Consumer Goods</option>
+          <option value="Pharmaceuticals">Pharmaceuticals</option>
+          <option value="Manufacturing">Manufacturing</option>
+          <option value="Retail">Retail</option>
+          <option value="Packaging and Containers">Packaging and Containers</option>
+          <option value="Apparel and Fashion">Apparel and Fashion</option>
+          <option value="Chemicals">Chemicals</option>
+          <option value="Biotechnology">Biotechnology</option>
+          <option value="Medical Devices">Medical Devices</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Job Title Keywords</label>
+        <input class="form-control" id="sn-title" placeholder="e.g. Procurement, Packaging, Supply Chain">
+      </div>
+      <div class="form-group"><label>Company Headcount</label>
+        <select class="form-control" id="sn-size">
+          <option value="">Any Size</option>
+          <option value="B">1 to 10</option>
+          <option value="C">11 to 50</option>
+          <option value="D">51 to 200</option>
+          <option value="E">201 to 500</option>
+          <option value="F">501 to 1000</option>
+          <option value="G">1001 to 5000</option>
         </select>
       </div>
     </div>
-    <div class="form-row">
-      <div class="form-group"><label>Job Title / Decision Maker</label>
-        <select class="form-control" id="apollo-title">
-          <option value="ceo">CEO / Founder / Owner</option>
-          <option value="procurement">Procurement / Purchasing Manager</option>
-          <option value="ops">VP Operations / COO</option>
-          <option value="brand">Brand Manager / Product Manager</option>
-          <option value="supply">Supply Chain Manager</option>
-        </select>
-      </div>
-      <div class="form-group"><label>Company Size</label>
-        <select class="form-control" id="apollo-size">
-          <option value="1,50">1–50 (SMB)</option>
-          <option value="51,200">51–200</option>
-          <option value="201,1000">201–1,000</option>
-          <option value="1001,10000">1,000+</option>
-        </select>
-      </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
+      <button class="btn btn-primary" onclick="openSalesNav()">🚀 Open in Sales Navigator</button>
+      <button class="btn btn-secondary" onclick="openLinkedInSearch()">🔗 Open LinkedIn Search</button>
     </div>
-    <button class="btn btn-primary" onclick="searchApollo()">🚀 Search Leads</button>
-    <button class="btn btn-secondary" style="margin-left:8px" onclick="openModal('coldRoute')">🗺️ Plan Cold Call Route</button>
   </div>
-  <div id="apollo-results"></div>
+  <div class="card" style="margin-top:18px">
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+      <h3>📋 Prospect Tracker</h3>
+      <button class="btn btn-primary btn-sm" onclick="window._editingProspectId=null;['name','title','company','city','email','phone','linkedin','notes'].forEach(f=>{const el=document.getElementById('prospect-'+f);if(el)el.value='';});const ss=document.getElementById('prospect-stage');if(ss)ss.value='new';openModal('addProspect')">+ Add Prospect</button>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+      <select class="form-control" id="prospect-filter-stage" style="width:auto;min-width:140px" onchange="renderProspects()">
+        <option value="">All Stages</option>
+        <option value="new">New</option>
+        <option value="contacted">Contacted</option>
+        <option value="replied">Replied</option>
+        <option value="meeting">Meeting Set</option>
+        <option value="qualified">Qualified</option>
+        <option value="passed">Passed</option>
+      </select>
+      <input class="form-control" id="prospect-search" placeholder="Search prospects..." style="width:auto;min-width:200px" oninput="renderProspects()">
+    </div>
+    <div id="prospect-cards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px"></div>
+  </div>
 </div>
 
 <!-- ===== TAB: SOCIAL ===== -->
@@ -575,17 +603,17 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
     <div class="card">
       <div class="card-header"><h3>🔑 API Keys</h3></div>
       <div class="form-group"><label>HubSpot API Key</label><input class="form-control" id="set-hubspot" type="password" placeholder="pat-na1-..."></div>
-      <div class="form-group"><label>Apollo.io API Key</label><input class="form-control" id="set-apollo" type="password" placeholder="your-apollo-key"></div>
+      <div class="form-group"><label>LinkedIn Sales Navigator</label><input class="form-control" id="set-linkedin-note" type="text" value="Browser-based — no API key needed" disabled style="color:var(--text-muted)"></div>
       <div class="form-group"><label>Claude / Anthropic API Key</label><input class="form-control" id="set-claude" type="password" placeholder="sk-ant-..."></div>
       <div class="form-group"><label>Microsoft Graph Token (Outlook)</label><input class="form-control" id="set-msgraph" type="password" placeholder="Paste access token..."></div>
       <button class="btn btn-primary" onclick="saveSettings()">💾 Save Keys</button>
     </div>
     <div class="card">
       <div class="card-header"><h3>👤 Your Info</h3></div>
-      <div class="form-group"><label>Your Name</label><input class="form-control" id="set-name" value="Brian"></div>
+      <div class="form-group"><label>Your Name</label><input class="form-control" id="set-name" value="Brian Blakeslee"></div>
       <div class="form-group"><label>Company</label><input class="form-control" id="set-company" value="Stephen Gould Corporation"></div>
       <div class="form-group"><label>Email</label><input class="form-control" id="set-email" placeholder="your@email.com"></div>
-      <div class="form-group"><label>Phone</label><input class="form-control" id="set-phone" placeholder="(555) 000-0000"></div>
+      <div class="form-group"><label>Phone</label><input class="form-control" id="set-phone" placeholder="(555) 000-0000" value="248-613-5937"></div>
       <div class="form-group"><label>Follow-up stale threshold (days)</label><input class="form-control" id="set-stale" type="number" value="7"></div>
       <button class="btn btn-primary" onclick="saveSettings()">💾 Save</button>
     </div>
@@ -860,6 +888,41 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
   </div>
 </div>
 
+<div class="modal-overlay" id="modal-addProspect">
+  <div class="modal">
+    <div class="modal-header"><h2>Add Prospect</h2><button class="modal-close" onclick="closeModal('addProspect')">×</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>Full Name *</label><input class="form-control" id="prospect-name" placeholder="Jane Smith"></div>
+        <div class="form-group"><label>Job Title</label><input class="form-control" id="prospect-title" placeholder="VP Procurement"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Company</label><input class="form-control" id="prospect-company" placeholder="Acme Corp"></div>
+        <div class="form-group"><label>City</label><input class="form-control" id="prospect-city" placeholder="Detroit, MI"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Email</label><input class="form-control" id="prospect-email" type="email" placeholder="jane@acme.com"></div>
+        <div class="form-group"><label>Phone</label><input class="form-control" id="prospect-phone" placeholder="(555) 000-0000"></div>
+      </div>
+      <div class="form-group"><label>LinkedIn Profile URL</label><input class="form-control" id="prospect-linkedin" placeholder="linkedin.com/in/..."></div>
+      <div class="form-group"><label>Stage</label>
+        <select class="form-control" id="prospect-stage">
+          <option value="new">New</option>
+          <option value="contacted">Contacted</option>
+          <option value="replied">Replied</option>
+          <option value="meeting">Meeting Set</option>
+          <option value="qualified">Qualified</option>
+          <option value="passed">Passed</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Notes</label><textarea class="form-control" id="prospect-notes" rows="3" placeholder="Where you found them, context, next step..."></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('addProspect')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveProspect()">Save Prospect</button>
+    </div>
+  </div>
+</div>
 <script>
 // ============================================================
 //  SG SALES DASHBOARD — BRIAN BLAKESLEE @ STEPHEN GOULD
@@ -1763,61 +1826,79 @@ async function syncHubSpot() {
 }
 
 // ─── APOLLO INTEGRATION ───────────────────────────────────────
-async function searchApollo() {
-  if(!state.settings.apollo) { toast('Add your Apollo API key in Settings first','error'); showTab('settings'); return; }
-  const industry = document.getElementById('apollo-industry').value;
-  const city = document.getElementById('apollo-city').value;
-  const titleMap = { ceo:['CEO','Founder','Owner','President'], procurement:['Procurement Manager','Purchasing Manager','Buyer'], ops:['VP Operations','COO','Director of Operations'], brand:['Brand Manager','Product Manager','Marketing Director'], supply:['Supply Chain Manager','Logistics Manager'] };
-  const titles = titleMap[document.getElementById('apollo-title').value]||['CEO'];
-  const sizeParts = document.getElementById('apollo-size').value.split(',');
-  const el = document.getElementById('apollo-results');
-  el.innerHTML = '<div class="card" style="text-align:center;padding:24px"><div class="spinner"></div><p style="margin-top:10px;color:var(--text-muted)">Searching Apollo for leads in Michigan...</p></div>';
-  const industryKeywords = { fitness:'supplement,protein,fitness,health,wellness', cosmetics:'cosmetic,beauty,skincare,makeup,personal care', food_beverage:'food,beverage,drink,snack,nutrition', nutraceuticals:'nutraceutical,vitamin,supplement,pharmaceutical', personal_care:'personal care,hygiene,soap,lotion,shampoo', cannabis:'cannabis,CBD,hemp,dispensary' };
-  const kw = (industryKeywords[industry]||'health').split(',')[0];
-  try {
-    const body = { q_organization_keyword_tags:[kw], person_titles:titles, person_locations:city?[city+', Michigan, United States']:['Michigan, United States'], organization_num_employees_ranges:[document.getElementById('apollo-size').value], page:1, per_page:20 };
-    const res = await fetch('https://api.apollo.io/v1/mixed_people/search', {
-      method:'POST', headers:{'Content-Type':'application/json','X-Api-Key':state.settings.apollo,'Cache-Control':'no-cache'},
-      body: JSON.stringify(body)
-    });
-    if(!res.ok) throw new Error('Apollo API error: '+res.status);
-    const data = await res.json();
-    const people = data.people||[];
-    if(!people.length) { el.innerHTML='<div class="empty-state"><div class="ei">🔍</div><h3>No results</h3><p>Try a different industry or city filter.</p></div>'; return; }
-    el.innerHTML = `<div style="font-size:13px;color:var(--text-muted);margin-bottom:10px">Found ${people.length} leads in ${city||'Michigan'} — ${industry.replace('_',' ')}</div>` +
-      people.map(p => {
-        const name = `${p.first_name||''} ${p.last_name||''}`.trim();
-        const org = p.organization?.name||p.employment_history?.[0]?.organization_name||'';
-        return `<div class="contact-card" style="cursor:default">
-          <div class="avatar navy">${(p.first_name||'?')[0].toUpperCase()}</div>
-          <div class="contact-info">
-            <div class="name">${name}</div>
-            <div class="sub">${p.title||''} ${org?'@ '+org:''}</div>
-            <div class="sub" style="font-size:11px">${p.city||''} ${p.state?', '+p.state:''}</div>
-          </div>
-          <div class="contact-actions">
-            ${p.email?`<a class="act" href="mailto:${p.email}" title="${p.email}">✉️</a>`:''}
-            ${p.phone_numbers?.[0]?.sanitized_number?`<a class="act call" href="tel:${p.phone_numbers[0].sanitized_number}">📞</a>`:''}
-            <button class="act" onclick="importApolloLead('${encodeURIComponent(JSON.stringify({firstName:p.first_name,lastName:p.last_name,title:p.title,company:org,email:p.email||'',phone:p.phone_numbers?.[0]?.sanitized_number||''}))}')">➕</button>
-            ${p.linkedin_url?`<a class="act" href="${p.linkedin_url}" target="_blank">in</a>`:''}
-          </div>
-        </div>`;
-      }).join('');
-  } catch(e) { el.innerHTML=`<div class="alert-card urgent"><span class="alert-icon">❌</span><div class="alert-content"><strong>Apollo Search Failed</strong><p>${e.message}. Check your API key in Settings.</p></div></div>`; }
+function openSalesNav() {
+  const city=document.getElementById("sn-city").value;
+  const industry=document.getElementById("sn-industry").value;
+  const title=document.getElementById("sn-title").value.trim();
+  const size=document.getElementById("sn-size").value;
+  const parts=[];
+  if(city)parts.push("geoIncluded%3A%5B"+encodeURIComponent('"'+city+'"')+"%5D");
+  if(industry)parts.push("industryIncluded%3A%5B"+encodeURIComponent('"'+industry+'"')+"%5D");
+  if(title)parts.push("titleIncluded%3A%5B"+encodeURIComponent('"'+title+'"')+"%5D");
+  if(size)parts.push("companyHeadcountIncluded%3A%5B"+encodeURIComponent('"'+size+'"')+"%5D");
+  const q=parts.length?"?query=("+parts.join("%2C")+")":"";
+  window.open("https://www.linkedin.com/sales/search/people"+q,"_blank");
+}
+function openLinkedInSearch() {
+  const city=document.getElementById("sn-city").value;
+  const industry=document.getElementById("sn-industry").value;
+  const title=document.getElementById("sn-title").value.trim();
+  const kw=[title,industry,city].filter(Boolean).join(" ")||"packaging procurement Michigan";
+  window.open("https://www.linkedin.com/search/results/people/?keywords="+encodeURIComponent(kw),"_blank");
+}
+function getProspects(){try{return JSON.parse(localStorage.getItem("sg_prospects")||"[]");}catch{return [];}}
+function saveProspects(arr){localStorage.setItem("sg_prospects",JSON.stringify(arr));}
+function renderProspects(){
+  const prospects=getProspects();
+  const fs=document.getElementById("prospect-filter-stage")?.value||"";
+  const st=(document.getElementById("prospect-search")?.value||"").toLowerCase();
+  const c=document.getElementById("prospect-cards");
+  if(!c)return;
+  const filtered=prospects.filter(p=>{
+    const ms=!fs||p.stage===fs;
+    const mt=!st||["name","company","title","city"].some(k=>(p[k]||"").toLowerCase().includes(st));
+    return ms&&mt;
+  });
+  if(!filtered.length){c.innerHTML='<div style="color:var(--text-muted);padding:20px;text-align:center">No prospects yet — add one or adjust filters.</div>';return;}
+  const sc={new:"#6B7A99",contacted:"#D97706",replied:"#16A34A",meeting:"#2563EB",qualified:"#7C3AED",passed:"#DC2626"};
+  const sl={new:"New",contacted:"Contacted",replied:"Replied",meeting:"Meeting Set",qualified:"Qualified",passed:"Passed"};
+  c.innerHTML=filtered.map(p=>{
+    const stageColor=sc[p.stage]||"#6B7A99";
+    const stageLabel=sl[p.stage]||p.stage||"New";
+    const nameRow='<div style="font-weight:600;font-size:15px">'+( p.name||"Unnamed")+'</div>';
+    const subtitleRow='<div style="font-size:13px;color:var(--text-muted)">'+[p.title,p.company].filter(Boolean).join(" · ")+'</div>';
+    const stagePill='<span style="background:'+stageColor+'22;color:'+stageColor+';font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;white-space:nowrap">'+stageLabel+'</span>';
+    const cityRow=p.city?'<div style="font-size:12px;color:var(--text-muted);margin-bottom:6px">📍 '+p.city+'</div>':"" ;
+    const contactRow='<div style="font-size:12px;color:var(--text-muted);line-height:1.8;margin-bottom:6px">'+( p.email?'<span style="margin-right:10px">✉️ '+p.email+'</span>':"")+(p.phone?'<span>📞 '+p.phone+'</span>':"")+'</div>';
+    const notesRow=p.notes?'<div style="font-size:12px;background:var(--gray-bg);border-radius:6px;padding:8px;margin-bottom:8px">'+p.notes+'</div>':"" ;
+    const liRow=p.linkedin?'<a href="'+p.linkedin+'" target="_blank" style="font-size:12px;color:#0A66C2;font-weight:500;text-decoration:none;display:block;margin-bottom:8px">🔗 LinkedIn Profile</a>':"" ;
+    const opts=Object.entries(sl).map(([v,l])=>'<option value="'+v+'"'+(p.stage===v?' selected':'')+'>'+l+'</option>').join("");
+    const stageSelect='<select style="flex:1;padding:4px 6px;border:1px solid var(--border);border-radius:4px;font-size:12px" onchange="updateProspectStage(\''+(p.id||"")+'\',this.value)">'+opts+'</select>';
+    const editBtn='<button style="font-size:12px;padding:4px 8px;border:1px solid var(--border);border-radius:4px;cursor:pointer" onclick="editProspect(\''+( p.id||"")+'\')">✏️</button>';
+    const delBtn='<button style="font-size:12px;padding:4px 8px;border:1px solid var(--red);color:var(--red);border-radius:4px;cursor:pointer" onclick="deleteProspect(\''+( p.id||"")+'\')">🗑️</button>';
+    return '<div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:14px">'+ '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px"><div>'+nameRow+subtitleRow+'</div>'+stagePill+'</div>'+cityRow+contactRow+notesRow+liRow+'<div style="display:flex;gap:6px;margin-top:8px;border-top:1px solid var(--border);padding-top:8px">'+stageSelect+editBtn+delBtn+'</div></div>';
+  }).join("");
+}
+function updateProspectStage(id,stage){const a=getProspects();const p=a.find(x=>x.id===id);if(p){p.stage=stage;saveProspects(a);renderProspects();}}
+function deleteProspect(id){if(!confirm("Delete this prospect?"))return;saveProspects(getProspects().filter(x=>x.id!==id));renderProspects();}
+function editProspect(id){
+  const p=getProspects().find(x=>x.id===id);if(!p)return;
+  window._editingProspectId=id;
+  ["name","title","company","city","email","phone","linkedin","notes","stage"].forEach(f=>{const el=document.getElementById("prospect-"+f);if(el)el.value=p[f]||"";});
+  openModal("addProspect");
+}
+function saveProspect(){
+  const fields=["name","title","company","city","email","phone","linkedin","notes","stage"];
+  const data={};fields.forEach(f=>{data[f]=(document.getElementById("prospect-"+f)?.value||"").trim();});
+  if(!data.name){alert("Name is required");return;}
+  data.stage=data.stage||"new";
+  const arr=getProspects();
+  const editId=window._editingProspectId;
+  if(editId){const i=arr.findIndex(x=>x.id===editId);if(i>=0)arr[i]={...arr[i],...data};window._editingProspectId=null;}
+  else{data.id="p_"+Date.now();data.createdAt=new Date().toISOString();arr.unshift(data);}
+  saveProspects(arr);closeModal("addProspect");renderProspects();
 }
 
-function importApolloLead(encoded) {
-  try {
-    const data = JSON.parse(decodeURIComponent(encoded));
-    const existing = state.contacts.find(c=>c.email&&c.email===data.email);
-    if(existing) { toast('Contact already exists!','warning'); return; }
-    state.contacts.push({ id:uid(), ...data, priority:'cold', notes:'Imported from Apollo.io search', lastContact:new Date().toISOString().split('T')[0], tags:['apollo'], calls:[], quotes:[], createdAt:new Date().toISOString() });
-    saveAll(); renderContacts(); updateBadges();
-    toast(`➕ ${data.firstName} added to contacts!`,'success');
-  } catch(e) { toast('Import failed','error'); }
-}
-
-// ─── SOCIAL SEARCH ────────────────────────────────────────────
 async function searchSocial() {
   const keyword = document.getElementById('social-keyword').value.trim();
   const platform = document.getElementById('social-platform').value;
