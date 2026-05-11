@@ -171,6 +171,12 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
   #content{padding:12px}
   .quick-log-bar{flex-direction:column}
 }
+
+.li-msg{padding:12px 16px;border-radius:12px;max-width:88%;line-height:1.65;font-size:13px;white-space:pre-wrap}
+.li-assistant{background:var(--gray-bg);color:var(--text);align-self:flex-start;border-radius:2px 12px 12px 12px}
+.li-user{background:var(--navy);color:#fff;align-self:flex-end;border-radius:12px 2px 12px 12px}
+.li-copy-btn{display:inline-block;margin-top:8px;font-size:11px;padding:3px 10px;background:var(--white);border:1px solid var(--border);border-radius:4px;cursor:pointer;color:var(--text-muted)}
+.li-copy-btn:hover{background:var(--border)}
 </style>
 </head>
 <body>
@@ -200,6 +206,7 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
     <div class="nav-item" data-tab="calllog"><span class="icon">📞</span>Call Log</div>
     <div class="nav-section">Growth</div>
     <div class="nav-item" data-tab="prospecting" onclick="renderProspects()"><span class="icon">💼</span>Prospects</div>
+        <div class="nav-item" data-tab="content" onclick="showTab('content')"><span class="icon">✍️</span>LinkedIn</div>
     <div class="nav-item" data-tab="social"><span class="icon">💬</span>Social</div>
     <div class="nav-item" data-tab="suppliers"><span class="icon">🏭</span>Suppliers</div>
     <div class="nav-section">Tools</div>
@@ -486,6 +493,53 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
 </div>
 
 <!-- ===== TAB: SOCIAL ===== -->
+<div class="tab-pane" id="tab-content">
+  <div class="topbar"><h1>✍️ LinkedIn Content Studio</h1><span class="date-chip" id="li-status"></span></div>
+  <div style="display:grid;grid-template-columns:260px 1fr;gap:16px;height:calc(100vh - 130px)">
+    <div style="display:flex;flex-direction:column;gap:12px;overflow-y:auto">
+      <div class="card"><div class="card-header"><h3>Quick Start</h3></div>
+        <div style="display:flex;flex-direction:column;gap:6px;padding-top:4px">
+          <button onclick="liQuick('packaging tip or insight that beauty or fitness brands need to hear')" class="btn btn-secondary" style="text-align:left;font-size:13px">💡 Packaging Tip</button>
+          <button onclick="liQuick('customer win or problem I solved in packaging — keep vague, no names')" class="btn btn-secondary" style="text-align:left;font-size:13px">🏆 Customer Win</button>
+          <button onclick="liQuick('trend or insight in CPG, beauty, or fitness packaging right now')" class="btn btn-secondary" style="text-align:left;font-size:13px">📊 Industry Insight</button>
+          <button onclick="liQuick('question that sparks conversation with brand owners and buyers')" class="btn btn-secondary" style="text-align:left;font-size:13px">💬 Engagement Hook</button>
+          <button onclick="liQuick('lesson I learned in outside sales that resonates with business owners')" class="btn btn-secondary" style="text-align:left;font-size:13px">🎯 Sales Lesson</button>
+          <button onclick="liQuick('why custom packaging matters for brand differentiation')" class="btn btn-secondary" style="text-align:left;font-size:13px">📦 Brand Value</button>
+        </div>
+      </div>
+      <div class="card"><div class="card-header"><h3>Target Audience</h3></div>
+        <select id="li-audience" class="form-control" style="margin-top:8px">
+          <option value="beauty and cosmetics brand founders and marketing leaders">Beauty & Cosmetics Brands</option>
+          <option value="fitness and supplement brand owners">Fitness & Supplement Brands</option>
+          <option value="CPG brand founders and product teams">CPG Brands & Startups</option>
+          <option value="procurement and supply chain leaders">Supply Chain Leaders</option>
+          <option value="general B2B LinkedIn audience">General B2B</option>
+        </select>
+      </div>
+      <div class="card"><div class="card-header"><h3>Tone</h3></div>
+        <select id="li-tone" class="form-control" style="margin-top:8px">
+          <option value="conversational and authentic, like talking to a colleague">Conversational & Real</option>
+          <option value="confident expert sharing hard-earned knowledge">Expert & Confident</option>
+          <option value="bold and direct with a strong point of view">Bold & Direct</option>
+          <option value="storytelling — pull the reader in with narrative">Storytelling</option>
+        </select>
+      </div>
+      <button onclick="liClear()" class="btn btn-secondary" style="font-size:13px">🗑 Clear & Start Over</button>
+      <div style="font-size:11px;color:var(--text-muted);line-height:1.5;padding:4px">
+        💡 Tip: After Claude gives you options, just reply with "make option 2 shorter" or "add a stronger hook to option 1" to refine.
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;background:var(--white);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden">
+      <div id="li-messages" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px">
+        <div class="li-msg li-assistant">👋 I'm your LinkedIn content collaborator. Tell me what you want to post about — a win, a packaging insight, something on your mind — and we'll turn it into a post that gets you in front of the right people.<br><br>Use the quick-start buttons on the left, or just type what's on your mind.</div>
+      </div>
+      <div style="padding:12px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:flex-end">
+        <textarea id="li-input" class="form-control" placeholder="What do you want to post about? Describe the idea, a story, a thought — anything." style="flex:1;resize:none;height:70px;font-size:13px" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();liSend()}"></textarea>
+        <button class="btn btn-primary" onclick="liSend()" style="height:36px;padding:0 16px">Send ↑</button>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="tab-pane" id="tab-social">
   <div class="sec-title">Social Media Prospecting</div>
   <div class="card">
@@ -2936,6 +2990,113 @@ init();
 
 // ── Microsoft OAuth init ──
 
+
+
+// ── LinkedIn Content Studio ──────────────────────────────────────
+let liHistory = [];
+
+const LI_SYSTEM = `You are a LinkedIn content strategist helping Brian Blakeslee, an outside sales rep at Stephen Gould Corporation, build his personal brand and generate warm leads on LinkedIn.
+
+About Brian:
+- Sells custom packaging and supply chain solutions at Stephen Gould Corporation
+- Primary verticals: fitness/supplement brands and beauty/cosmetics brands  
+- Strengths: cold calling, networking, pitching, relationship building
+- Based in Michigan, building toward becoming a 1099 straight commission independent sales agent
+- Goal: become known as the go-to packaging expert for CPG, beauty, and fitness brands
+
+Your job: Help Brian craft authentic, high-performing LinkedIn posts that:
+1. Position him as a trusted packaging expert buyers want to work with
+2. Generate conversations and warm inbound leads
+3. Sound like Brian — direct, real, no corporate fluff
+4. Use proven LinkedIn formats that actually get engagement
+
+LinkedIn best practices you always follow:
+- First line is a hook (bold statement, pattern interrupt, or curiosity gap) — no fluff openers
+- Short paragraphs, 1-3 lines max, lots of white space
+- Value-first, always — give something useful before any CTA
+- End with a question or soft CTA to drive comments
+- 2-3 hashtags max, only if relevant
+- 150-300 words is the sweet spot unless Brian specifies
+
+When generating posts:
+- Give exactly 2-3 variations labeled Option 1, Option 2, Option 3
+- Each option should use a different angle or format
+- After presenting options, ask which direction feels most like him or what he wants to change
+- When refining, show just the refined version — don't re-show all options
+- If Brian gives you a rough story or idea, pull out the insight and shape it into a post`;
+
+function liQuick(topic) {
+  document.getElementById('li-input').value = 'Give me 3 LinkedIn post options about: ' + topic;
+  document.getElementById('li-input').focus();
+}
+
+async function liSend() {
+  const input = document.getElementById('li-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  input.style.height = '70px';
+
+  const audience = document.getElementById('li-audience').value;
+  const tone = document.getElementById('li-tone').value;
+
+  liAppend('user', msg);
+  liHistory.push({ role: 'user', content: msg });
+
+  const typingId = 'li-typing-' + Date.now();
+  liAppend('assistant', '✍️ Writing...', typingId);
+
+  try {
+    const system = LI_SYSTEM + '\n\nAudience for this post: ' + audience + '. Tone: ' + tone + '.';
+    const res = await fetch('https://sg-hubspot-proxy.bribaseball66sg.workers.dev/ai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1800,
+        system: system,
+        messages: liHistory
+      })
+    });
+    const data = await res.json();
+    const reply = data.content?.[0]?.text || 'Something went wrong. Check your API key in Settings.';
+    document.getElementById(typingId)?.remove();
+    liAppend('assistant', reply, null, true);
+    liHistory.push({ role: 'assistant', content: reply });
+    document.getElementById('li-status').textContent = liHistory.length / 2 + ' exchanges';
+  } catch(e) {
+    document.getElementById(typingId)?.remove();
+    liAppend('assistant', '⚠️ Error: ' + e.message + '. Make sure your Anthropic API key is saved in Settings.');
+  }
+}
+
+function liAppend(role, text, id, showCopy) {
+  const container = document.getElementById('li-messages');
+  const div = document.createElement('div');
+  div.className = 'li-msg li-' + (role === 'user' ? 'user' : 'assistant');
+  if (id) div.id = id;
+  div.textContent = text;
+  if (showCopy) {
+    const btn = document.createElement('button');
+    btn.className = 'li-copy-btn';
+    btn.textContent = '📋 Copy post';
+    btn.onclick = function() {
+      navigator.clipboard.writeText(text);
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => { btn.textContent = '📋 Copy post'; }, 2000);
+    };
+    div.appendChild(document.createElement('br'));
+    div.appendChild(btn);
+  }
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function liClear() {
+  liHistory = [];
+  document.getElementById('li-status').textContent = '';
+  document.getElementById('li-messages').innerHTML = '<div class="li-msg li-assistant">👋 I\'m your LinkedIn content collaborator. Tell me what you want to post about — a win, a packaging insight, something on your mind — and we\'ll turn it into a post that gets you in front of the right people.<br><br>Use the quick-start buttons on the left, or just type what\'s on your mind.</div>';
+}
 </script>
 </body>
 </html>
