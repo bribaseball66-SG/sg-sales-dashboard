@@ -625,39 +625,44 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
 </div>
 
 <!-- ===== TAB: OUTLOOK ===== -->
-<div class="tab-pane" id="tab-outlook">
-  <div class="sec-title">📧 Outlook Cold Email Follow-Up</div>
-  <div class="card">
-    <div class="card-header"><h3>Scan Sent Emails → Draft Follow-Ups</h3></div>
-    <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px">Scans your Outlook sent folder for cold outreach emails with no reply, then drafts follow-up emails directly into your Drafts folder via Microsoft Graph API.</p>
-    <div class="form-row">
-      <div class="form-group"><label>Look back (days)</label>
-        <select class="form-control" id="outlook-days">
-          <option value="7">Last 7 days</option>
-          <option value="14">Last 14 days</option>
-          <option value="30" selected>Last 30 days</option>
-          <option value="60">Last 60 days</option>
-        </select>
-      </div>
-      <div class="form-group"><label>Your Tone</label>
-        <select class="form-control" id="outlook-tone">
-          <option value="warm">Warm / Conversational</option>
-          <option value="direct">Direct / Punchy</option>
-          <option value="value">Value-Led</option>
-        </select>
-      </div>
-    </div>
-    <div style="display:flex;gap:8px">
-      <button class="btn btn-navy" onclick="connectMSGraph()">🔑 Connect Microsoft 365</button>
-      <button class="btn btn-primary" onclick="scanOutlook()" id="scan-outlook-btn">📩 Scan & Draft Follow-Ups</button>
-    </div>
-    <div id="outlook-status" style="margin-top:10px"></div>
-  </div>
-  <div id="outlook-results"></div>
-</div>
-
-<!-- ===== TAB: AI ASSISTANT ===== -->
-<div class="tab-pane" id="tab-ai">
+<div class="tab-pane" <div class="tab-pane" id="tab-outlook">
+          <h2>📬 Inbox Scan Agent</h2>
+          <div class="card" style="margin-bottom:18px">
+            <div class="card-header"><h3>🤖 Monday Auto-Scan</h3></div>
+            <div style="padding:16px">
+              <div style="display:flex;gap:14px;margin-bottom:18px;flex-wrap:wrap">
+                <div style="flex:1;min-width:180px;background:var(--gray-bg);border-radius:8px;padding:14px">
+                  <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Schedule</div>
+                  <div style="font-size:15px;font-weight:600">Every Monday · 8:00 AM</div>
+                  <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Runs automatically</div>
+                </div>
+                <div style="flex:1;min-width:180px;background:var(--gray-bg);border-radius:8px;padding:14px">
+                  <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Delivery</div>
+                  <div style="font-size:15px;font-weight:600">AI Assistant tab</div>
+                  <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Results appear here each week</div>
+                </div>
+                <div style="flex:1;min-width:180px;background:var(--gray-bg);border-radius:8px;padding:14px">
+                  <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Status</div>
+                  <div style="font-size:15px;font-weight:600;color:#27ae60">● Active</div>
+                  <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Connected via Claude</div>
+                </div>
+              </div>
+              <div style="background:#f0f9f0;border:1px solid #c3e6cb;border-radius:8px;padding:14px;margin-bottom:18px">
+                <div style="font-weight:600;margin-bottom:10px;font-size:13px">What it scans for every Monday:</div>
+                <div style="display:grid;gap:8px">
+                  <div style="font-size:13px">🔴 <strong>Needs Response Now</strong> — unanswered cold outreach replies, RFQs, urgent requests</div>
+                  <div style="font-size:13px">🟡 <strong>Follow Up This Week</strong> — sent quotes with no reply, stale conversations</div>
+                  <div style="font-size:13px">📋 <strong>FYI</strong> — informational emails worth noting, no action needed</div>
+                </div>
+              </div>
+              <button class="btn-primary" onclick="runInboxScanNow()" style="width:100%;padding:13px;font-size:14px;margin-bottom:10px">
+                📬 Scan Inbox Now
+              </button>
+              <p style="font-size:12px;color:var(--text-muted);text-align:center;margin:0">Manually trigger a scan anytime — or wait for Monday's automatic run</p>
+            </div>
+          </div>
+        </div>
+        id="tab-ai">
   <div class="sec-title">🤖 AI Assistant <span id="ai-alert-count"></span></div>
   <div class="card" style="background:linear-gradient(135deg,var(--navy),var(--navy-light));color:white;margin-bottom:14px">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
@@ -3206,6 +3211,18 @@ function clearResearch() {
   document.getElementById('res-output').style.display = 'none';
   document.getElementById('res-results').textContent = '';
 }
+
+      function runInboxScanNow() {
+        showTab('ai');
+        setTimeout(() => {
+          const ta = document.querySelector('#tab-ai textarea');
+          if (ta) {
+            ta.value = 'Please scan my Outlook inbox now. Look for: unanswered cold outreach replies, RFQs I have not responded to, sent quotes with no reply, and any emails I should follow up on. Organize results into: Needs Response Now, Follow Up This Week, FYI.';
+            ta.dispatchEvent(new Event('input', { bubbles: true }));
+            ta.focus();
+          }
+        }, 350);
+      }
 </script>
 </body>
 </html>
