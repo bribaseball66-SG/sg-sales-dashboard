@@ -211,7 +211,7 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
     <div class="nav-item" data-tab="suppliers"><span class="icon">🏭</span>Suppliers</div>
     <div class="nav-section">Tools</div>
     <div class="nav-item" data-tab="ocr"><span class="icon">📸</span>Screenshot OCR</div>
-    <div class="nav-item" data-tab="outlook"><span class="icon">📧</span>Outlook</div>
+    <div class="nav-item" data-tab="outlook"><span class="icon">✉️</span>Sequences</div>
     <div class="nav-item" data-tab="ai"><span class="icon">🤖</span>AI Assistant<span class="nav-badge" id="badge-ai">0</span></div>
     <div class="nav-item" data-tab="settings"><span class="icon">⚙️</span>Settings</div>
   </div>
@@ -625,40 +625,80 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
 </div>
 
 <!-- ===== TAB: OUTLOOK ===== -->
-<div class="tab-pane" <div class="tab-pane" id="tab-outlook">
-          <h2>📬 Inbox Scan Agent</h2>
+<div class="tab-pane" <div class="tab-pane" <div class="tab-pane" id="tab-outlook">
+          <h2>✉️ Cold Email Sequences</h2>
+
+          <!-- Stats row -->
+          <div style="display:flex;gap:12px;margin-bottom:18px;flex-wrap:wrap" id="seq-stats-row">
+            <div style="flex:1;min-width:140px;background:white;border-radius:8px;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.07)">
+              <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Active</div>
+              <div style="font-size:22px;font-weight:700" id="seq-stat-active">0</div>
+            </div>
+            <div style="flex:1;min-width:140px;background:white;border-radius:8px;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.07)">
+              <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Follow-Up Due</div>
+              <div style="font-size:22px;font-weight:700;color:var(--red)" id="seq-stat-due">0</div>
+            </div>
+            <div style="flex:1;min-width:140px;background:white;border-radius:8px;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.07)">
+              <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Replied</div>
+              <div style="font-size:22px;font-weight:700;color:#27ae60" id="seq-stat-replied">0</div>
+            </div>
+            <div style="flex:1;min-width:140px;background:white;border-radius:8px;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.07)">
+              <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Total Sent</div>
+              <div style="font-size:22px;font-weight:700" id="seq-stat-total">0</div>
+            </div>
+          </div>
+
+          <!-- Add sequence -->
           <div class="card" style="margin-bottom:18px">
-            <div class="card-header"><h3>🤖 Monday Auto-Scan</h3></div>
-            <div style="padding:16px">
-              <div style="display:flex;gap:14px;margin-bottom:18px;flex-wrap:wrap">
-                <div style="flex:1;min-width:180px;background:var(--gray-bg);border-radius:8px;padding:14px">
-                  <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Schedule</div>
-                  <div style="font-size:15px;font-weight:600">Every Monday · 8:00 AM</div>
-                  <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Runs automatically</div>
+            <div class="card-header" style="cursor:pointer;user-select:none" onclick="toggleSeqForm()">
+              <h3>➕ Add to Sequence <span id="seq-form-arrow" style="font-size:12px;float:right;margin-top:2px">▼</span></h3>
+            </div>
+            <div id="seq-form" style="padding:16px;display:none">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+                <div>
+                  <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">First Name</label>
+                  <input id="seq-fname" type="text" placeholder="Jane" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px">
                 </div>
-                <div style="flex:1;min-width:180px;background:var(--gray-bg);border-radius:8px;padding:14px">
-                  <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Delivery</div>
-                  <div style="font-size:15px;font-weight:600">AI Assistant tab</div>
-                  <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Results appear here each week</div>
+                <div>
+                  <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Company</label>
+                  <input id="seq-company" type="text" placeholder="Acme Supplements" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px">
                 </div>
-                <div style="flex:1;min-width:180px;background:var(--gray-bg);border-radius:8px;padding:14px">
-                  <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Status</div>
-                  <div style="font-size:15px;font-weight:600;color:#27ae60">● Active</div>
-                  <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Connected via Claude</div>
+                <div>
+                  <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Title / Role</label>
+                  <input id="seq-title" type="text" placeholder="VP of Operations" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px">
                 </div>
-              </div>
-              <div style="background:#f0f9f0;border:1px solid #c3e6cb;border-radius:8px;padding:14px;margin-bottom:18px">
-                <div style="font-weight:600;margin-bottom:10px;font-size:13px">What it scans for every Monday:</div>
-                <div style="display:grid;gap:8px">
-                  <div style="font-size:13px">🔴 <strong>Needs Response Now</strong> — unanswered cold outreach replies, RFQs, urgent requests</div>
-                  <div style="font-size:13px">🟡 <strong>Follow Up This Week</strong> — sent quotes with no reply, stale conversations</div>
-                  <div style="font-size:13px">📋 <strong>FYI</strong> — informational emails worth noting, no action needed</div>
+                <div>
+                  <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Email</label>
+                  <input id="seq-email" type="email" placeholder="jane@acme.com" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px">
                 </div>
               </div>
-              <button class="btn-primary" onclick="runInboxScanNow()" style="width:100%;padding:13px;font-size:14px;margin-bottom:10px">
-                📬 Scan Inbox Now
-              </button>
-              <p style="font-size:12px;color:var(--text-muted);text-align:center;margin:0">Manually trigger a scan anytime — or wait for Monday's automatic run</p>
+              <div style="margin-bottom:12px">
+                <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Context / Notes (optional)</label>
+                <textarea id="seq-notes" placeholder="What their company does, why you're reaching out, any packaging needs you noticed..." style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;height:70px;resize:vertical"></textarea>
+              </div>
+              <div style="display:flex;gap:10px;align-items:center">
+                <button class="btn-primary" onclick="addToSequence()" style="padding:9px 20px">Add to Sequence</button>
+                <button class="btn-sm" onclick="draftColdEmail()" style="padding:9px 20px;background:var(--gray-bg);color:var(--text);border:1px solid var(--border);border-radius:6px;font-size:13px;cursor:pointer">🤖 Draft Cold Email First</button>
+              </div>
+              <div id="seq-draft-output" style="display:none;margin-top:14px;background:#f8f8f8;border-radius:8px;padding:14px;font-size:13px;white-space:pre-wrap;font-family:inherit"></div>
+            </div>
+          </div>
+
+          <!-- Sequences table -->
+          <div class="card">
+            <div class="card-header" style="display:flex;align-items:center;justify-content:space-between">
+              <h3>📋 Active Sequences</h3>
+              <div style="display:flex;gap:8px">
+                <select id="seq-filter" onchange="renderSequences()" style="font-size:12px;padding:4px 8px;border:1px solid var(--border);border-radius:6px;background:white">
+                  <option value="all">All</option>
+                  <option value="due">Follow-Up Due</option>
+                  <option value="active">Active</option>
+                  <option value="replied">Replied</option>
+                </select>
+              </div>
+            </div>
+            <div id="seq-table-body" style="padding:0">
+              <div style="padding:32px;text-align:center;color:var(--text-muted);font-size:13px">No sequences yet — add your first cold outreach contact above</div>
             </div>
           </div>
         </div>
@@ -3223,6 +3263,164 @@ function clearResearch() {
           }
         }, 350);
       }
+
+      // ── Cold Email Sequencing ──────────────────────────────
+      const SEQ_KEY = 'sg_sequences';
+      function loadSeqs() { try { return JSON.parse(localStorage.getItem(SEQ_KEY)||'[]'); } catch(e){ return []; } }
+      function saveSeqs(arr) { localStorage.setItem(SEQ_KEY, JSON.stringify(arr)); }
+
+      function toggleSeqForm() {
+        const f = document.getElementById('seq-form');
+        const a = document.getElementById('seq-form-arrow');
+        const open = f.style.display === 'block';
+        f.style.display = open ? 'none' : 'block';
+        a.textContent = open ? '▼' : '▲';
+      }
+
+      function addToSequence() {
+        const fname = document.getElementById('seq-fname').value.trim();
+        const company = document.getElementById('seq-company').value.trim();
+        const title = document.getElementById('seq-title').value.trim();
+        const email = document.getElementById('seq-email').value.trim();
+        const notes = document.getElementById('seq-notes').value.trim();
+        if (!fname || !company) { alert('First name and company are required.'); return; }
+        const seqs = loadSeqs();
+        seqs.unshift({
+          id: Date.now(),
+          fname, company, title, email, notes,
+          status: 'active',
+          step: 1,
+          startedAt: new Date().toISOString(),
+          lastContactAt: new Date().toISOString(),
+          nextFollowUp: new Date(Date.now() + 3*86400000).toISOString(),
+          history: [{ step: 1, date: new Date().toISOString(), note: 'Initial email sent' }]
+        });
+        saveSeqs(seqs);
+        ['seq-fname','seq-company','seq-title','seq-email','seq-notes'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+        document.getElementById('seq-draft-output').style.display = 'none';
+        renderSequences();
+        updateSeqStats();
+      }
+
+      function markSeqStep(id, action) {
+        const seqs = loadSeqs();
+        const s = seqs.find(x => x.id === id);
+        if (!s) return;
+        if (action === 'replied') {
+          s.status = 'replied';
+          s.history.push({ step: s.step, date: new Date().toISOString(), note: 'Replied!' });
+        } else if (action === 'followup') {
+          s.step++;
+          s.lastContactAt = new Date().toISOString();
+          const days = s.step <= 2 ? 3 : s.step <= 3 ? 5 : 7;
+          s.nextFollowUp = new Date(Date.now() + days*86400000).toISOString();
+          s.history.push({ step: s.step, date: new Date().toISOString(), note: 'Follow-up ' + (s.step-1) + ' sent' });
+        } else if (action === 'stop') {
+          s.status = 'stopped';
+        }
+        saveSeqs(seqs);
+        renderSequences();
+        updateSeqStats();
+      }
+
+      async function draftSeqEmail(id) {
+        const seqs = loadSeqs();
+        const s = seqs.find(x => x.id === id);
+        if (!s) return;
+        const btn = document.getElementById('draft-btn-'+id);
+        if (btn) { btn.disabled = true; btn.textContent = 'Drafting...'; }
+        const isFollowUp = s.step > 1;
+        const prompt = isFollowUp
+          ? 'Write a short, natural follow-up #' + (s.step-1) + ' cold email from Brian Blakeslee at Stephen Gould Corporation (custom packaging/supply chain) to ' + s.fname + ' at ' + s.company + (s.title ? ' (' + s.title + ')' : '') + '. Context: ' + (s.notes||'no extra context') + '. Keep it under 75 words, reference the previous outreach, provide a new value hook around packaging, and end with a soft CTA. No subject line.'
+          : 'Write a short, personalized cold email from Brian Blakeslee at Stephen Gould Corporation (custom packaging and supply chain solutions) to ' + s.fname + ' at ' + s.company + (s.title ? ', ' + s.title : '') + '. Context: ' + (s.notes||'custom packaging prospect') + '. Under 100 words. Hook first line, one value prop, soft CTA. Include a subject line.';
+        try {
+          const apiKey = localStorage.getItem('anthropicKey') || '';
+          const r = await fetch('/ai', {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:400, system:'You are a concise sales copywriter for Brian Blakeslee, an outside sales rep at Stephen Gould Corporation specializing in custom packaging. Write natural, non-salesy emails that get responses.', messages:[{role:'user',content:prompt}] })
+          });
+          const d = await r.json();
+          const text = d.content?.[0]?.text || d.error || 'Error generating draft';
+          const out = document.getElementById('draft-output-'+id);
+          if (out) { out.style.display='block'; out.textContent = text; }
+        } catch(e) {
+          const out = document.getElementById('draft-output-'+id);
+          if (out) { out.style.display='block'; out.textContent = 'Error: ' + e.message; }
+        }
+        if (btn) { btn.disabled = false; btn.textContent = '🤖 Draft Email'; }
+      }
+
+      async function draftColdEmail() {
+        const fname = document.getElementById('seq-fname').value.trim() || 'the prospect';
+        const company = document.getElementById('seq-company').value.trim() || 'their company';
+        const title = document.getElementById('seq-title').value.trim();
+        const notes = document.getElementById('seq-notes').value.trim();
+        const out = document.getElementById('seq-draft-output');
+        out.style.display='block'; out.textContent='Drafting...';
+        try {
+          const prompt = 'Write a short, personalized cold email from Brian Blakeslee at Stephen Gould Corporation (custom packaging and supply chain) to ' + fname + ' at ' + company + (title?', '+title:'') + '. Context: ' + (notes||'custom packaging prospect') + '. Under 100 words. Strong hook, one value prop, soft CTA. Include a subject line.';
+          const r = await fetch('/ai', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:400, system:'You are a concise sales copywriter for Brian Blakeslee at Stephen Gould Corporation. Write natural emails that get responses.', messages:[{role:'user',content:prompt}] }) });
+          const d = await r.json();
+          out.textContent = d.content?.[0]?.text || 'Error generating draft';
+        } catch(e) { out.textContent = 'Error: ' + e.message; }
+      }
+
+      function seqDaysUntil(iso) {
+        const diff = new Date(iso) - new Date();
+        return Math.ceil(diff / 86400000);
+      }
+
+      function renderSequences() {
+        const filter = document.getElementById('seq-filter')?.value || 'all';
+        let seqs = loadSeqs();
+        if (filter === 'due') seqs = seqs.filter(s => s.status==='active' && seqDaysUntil(s.nextFollowUp) <= 0);
+        else if (filter === 'active') seqs = seqs.filter(s => s.status==='active');
+        else if (filter === 'replied') seqs = seqs.filter(s => s.status==='replied');
+        const body = document.getElementById('seq-table-body');
+        if (!body) return;
+        if (!seqs.length) {
+          body.innerHTML = '<div style="padding:32px;text-align:center;color:var(--text-muted);font-size:13px">' + (filter==='all' ? 'No sequences yet — add your first contact above' : 'No contacts match this filter') + '</div>';
+          return;
+        }
+        body.innerHTML = seqs.map(s => {
+          const daysUntil = seqDaysUntil(s.nextFollowUp);
+          const isDue = s.status==='active' && daysUntil <= 0;
+          const statusBadge = s.status==='replied' ? '<span style="background:#e8f8f0;color:#27ae60;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600">✓ Replied</span>'
+            : s.status==='stopped' ? '<span style="background:#f0f0f0;color:#888;padding:2px 8px;border-radius:10px;font-size:11px">Stopped</span>'
+            : isDue ? '<span style="background:#fff0f0;color:var(--red);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600">Follow-Up Due</span>'
+            : '<span style="background:#fff8e0;color:#d68910;padding:2px 8px;border-radius:10px;font-size:11px">Day ' + [0,1,3,7,14][Math.min(s.step,4)] + ' sent</span>';
+          return `<div style="padding:14px 16px;border-bottom:1px solid #f5f5f5">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+              <div style="flex:1;min-width:0">
+                <div style="font-size:13px;font-weight:600;margin-bottom:2px">${s.fname} — ${s.company}${s.title?' <span style="color:var(--text-muted);font-weight:400">· ${s.title}</span>':''}</div>
+                <div style="font-size:12px;color:var(--text-muted);margin-bottom:6px">${s.email||'No email'} · Step ${s.step} · ${isDue?'<strong style=color:var(--red)>Follow-up overdue</strong>':daysUntil>0?'Next in '+daysUntil+' days':'Due today'}</div>
+                ${statusBadge}
+              </div>
+              <div style="display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end">
+                ${s.status==='active'?'<button id="draft-btn-'+s.id+'" onclick="draftSeqEmail('+s.id+')" style="padding:5px 10px;font-size:11px;background:var(--gray-bg);border:1px solid var(--border);border-radius:5px;cursor:pointer">🤖 Draft Email</button><button onclick="markSeqStep('+s.id+`,'followup')` style="padding:5px 10px;font-size:11px;background:var(--navy);color:white;border:none;border-radius:5px;cursor:pointer">✉️ Sent</button><button onclick="markSeqStep('+s.id+`,'replied')` style="padding:5px 10px;font-size:11px;background:#27ae60;color:white;border:none;border-radius:5px;cursor:pointer">✓ Replied</button><button onclick="markSeqStep('+s.id+`,'stop')` style="padding:5px 10px;font-size:11px;background:var(--gray-bg);border:1px solid var(--border);border-radius:5px;cursor:pointer">Stop</button>':''}
+              </div>
+            </div>
+            <div id="draft-output-${s.id}" style="display:none;margin-top:10px;background:#f8f8f8;border-radius:6px;padding:12px;font-size:12px;white-space:pre-wrap;line-height:1.5"></div>
+          </div>`;
+        }).join('');
+      }
+
+      function updateSeqStats() {
+        const seqs = loadSeqs();
+        const active = seqs.filter(s=>s.status==='active').length;
+        const due = seqs.filter(s=>s.status==='active' && seqDaysUntil(s.nextFollowUp)<=0).length;
+        const replied = seqs.filter(s=>s.status==='replied').length;
+        const el_a=document.getElementById('seq-stat-active'), el_d=document.getElementById('seq-stat-due'),
+              el_r=document.getElementById('seq-stat-replied'), el_t=document.getElementById('seq-stat-total');
+        if(el_a) el_a.textContent=active;
+        if(el_d) el_d.textContent=due;
+        if(el_r) el_r.textContent=replied;
+        if(el_t) el_t.textContent=seqs.length;
+      }
+
+      // Init sequences tab when shown
+      const _origShowTab = typeof showTab === 'function' ? showTab : null;
 </script>
 </body>
 </html>
