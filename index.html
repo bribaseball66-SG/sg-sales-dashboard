@@ -472,6 +472,34 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
     </div>
   </div>
   <div class="card" style="margin-top:18px">
+  <div class="card-header"><h3>🤖 AI Lead Research</h3></div>
+  <div style="padding:4px 0 12px">
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">Enter a city and market — Claude will research target companies, the right buyers to contact, what pain points to lead with, and how to find them on Sales Navigator.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <div>
+        <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px">City / Metro Area</label>
+        <input class="form-control" id="res-city" placeholder="e.g. Chicago, Los Angeles, NYC" style="font-size:13px">
+      </div>
+      <div>
+        <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px">Market / Niche</label>
+        <input class="form-control" id="res-market" placeholder="e.g. luxury skincare, pet food, supplements" style="font-size:13px">
+      </div>
+    </div>
+    <div style="margin-bottom:10px">
+      <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px">Any extra context? (optional)</label>
+      <input class="form-control" id="res-context" placeholder="e.g. small/mid-size brands, looking for sustainable packaging, launching new product line" style="font-size:13px">
+    </div>
+    <button class="btn btn-primary" onclick="runLeadResearch()" id="res-btn" style="width:100%">🔍 Research This Market</button>
+    <div id="res-output" style="margin-top:14px;display:none">
+      <div style="background:var(--gray-bg);border-radius:var(--radius-sm);padding:14px;font-size:13px;line-height:1.7;white-space:pre-wrap" id="res-results"></div>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn btn-secondary btn-sm" onclick="copyResearch()">📋 Copy Results</button>
+        <button class="btn btn-secondary btn-sm" onclick="clearResearch()">↺ New Search</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="card" style="margin-top:18px">
     <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
       <h3>📋 Prospect Tracker</h3>
       <button class="btn btn-primary btn-sm" onclick="window._editingProspectId=null;['name','title','company','city','email','phone','linkedin','notes'].forEach(f=>{const el=document.getElementById('prospect-'+f);if(el)el.value='';});const ss=document.getElementById('prospect-stage');if(ss)ss.value='new';openModal('addProspect')">+ Add Prospect</button>
@@ -3096,6 +3124,87 @@ function liClear() {
   liHistory = [];
   document.getElementById('li-status').textContent = '';
   document.getElementById('li-messages').innerHTML = '<div class="li-msg li-assistant">👋 I\'m your LinkedIn content collaborator. Tell me what you want to post about — a win, a packaging insight, something on your mind — and we\'ll turn it into a post that gets you in front of the right people.<br><br>Use the quick-start buttons on the left, or just type what\'s on your mind.</div>';
+}
+
+
+// ── AI Lead Research ─────────────────────────────────────────────
+async function runLeadResearch() {
+  const city = document.getElementById('res-city').value.trim();
+  const market = document.getElementById('res-market').value.trim();
+  const context = document.getElementById('res-context').value.trim();
+  if (!city || !market) { alert('Enter a city and market to research.'); return; }
+
+  const btn = document.getElementById('res-btn');
+  btn.textContent = '⏳ Researching...';
+  btn.disabled = true;
+
+  const prompt = `You are a B2B sales research expert helping Brian Blakeslee, an outside sales rep at Stephen Gould Corporation, find packaging prospects.
+
+Brian sells: Custom packaging and supply chain solutions (boxes, bags, bottles, labels, sustainable packaging, contract packaging)
+His pitch: Stephen Gould is a full-service packaging partner — design, sourcing, manufacturing, and supply chain all in one place.
+
+Research request:
+- City / Metro: ${city}
+- Market / Niche: ${market}
+${context ? '- Additional context: ' + context : ''}
+
+Provide a detailed research report with these exact sections:
+
+🏢 TARGET COMPANIES
+List 10-15 real, specific companies in this market and city that would need custom packaging. Include company name and what they make/sell. Focus on brands that are growing, have physical products, and are large enough to have packaging budgets but not so large they only work with global suppliers.
+
+👤 BUYER PERSONAS
+The 3-4 job titles Brian should target at these companies (e.g. VP of Operations, Head of Packaging, Brand Manager, Director of Supply Chain). For each title, explain what they care about most.
+
+💬 PAIN POINTS TO LEAD WITH
+The top 3-5 packaging challenges these companies face that Stephen Gould can solve. These become Brian's conversation openers.
+
+🔎 SALES NAVIGATOR SEARCH STRATEGY
+Exact filters to use in LinkedIn Sales Navigator to find these buyers:
+- Job titles to search
+- Industries to filter
+- Company size range
+- Any other filters that help narrow it down
+
+📝 SAMPLE OUTREACH ANGLE
+One sentence Brian can use as an opener when reaching out cold to this market.`;
+
+  try {
+    const res = await fetch('https://sg-hubspot-proxy.bribaseball66sg.workers.dev/ai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 2000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const result = data.content?.[0]?.text || 'No results returned. Check your API key in Settings.';
+    document.getElementById('res-results').textContent = result;
+    document.getElementById('res-output').style.display = 'block';
+  } catch(e) {
+    document.getElementById('res-results').textContent = 'Error: ' + e.message + '. Make sure your Anthropic API key is saved in Settings.';
+    document.getElementById('res-output').style.display = 'block';
+  }
+
+  btn.textContent = '🔍 Research This Market';
+  btn.disabled = false;
+}
+
+function copyResearch() {
+  const text = document.getElementById('res-results').textContent;
+  navigator.clipboard.writeText(text);
+  event.target.textContent = '✓ Copied!';
+  setTimeout(() => { event.target.textContent = '📋 Copy Results'; }, 2000);
+}
+
+function clearResearch() {
+  document.getElementById('res-city').value = '';
+  document.getElementById('res-market').value = '';
+  document.getElementById('res-context').value = '';
+  document.getElementById('res-output').style.display = 'none';
+  document.getElementById('res-results').textContent = '';
 }
 </script>
 </body>
