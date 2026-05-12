@@ -1055,10 +1055,31 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
 // ============================================================
 
 // ─── STATE ───────────────────────────────────────────────────
+const SB_URL = 'https://zacyaawllbzqlhzlmfll.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InphY3lhYXdsbGJ6cWxoemxtZmxsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1ODYxMTQsImV4cCI6MjA5NDE2MjExNH0.D-ORaVoHs4So4NK-WLecEJIB-SlIdnmG9Z-yjLG-33k';
+async function sbSet(k, v) {
+  try {
+    await fetch(SB_URL+'/rest/v1/sg_data', {
+      method:'POST',
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates'},
+      body:JSON.stringify({key:k, value:v, updated_at:new Date().toISOString()})
+    });
+  } catch(e) { console.warn('Supabase write failed:',e); }
+}
+async function syncFromSupabase() {
+  try {
+    const r = await fetch(SB_URL+'/rest/v1/sg_data?select=key,value', {
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+    });
+    const rows = await r.json();
+    if (Array.isArray(rows)) rows.forEach(row => localStorage.setItem('sg_'+row.key, JSON.stringify(row.value)));
+    console.log('Synced',Array.isArray(rows)?rows.length:0,'keys from Supabase');
+  } catch(e) { console.warn('Supabase sync failed, using local data:',e); }
+}
 const DB = {
-  get: k => { try { return JSON.parse(localStorage.getItem('sg_'+k)||'null') } catch(e){ return null } },
-  set: (k,v) => localStorage.setItem('sg_'+k, JSON.stringify(v)),
-  keys: ['contacts','followups','quotes','calllog','projects','suppliers','socialleads','aiAlerts','dismissed']
+  get: k => { try { return JSON.parse(localStorage.getItem('sg_'+k)||'null'); } catch(e){ return null; } },
+  set: (k,v) => { localStorage.setItem('sg_'+k, JSON.stringify(v)); sbSet(k,v); },
+  keys: ['contacts','followups','quotes','calllog','projects','suppliers','socialleads','aiAlerts','settings','sequences','prospecting']
 };
 
 let state = {
@@ -2354,7 +2375,7 @@ if(window.location.hash.includes('access_token')) {
 }
 
 // ─── BOOT ─────────────────────────────────────────────────────
-init();
+syncFromSupabase().then(() => init());
 </script>
 <script id="sg-li-apollo">
 // ====================================================
