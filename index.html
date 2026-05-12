@@ -1590,26 +1590,24 @@ function renderSuppliers() {
   const list = state.suppliers.filter(s=>!q||`${s.name} ${s.contact} ${s.categories} ${s.country}`.toLowerCase().includes(q));
   const el = document.getElementById('suppliers-list');
   if(!el) return;
-  if(!list.length) { el.innerHTML='<div class="empty-state"><div class="ei">🏭</div><h3>No suppliers yet</h3><p>Add your supplier contacts and track tariff exposure.</p></div>'; return; }
+  if(!list.length) { el.innerHTML='<div class="empty-state"><div class="ei">&#x1F3ED;</div><h3>No suppliers yet</h3><p>Add your supplier contacts and track tariff exposure.</p></div>'; return; }
   el.innerHTML = list.map(s=>`
     <div class="card">
       <div class="card-header">
         <div class="avatar navy" style="width:36px;height:36px;font-size:13px">${(s.name[0]||'S').toUpperCase()}</div>
         <div style="flex:1">
           <h3 style="margin:0">${s.name}</h3>
-          <div style="font-size:12px;color:var(--text-muted)">Contact: ${s.contact||'—'} ${s.email?'· '+s.email:''}</div>
+          <div style="font-size:12px;color:var(--text-muted)">${s.contact||''}${s.phone?' &middot; '+s.phone:''}${s.email?' &middot; '+s.email:''}</div>
+          ${s.url?`<div style="font-size:12px;margin-top:2px"><a href="${s.url}" target="_blank" rel="noopener" style="color:var(--navy);text-decoration:underline">${s.url.replace(/^https?:\/\//, '')}</a></div>`:''}
         </div>
-        <span class="badge ${s.country==='China'?'badge-red':'badge-navy'}">${s.country||'—'}</span>
-        ${s.country==='China'?'<span style="font-size:14px" title="China tariff risk">⚠️</span>':''}
-        <button class="btn btn-sm btn-secondary" onclick="deleteSupplier('${s.id}')">🗑️</button>
+        <span class="badge ${s.country==='China'?'badge-red':'badge-navy'}">${s.country||''}</span>
+        ${s.country==='China'?'<span style="font-size:14px" title="China tariff risk">&#x26A0;&#xFE0F;</span>':''}
+        <button class="btn btn-sm btn-secondary" onclick="deleteSupplier('${s.id}')">&#x1F5D1;&#xFE0F;</button>
       </div>
-      <div class="grid-2" style="gap:10px;font-size:13px">
-        <div><span style="color:var(--text-muted);font-size:11px;font-weight:700;text-transform:uppercase">Categories</span><br>${s.categories||'—'}</div>
-        <div><span style="color:var(--text-muted);font-size:11px;font-weight:700;text-transform:uppercase">Lead Time</span><br>${s.leadTime||'—'}</div>
-        <div><span style="color:var(--text-muted);font-size:11px;font-weight:700;text-transform:uppercase">MOQ</span><br>${s.moq||'—'}</div>
-        <div><span style="color:var(--text-muted);font-size:11px;font-weight:700;text-transform:uppercase">Pricing</span><br>${s.pricing||'—'}</div>
+      <div style="margin-top:10px;font-size:13px">
+        <span style="color:var(--text-muted);font-size:11px;font-weight:700;text-transform:uppercase">Categories</span><br>${s.categories||''}
       </div>
-      ${s.tariff?`<div class="tariff-flag" style="margin-top:10px"><div class="tfh">⚠️ Tariff Notes</div><p>${s.tariff}</p></div>`:''}
+      ${s.tariff?`<div class="tariff-flag" style="margin-top:10px"><div class="tfh">&#x26A0;&#xFE0F; Tariff Notes</div><p>${s.tariff}</p></div>`:''}
       ${s.notes?`<div style="margin-top:10px;font-size:13px;color:var(--text-muted);line-height:1.5">${s.notes}</div>`:''}
     </div>`).join('');
 }
