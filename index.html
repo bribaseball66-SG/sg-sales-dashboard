@@ -1098,6 +1098,8 @@ function init() {
   DB.keys.forEach(k => { const v = DB.get(k); if(v) state[k] = v; });
   const s = DB.get('settings'); if(s) state.settings = {...state.settings, ...s};
 
+  // Normalize contacts from mobile.html format
+  state.contacts=state.contacts.map(function(c){if(!c.firstName&&c.name){var p=(c.name||'').trim().split(' ');c.firstName=p[0]||'';c.lastName=p.slice(1).join(' ')||'';}return c;});
   // Seed warm leads if first launch
   if (!state.contacts.length) seedDefaultData();
   if (!state.suppliers.length) seedDefaultSuppliers();
@@ -1189,6 +1191,8 @@ function isOverdue(dateStr) { return dateStr && daysUntil(dateStr) < 0; }
 function isToday(dateStr) { return dateStr && daysUntil(dateStr) === 0; }
 function isThisWeek(dateStr) { const d = daysUntil(dateStr); return d >= 0 && d <= 7; }
 function isStale(contact) { return daysAgo(contact.lastContact) >= (parseInt(state.settings.stale)||7); }
+function fName(c){return c.firstName||(c.name||'').split(' ')[0]||'';}
+function lName(c){return c.lastName||(c.name||'').split(' ').slice(1).join(' ')||'';}
 function initials(c) { return ((c.firstName||'?')[0]+(c.lastName||c.company||'')[0]||'').toUpperCase(); }
 function priorityColor(p) { return p==='warm'?'red':p==='hot'?'green':'navy'; }
 function statusBadge(s) {
@@ -1314,7 +1318,7 @@ function buildPriorityList() {
     if(c.priority==='warm') score+=30;
     if(c.priority==='hot') score+=40;
     if(isStale(c)) { score+=20; reason = reason||`⚠️ Not contacted in ${daysAgo(c.lastContact)} days`; meta = meta||daysAgo(c.lastContact)+'d ago'; }
-    if(score>0) scored.push({ id:c.id, name:`${c.firstName} ${c.lastName}`.trim()||c.firstName, company:c.company, reason:reason||'Warm lead — check in', meta:meta||fmtDate(c.lastContact), score });
+    if(score>0) scored.push({ id:c.id, name:`${fName(c)} ${lName(c)}`.trim()||fName(c), company:c.company, reason:reason||'Warm lead — check in', meta:meta||fmtDate(c.lastContact), score });
   });
   return scored.sort((a,b)=>b.score-a.score);
 }
@@ -1355,7 +1359,7 @@ function contactCardHTML(c, compact=false) {
   return `<div class="contact-card ${c.priority==='warm'?'warm':isStale(c)?'stale':''}" onclick="openBrief('${c.id}')">
     <div class="avatar ${priorityColor(c.priority)}">${initials(c)}</div>
     <div class="contact-info">
-      <div class="name">${c.firstName} ${c.lastName||''} ${staleFlag} ${fuFlag}</div>
+      <div class="name">${fName(c)} ${lName(c)||''} ${staleFlag} ${fuFlag}</div>
       <div class="sub">${c.title||''}${c.title&&c.company?' · ':''}${c.company||''}</div>${c.email||c.phone||c.city?'<div style="font-size:11px;color:#888;margin-top:2px;line-height:1.4">'+[c.email?'✉️ '+c.email:'',c.phone?'📞 '+c.phone:'',c.city?(c.city+(c.state?', '+c.state:'')):''].filter(Boolean).join(' · ')+'</div>':''}
       ${!compact&&c.email?`<div class="sub" style="font-size:11px;color:var(--text-muted)">${c.email}</div>`:''}
     </div>
@@ -1677,7 +1681,7 @@ function openBrief(id) {
   const staleWarn = isStale(c) ? `<div class="alert-card urgent" style="margin-bottom:10px"><span class="alert-icon">⚠️</span><div class="alert-content"><strong>Stale Contact</strong><p>Last contact was ${daysAgo(c.lastContact)} days ago. Touch base today.</p></div></div>` : '';
   document.getElementById('brief-header').innerHTML = `
     <div class="avatar ${priorityColor(c.priority)}" style="width:44px;height:44px;font-size:16px">${initials(c)}</div>
-    <div style="flex:1"><h2 style="margin:0">${c.firstName} ${c.lastName||''}</h2><div style="font-size:13px;color:var(--text-muted)">${c.title||''} ${c.company?'@ '+c.company:''}</div></div>
+    <div style="flex:1"><h2 style="margin:0">${fName(c)} ${lName(c)||''}</h2><div style="font-size:13px;color:var(--text-muted)">${c.title||''} ${c.company?'@ '+c.company:''}</div></div>
     <button class="modal-close" onclick="closeModal('contactBrief')">×</button>`;
   document.getElementById('brief-body').innerHTML = `
     ${staleWarn}
