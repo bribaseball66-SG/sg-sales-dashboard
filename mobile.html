@@ -21,6 +21,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .nav-btn svg{width:24px;height:24px}
 .page{display:none;padding:0}
 .page.active{display:block}
+
+/* --- CONTACT LIST --- */
 .add-form{background:#1e293b;border-bottom:1px solid #334155;padding:16px}
 .add-form h2{font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
@@ -30,6 +32,7 @@ textarea{resize:none;height:70px;margin-bottom:0}
 .btn{width:100%;padding:14px;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer}
 .btn-blue{background:#2563eb;color:#fff;margin-top:10px}
 .btn-green{background:#16a34a;color:#fff}
+.btn-disabled{background:#1e293b;color:#475569;border:1.5px solid #334155}
 .contact-list{padding:12px 14px}
 .contact-card{background:#1e293b;border-radius:12px;padding:14px;margin-bottom:8px;border:1px solid #334155;display:flex;align-items:center;gap:12px}
 .contact-card .av{width:40px;height:40px;border-radius:50%;background:#1e3a5f;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#60a5fa;flex-shrink:0}
@@ -42,6 +45,8 @@ textarea{resize:none;height:70px;margin-bottom:0}
 .empty-state{text-align:center;padding:48px 24px;color:#64748b}
 .empty-state .icon{font-size:40px;margin-bottom:12px}
 .empty-state p{font-size:14px;line-height:1.6}
+
+/* --- PROSPECT --- */
 .search-bar{background:#1e293b;border-bottom:1px solid #334155;padding:16px}
 .search-bar h2{font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
 .search-bar input{margin-bottom:8px}
@@ -63,10 +68,11 @@ textarea{resize:none;height:70px;margin-bottom:0}
 .toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#16a34a;color:#fff;padding:10px 22px;border-radius:20px;font-weight:600;font-size:14px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
 .toast.show{opacity:1}
 .no-results{text-align:center;padding:36px 24px;color:#64748b;font-size:14px;line-height:1.6}
-.warn{background:#7c3aed22;border:1px solid #7c3aed55;border-radius:10px;padding:10px 14px;font-size:12px;color:#a78bfa;margin-bottom:8px}
+.tag{display:inline-block;font-size:10px;padding:2px 7px;border-radius:12px;font-weight:600;background:#1e3a5f;color:#60a5fa;margin-top:4px}
 </style>
 </head>
 <body>
+
 <div class="header">
   <h1>SG Field</h1>
   <div class="header-right">
@@ -75,6 +81,8 @@ textarea{resize:none;height:70px;margin-bottom:0}
   </div>
 </div>
 <div class="toast" id="toast"></div>
+
+<!-- CONTACT LIST TAB -->
 <div class="page active" id="page-list">
   <div class="add-form">
     <h2>New Contact</h2>
@@ -89,53 +97,135 @@ textarea{resize:none;height:70px;margin-bottom:0}
     <textarea id="c-notes" placeholder="Notes (optional)"></textarea>
     <button class="btn btn-blue" onclick="window.addToList()">+ Add to List</button>
   </div>
+
   <div class="contact-list" id="contact-list-area">
-    <div class="empty-state"><div class="icon">📋</div><p>Your list is empty.<br>Add contacts above and upload<br>them all at the end of the day.</p></div>
+    <div class="empty-state">
+      <div class="icon">&#128203;</div>
+      <p>Your list is empty.<br>Add contacts above and upload<br>them all at the end of the day.</p>
+    </div>
   </div>
+
   <div class="upload-bar" id="upload-bar" style="display:none">
     <button class="btn btn-green" id="upload-btn" onclick="window.uploadAll()">Upload 0 Contacts to Dashboard</button>
   </div>
 </div>
+
+<!-- PROSPECT FINDER TAB -->
 <div class="page" id="page-prospect">
   <div class="search-bar">
     <h2>Prospect Finder</h2>
-    <input type="text" id="p-city" placeholder="City, State (e.g. Flint, MI)">
-    <select id="p-industry" style="margin-top:8px">
-      <option value="all">All Businesses</option>
+    <input type="text" id="p-city" placeholder="City (e.g. Flint, MI)" style="margin-bottom:8px">
+    <select id="p-industry">
+      <option value="all">All Industries</option>
       <option value="cosmetics">Cosmetics / Beauty</option>
       <option value="fitness">Fitness / Sports</option>
       <option value="food">Food &amp; Beverage</option>
       <option value="retail">Retail / Boutique</option>
       <option value="health">Health / Wellness</option>
-      <option value="manufacturing">Manufacturing</option>
+      <option value="manufacturing">Manufacturing / Industrial</option>
     </select>
-    <button class="btn btn-prospect" style="margin-top:8px" onclick="window.findProspects()">🔍 Find Prospects</button>
+    <button class="btn btn-prospect" onclick="window.findProspects()">Find Prospects</button>
   </div>
   <div class="prospect-results" id="prospect-results">
-    <div class="no-results" style="color:#475569;margin-top:8px">Enter a city above to find local businesses to prospect.</div>
+    <div class="no-results" style="color:#475569">Enter a city above to find prospect accounts in your area.</div>
   </div>
 </div>
+
+<!-- BOTTOM NAV -->
 <div class="bottom-nav">
-  <button class="nav-btn active" onclick="window.goTo('list',this)">
+  <button class="nav-btn active" id="nav-list" onclick="window.goTo('list',this)">
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
     My List
   </button>
-  <button class="nav-btn" onclick="window.goTo('prospect',this)">
+  <button class="nav-btn" id="nav-prospect" onclick="window.goTo('prospect',this)">
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
     Prospect
   </button>
 </div>
+
 <script>
 (function(){
 var SB='https://zacyaawllbzqlhzlmfll.supabase.co';
 var SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InphY3lhYXdsbGJ6cWxoemxtZmxsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1ODYxMTQsImV4cCI6MjA5NDE2MjExNH0.D-ORaVoHs4So4NK-WLecEJIB-SlIdnmG9Z-yjLG-33k';
+
+/* ---- HubSpot backup â auto-restored if contacts are missing/dirty ---- */
+var HS_BACKUP=[
+{id:'hs_csv_0_1778639281',name:'Imtahaj Zaman',company:'Iroquois Industries',title:'',phone:'',email:'',notes:'Has given me 2 projects. Both were a little out of range but keep relationship going.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_1_1778639281',name:'Paige Hoffman',company:'Autoform Tool & Mfg',title:'',phone:'',email:'',notes:'Need to get pricing to Paige ASAP. Overdue.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_2_1778639281',name:'Cheuk Lee',company:'Jacked Alien',title:'',phone:'',email:'',notes:'Working on quoting boxes. Trying to beat .30.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_3_1778639281',name:'Justin Elias',company:'Puff Co',title:'',phone:'',email:'',notes:'Life Time connection through Rana. Follow up.',status:'new',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_4_1778639281',name:'Dominic Maniaci',company:'Troy Tube & Mfg Co',title:'',phone:'',email:'',notes:'Sent email. NDP and MSU connection.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_5_1778639281',name:'Michael Meadows',company:'Protein Pints',title:'',phone:'303-330-5308',email:'mike@proteinpints.com',notes:'Texted and emailed. Also have address for in-person visit. Try 480-662-3596 if no answer.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_6_1778639281',name:'Kendall Donaldson',company:'University Weiner',title:'',phone:'',email:'',notes:'Try to connect with Kendall to get an in.',status:'new',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_7_1778639281',name:'Tom Hahn',company:'Star of the West Milling Co',title:'',phone:'',email:'',notes:'Met in person. High on price - working on better number. Has 2 additional bags to quote.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_8_1778639281',name:'Jason',company:'Killer Instinct Crossbows',title:'',phone:'',email:'',notes:'Call for Jason. Could be some potential here.',status:'new',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_9_1778639281',name:'Craig Spence',company:'Spen Tech',title:'',phone:'',email:'',notes:'Got card from Wanda. Give it a shot.',status:'new',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_10_1778639281',name:'Ryan',company:'Flower of Life',title:'',phone:'',email:'',notes:'Emailed Ryanadmin@mifloweroflife.com. Call and ask for Ryan.',status:'new',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_11_1778639281',name:'Mesco',company:'Mesco',title:'',phone:'',email:'',notes:'General sales contact. Bryce and Dan Witt have done business with them.',status:'new',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_12_1778639281',name:'Theresa Mitoraj',company:'Mamma Muccis Pasta',title:'',phone:'',email:'',notes:'Got card from front desk. Contact Theresa.',status:'new',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_13_1778639281',name:'Janelle Pushman',company:'Pushman Manufacturing Co',title:'',phone:'',email:'',notes:'Spoke to Joanna and emailed her and Janelle. Call to check in.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_14_1778639281',name:'John Koegel',company:'Koegel Meats',title:'',phone:'',email:'',notes:'Responds but says nothing for me now. Check back end of March.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_15_1778639281',name:'Mike McDonald',company:'MCD Prime Co',title:'',phone:'810-845-4701',email:'',notes:'Spoke on phone about gaylord boxes. Said check back in 6 months.',status:'new',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_16_1778639281',name:'Amy Phillips',company:'Domico Med-Device',title:'',phone:'',email:'aphillips@domicomed.com',notes:'Said they are all set. Follow up in 6 months.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_17_1778639281',name:'Dave Peterson',company:'Allied Industrial Grp',title:'',phone:'',email:'',notes:'Uses ULine. Sent email. Call to check in.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_18_1778639281',name:'Miller Industries',company:'Miller Industries',title:'',phone:'',email:'',notes:'Got names and emails. Sent email. Check back in.',status:'new',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_19_1778639281',name:'Mustak Chowdhury',company:'American MSC',title:'',phone:'',email:'',notes:'Said all set but will check in later.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_20_1778639281',name:'Scott',company:'Detroit Wheel and Tire',title:'',phone:'',email:'',notes:'Sent another email. Follow up.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_21_1778639281',name:'Paul Rogers',company:'Paragon Metals',title:'',phone:'',email:'',notes:'Walked through warehouse. Baseball player. Asked to email him and Sam and Matt. Follow up now.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_22_1778639281',name:'Adelle',company:'Fairway Products',title:'',phone:'',email:'',notes:'Got phone number. Left VM. Call again.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_23_1778639281',name:'Adam Mesarosh',company:'Precision Gage LLC',title:'',phone:'',email:'',notes:'Got card for Adam. Contact him.',status:'new',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_24_1778639281',name:'Jim Parker',company:'JTM',title:'',phone:'',email:'',notes:'Got card. Sent email. Call to check in.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_25_1778639281',name:'Lori Slagle',company:'Kecy Metal Technologies',title:'',phone:'',email:'Lslagle@kecymetals.com',notes:'Emailed asking for meeting.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_26_1778639281',name:'Hi-Lex Controls',company:'Hi-Lex Controls',title:'',phone:'',email:'',notes:'Went to Hudson location. Need to crack this one.',status:'new',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_27_1778639281',name:'Angie Flaugher',company:'Raptor Industries',title:'',phone:'',email:'',notes:'Asked to be contacted mid-March. Overdue - call immediately.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_28_1778639281',name:'Austin Karan',company:'Semex',title:'',phone:'',email:'',notes:'On hold due to mixing powder issue. Follow up end of March.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_29_1778639281',name:'Jerry Lenning',company:'Toth Industries',title:'',phone:'',email:'',notes:'Cold called. Got card. Call to get in contact.',status:'new',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_30_1778639281',name:'Brian Moyer',company:'Premier Industries',title:'',phone:'',email:'',notes:'Left message and emailed. Follow up.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_31_1778639281',name:'Steve Jones',company:'Midway Products Group',title:'',phone:'',email:'stevejones@midwayproducts.com',notes:'Left VM and emailed. Follow up.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_32_1778639281',name:'Steve Ferguson',company:'Dundee Mfg',title:'',phone:'567-377-4087',email:'',notes:'Left VM. Call again.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_33_1778639281',name:'Chris Joseph',company:'Detroit Dispensing Solutions',title:'',phone:'',email:'',notes:'CEO. Toured warehouse. Needs custom wooden crates. Said all set for now. Check back end of March.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_34_1778639281',name:'John',company:'Carpatians Manufacturing',title:'',phone:'',email:'',notes:'Met with John. Low volume. Gave wrap samples.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_35_1778639281',name:'Ernie Danos',company:'HMS Mfg',title:'',phone:'',email:'',notes:'Personnel changes happening. Call main line and ask for Ernie.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_36_1778639281',name:'Slate Auto',company:'Slate Auto',title:'',phone:'',email:'',notes:'Try to call them.',status:'new',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_37_1778639281',name:'Jeff Hamama',company:'JARS Cannabis',title:'',phone:'',email:'',notes:'Toured Madison Heights location. Send thank you card and donuts ASAP.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_38_1778639281',name:'Patrick Deporre',company:'Clean + Kind',title:'',phone:'',email:'',notes:'Active cosmetics quote. Price to beat .50. Need to set up meeting ASAP.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_39_1778639281',name:'Michael Dooley',company:'Stoneridge',title:'',phone:'248-756-0521',email:'michael.dooley@stoneridge.com',notes:'Left VM and sent email. Follow up with call.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_40_1778639281',name:'Lisa Fante',company:'Humanetics',title:'',phone:'',email:'lfante@humaneticsgroup.com',notes:'Has potential but hard to crack. Email Lisa.',status:'new',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_41_1778639281',name:'Daifku',company:'Daifku',title:'',phone:'',email:'',notes:'Look into Boyne location.',status:'new',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_42_1778639281',name:'KIP America Inc',company:'KIP America Inc',title:'',phone:'',email:'',notes:'Call back and ask for Chad.',status:'new',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_43_1778639281',name:'Sam Makdasi',company:'Private Label Labs',title:'',phone:'',email:'',notes:'Met with Adin Laura and Sam. Have bottle dimensions and box specs. Need suppliers and get back ASAP.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_44_1778639281',name:'PuroLea Cosmetics',company:'PuroLea Cosmetics',title:'',phone:'',email:'',notes:'Mary said all set on packaging. Left card just in case. Follow up July.',status:'new',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_45_1778639281',name:'Amanda Ernst',company:'Michigan Extruded Aluminum',title:'',phone:'',email:'',notes:'Got card from front desk.',status:'new',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_46_1778639281',name:'Jason Meijia',company:'Aertech Machining & Mfg',title:'',phone:'',email:'jasonmeijia@aertechmfg.com',notes:'Got email for Jason.',status:'new',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_47_1778639281',name:'Nick Schuelke',company:'Dawn Foods',title:'',phone:'',email:'Nick.schuelke@dawnfood.com',notes:'Got email from Ruth. Sent email to Nick.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_48_1778639281',name:'Eric',company:'Manufacturing Dynamics',title:'',phone:'',email:'',notes:'Call for Eric.',status:'new',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_49_1778639281',name:'Kim Utz',company:'Motion Industries',title:'',phone:'',email:'KimMarie.Utz@Motion.com',notes:'Away on family emergency. Emailed Kim. Follow up.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_50_1778639281',name:'Jacob Gasso',company:'Drs. Pharmacy',title:'',phone:'',email:'jacob@drspharmacyusa.com',notes:'Met with Jacob. Discussed OTC cartons. He responded to email. Follow up in a few months.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_51_1778639281',name:'Randy',company:'Barnes Industries',title:'',phone:'',email:'randy@barnesballscrew.com',notes:'Got email from front desk. Reach out.',status:'new',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_52_1778639281',name:'John Mock',company:'Atlas Gear Company',title:'',phone:'',email:'',notes:'Met with John. They order custom crates. Going to email with next order. Good opportunity.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_53_1778639281',name:'RJ',company:'Systematic Manufacturing Inc',title:'',phone:'',email:'',notes:'Has potential but hard to crack. Call back for RJ.',status:'new',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_54_1778639281',name:'Imad Alabsi',company:'Skill Chemicals',title:'',phone:'',email:'',notes:'Owner. Working on 5 gallon pails and jugs. Need to find solid supplier.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_55_1778639281',name:'Dan Speck',company:'Warrior Sports',title:'',phone:'',email:'',notes:'Handles purchasing for hockey equipment.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_56_1778639281',name:'Celena Soka',company:'General Dynamics Land Systems',title:'',phone:'',email:'',notes:'Sent email. Need to fill out supplier app. Look into CMMC certification.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_57_1778639281',name:'Christina Carnes',company:'Forvia Hella',title:'',phone:'',email:'',notes:'Found on LinkedIn. Give it a crack.',status:'new',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_58_1778639281',name:'Terah Ostrander',company:'AM General',title:'',phone:'',email:'',notes:'Found on LinkedIn.',status:'new',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_59_1778639281',name:'Tom Yono',company:'L&L Products',title:'',phone:'',email:'',notes:'Called and emailed Tom.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_60_1778639281',name:'Amy Holloway',company:'Halla Mechatronics',title:'',phone:'',email:'',notes:'LinkedIn find. Left VM and email.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
+{id:'hs_csv_61_1778639281',name:'Hendy Alushi',company:'ServeOne America Inc.',title:'',phone:'',email:'',notes:'Lead from Tony. Met with Hendy. Working on PET Tray and Double Wall corrugated with print.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'}
+];
+
 var dayList=[];
 window._SGP=[];
 
-function dot(ok){var e=document.getElementById('sdot');if(e)e.style.background=ok?'#22c55e':'#ef4444';}
-function toast(m,c){var t=document.getElementById('toast');if(!t)return;t.textContent=m;t.style.background=c||'#16a34a';t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
+function sbHeaders(){
+  return {'apikey':SK,'Authorization':'Bearer '+SK,'Content-Type':'application/json'};
+}
 
-function sbHeaders(){return{'apikey':SK,'Authorization':'Bearer '+SK,'Content-Type':'application/json'};}
+function fetchWithTimeout(url,opts,ms){
+  var ctrl=new AbortController();
+  var timer=setTimeout(function(){ctrl.abort();},ms||15000);
+  return fetch(url,Object.assign({},opts,{signal:ctrl.signal})).finally(function(){clearTimeout(timer);});
+}
 
 function fetchContacts(){
   return fetch(SB+'/rest/v1/sg_data?key=eq.contacts&select=value',{headers:sbHeaders()})
@@ -144,7 +234,51 @@ function fetchContacts(){
     .catch(function(){return[];});
 }
 
-function init(){fetchContacts().then(function(){dot(1);}).catch(function(){dot(0);});}
+function sbSet(k,v){
+  return fetch(SB+'/rest/v1/sg_data',{
+    method:'POST',
+    headers:Object.assign({},sbHeaders(),{'Prefer':'resolution=merge-duplicates'}),
+    body:JSON.stringify({key:k,value:v,updated_at:new Date().toISOString()})
+  })
+  .then(function(){dot(1);})
+  .catch(function(){dot(0);});
+}
+
+function dot(ok){
+  var el=document.getElementById('sdot');
+  if(el) el.style.background=ok?'#22c55e':'#ef4444';
+}
+
+function toast(m,color){
+  var t=document.getElementById('toast');
+  if(!t) return;
+  t.textContent=m;
+  t.style.background=color||'#16a34a';
+  t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},2500);
+}
+
+function needsRestore(contacts){
+  if(!contacts||contacts.length<5) return true;
+  var bad=contacts.filter(function(c){return !c.name||c.name==='undefined'||c.name==='null';});
+  return bad.length>0;
+}
+
+function init(){
+  fetchContacts().then(function(contacts){
+    if(needsRestore(contacts)){
+      /* Auto-restore from HubSpot backup */
+      var nonHS=contacts.filter(function(c){return c.source!=='hubspot'&&c.name&&c.name!=='undefined';});
+      var restored=HS_BACKUP.concat(nonHS);
+      sbSet('contacts',restored).then(function(){
+        dot(1);
+        toast('Contacts restored ('+restored.length+')', '#2563eb');
+      });
+    } else {
+      dot(1);
+    }
+  }).catch(function(){dot(0);});
+}
 
 window.goTo=function(name,btn){
   document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
@@ -186,169 +320,166 @@ function renderList(){
   var bar=document.getElementById('upload-bar');
   var badge=document.getElementById('list-badge');
   var upBtn=document.getElementById('upload-btn');
-  if(!el)return;
+  if(!el) return;
   if(!dayList.length){
-    el.innerHTML='<div class="empty-state"><div class="icon">📋</div><p>Your list is empty.<br>Add contacts above and upload<br>them all at the end of the day.</p></div>';
-    if(bar)bar.style.display='none';
-    if(badge)badge.style.display='none';
+    el.innerHTML='<div class="empty-state"><div class="icon">&#128203;</div><p>Your list is empty.<br>Add contacts above and upload<br>them all at the end of the day.</p></div>';
+    if(bar) bar.style.display='none';
+    if(badge) badge.style.display='none';
     return;
   }
   if(badge){badge.textContent=dayList.length;badge.style.display='inline-block';}
-  if(upBtn)upBtn.textContent='Upload '+dayList.length+' Contact'+(dayList.length!==1?'s':'')+' to Dashboard';
-  if(bar)bar.style.display='block';
+  if(upBtn) upBtn.textContent='Upload '+dayList.length+' Contact'+(dayList.length!==1?'s':'')+' to Dashboard';
+  if(bar) bar.style.display='block';
   el.innerHTML=dayList.map(function(c){
     var ini=((c.name||c.company||'?').split(' ').map(function(w){return w[0]||'';}).join('').substring(0,2)||'?').toUpperCase();
-    return '<div class="contact-card"><div class="av">'+ini+'</div><div class="info"><div class="name">'+(c.name||'&mdash;')+'</div><div class="co">'+(c.company||'&mdash;')+'</div>'+(c.phone?'<div class="ph">'+c.phone+'</div>':'')+(c.addedAt?'<div class="ph">Added '+c.addedAt+(c.city?' - '+c.city:'')+'</div>':'')+'</div><button class="del-btn" onclick="window.removeFromList('+c._lid+')">X</button></div>';
+    return '<div class="contact-card">'
+      +'<div class="av">'+ini+'</div>'
+      +'<div class="info">'
+      +'<div class="name">'+(c.name||'&mdash;')+'</div>'
+      +'<div class="co">'+(c.company||'&mdash;')+'</div>'
+      +(c.phone?'<div class="ph">'+c.phone+'</div>':'')
+      +(c.addedAt?'<div class="ph">Added '+c.addedAt+(c.city?' &middot; '+c.city:'')+'</div>':'')
+      +'</div>'
+      +'<button class="del-btn" onclick="window.removeFromList('+c._lid+')">X</button>'
+      +'</div>';
   }).join('');
 }
 
 window.uploadAll=function(){
-  if(!dayList.length)return;
+  if(!dayList.length) return;
   var btn=document.getElementById('upload-btn');
-  if(btn){btn.textContent='Syncing...';btn.disabled=true;}
+  if(btn){btn.textContent='Uploading...';btn.disabled=true;}
+  var ts=new Date().toISOString();
   var snapshot=dayList.slice();
+  /* Always fetch fresh from Supabase before merging â prevents overwrite on slow connections */
   fetchContacts().then(function(existing){
-    var existingMap={};
-    existing.forEach(function(c){if(c.id)existingMap[c.id]=c;});
-    var ts=new Date().toISOString();
+    var idMap={};
+    existing.forEach(function(c){if(c.id) idMap[c.id]=c;});
     var newContacts=snapshot.map(function(c){
-      return{id:'m'+Date.now()+Math.floor(Math.random()*99999),name:c.name,company:c.company,title:c.title||'',phone:c.phone||'',email:'',city:c.city||'',notes:c.notes||'',status:'cold',lastContact:ts,source:'mobile_field'};
+      return {
+        id:'f'+Date.now()+Math.floor(Math.random()*99999),
+        name:(c.name||c.company||'').trim()||'Unknown',
+        company:c.company||'',
+        title:c.title||'',
+        phone:c.phone||'',
+        email:'',
+        city:c.city||'',
+        notes:c.notes||'',
+        status:'cold',
+        lastContact:ts,
+        source:'mobile_field',
+        addedAt:ts
+      };
     });
-    newContacts.forEach(function(c){existingMap[c.id]=c;});
-    var merged=Object.keys(existingMap).map(function(k){return existingMap[k];});
-    return fetch(SB+'/rest/v1/sg_data',{method:'POST',headers:Object.assign({'Prefer':'resolution=merge-duplicates'},sbHeaders()),body:JSON.stringify({key:'contacts',value:merged,updated_at:ts})})
-      .then(function(){
-        dot(1);
-        dayList=dayList.filter(function(c){
-          return!snapshot.some(function(s){return s._lid===c._lid;});
-        });
-        renderList();
-        toast(snapshot.length+' contact'+(snapshot.length!==1?'s':'')+' added to dashboard!');
-        if(btn)btn.disabled=false;
-      });
+    newContacts.forEach(function(c){idMap[c.id]=c;});
+    var merged=Object.values(idMap);
+    return sbSet('contacts',merged).then(function(){
+      var n=snapshot.length;
+      dayList=[];
+      renderList();
+      toast(n+' contact'+(n!==1?'s':'')+' added to dashboard!');
+      if(btn){btn.textContent='Upload Contacts to Dashboard';btn.disabled=false;}
+    });
   }).catch(function(){
-    toast('Upload failed - check connection','#dc2626');
-    dot(0);
+    toast('Upload failed â check connection','#dc2626');
     if(btn){btn.textContent='Retry Upload';btn.disabled=false;}
   });
 };
 
-var IC={
-  all:{label:'Business',emoji:'🏢',tags:[['shop'],['office','company'],['craft'],['amenity','bank']]},
-  cosmetics:{label:'Cosmetics',emoji:'💄',tags:[['shop','cosmetics'],['shop','beauty'],['shop','hairdresser'],['amenity','beauty_salon']]},
-  fitness:{label:'Fitness',emoji:'💪',tags:[['leisure','fitness_centre'],['amenity','gym'],['shop','sports'],['leisure','sports_centre']]},
-  food:{label:'Food',emoji:'🍽',tags:[['shop','deli'],['shop','beverages'],['amenity','restaurant'],['shop','bakery']]},
-  retail:{label:'Retail',emoji:'🛍',tags:[['shop','clothes'],['shop','gift'],['shop','jewelry'],['shop','boutique']]},
-  health:{label:'Health',emoji:'💊',tags:[['amenity','pharmacy'],['amenity','clinic'],['amenity','spa'],['shop','health_food']]},
-  manufacturing:{label:'Manufacturing',emoji:'🏭',tags:[['man_made','works'],['office','manufacturer'],['building','industrial']]}
+var industryConfig={
+  all:{label:'Business',emoji:'ð¢',tags:[['shop'],['office','company'],['office','manufacturer'],['amenity','bank'],['craft']]},
+  cosmetics:{label:'Cosmetics / Beauty',emoji:'ð',tags:[['shop','cosmetics'],['shop','beauty'],['shop','hairdresser'],['craft','beauty_salon'],['shop','perfumery']]},
+  fitness:{label:'Fitness / Sports',emoji:'ðª',tags:[['leisure','fitness_centre'],['leisure','sports_centre'],['amenity','gym'],['shop','sports']]},
+  food:{label:'Food & Beverage',emoji:'ð½ï¸',tags:[['shop','deli'],['shop','beverages'],['shop','bakery'],['amenity','restaurant'],['shop','supermarket']]},
+  retail:{label:'Retail',emoji:'ðï¸',tags:[['shop','clothes'],['shop','boutique'],['shop','gift'],['shop','jewelry'],['shop','department_store']]},
+  health:{label:'Health / Wellness',emoji:'ð',tags:[['amenity','pharmacy'],['amenity','clinic'],['shop','health_food'],['shop','herbalist'],['amenity','spa']]},
+  manufacturing:{label:'Manufacturing',emoji:'ð­',tags:[['man_made','works'],['industrial','factory'],['building','industrial'],['office','manufacturer']]}
 };
-
-function fetchWithTimeout(url,opts,ms){
-  var ctrl=new AbortController();
-  var timer=setTimeout(function(){ctrl.abort();},ms||15000);
-  return fetch(url,Object.assign({},opts,{signal:ctrl.signal})).finally(function(){clearTimeout(timer);});
-}
 
 window.findProspects=function(){
   var city=document.getElementById('p-city').value.trim();
-  var ind=document.getElementById('p-industry').value;
+  var industry=document.getElementById('p-industry').value;
   if(!city){toast('Enter a city first','#dc2626');return;}
   var el=document.getElementById('prospect-results');
-  el.innerHTML='<div class="loading"><div class="spinner"></div>Finding prospects in '+city+'...</div>';
+  el.innerHTML='<div class="loading"><div class="spinner"></div>Looking for prospects in '+city+'...</div>';
+  window._SGP=[];
 
+  /* No User-Agent header â forbidden in browsers, breaks mobile Safari */
   fetchWithTimeout('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(city),{},12000)
     .then(function(r){return r.json();})
     .then(function(geo){
-      if(!geo||!geo.length){
-        el.innerHTML='<div class="no-results">City not found. Try "Flint, MI" format.</div>';
-        return;
-      }
-      var lat=parseFloat(geo[0].lat);
-      var lon=parseFloat(geo[0].lon);
-      var d=0.1;
+      if(!geo.length){el.innerHTML='<div class="no-results">City not found. Try adding state (e.g. "Flint, MI").</div>';return;}
+      var lat=parseFloat(geo[0].lat),lon=parseFloat(geo[0].lon),d=0.08;
       var bbox=(lat-d)+','+(lon-d)+','+(lat+d)+','+(lon+d);
-      var cfg=IC[ind]||IC.all;
-      var tf=cfg.tags.map(function(t){
-        return t.length===1?'node["'+t[0]+'"]('+bbox+');way["'+t[0]+'"]('+bbox+');':
-          'node["'+t[0]+'"="'+t[1]+'"]('+bbox+');way["'+t[0]+'"="'+t[1]+'"]('+bbox+');';
-      }).join('');
-      var q='[out:json][timeout:20];('+tf+');out center 40;';
+      var cfg=industryConfig[industry]||industryConfig.all;
+      var filters=cfg.tags.map(function(t){
+        return t.length===1?'node["'+t[0]+'"]('+bbox+');':
+          'node["'+t[0]+'"="'+t[1]+'"]('+bbox+');';
+      }).join('\n');
+      var q='[out:json][timeout:25];\n(\n'+filters+'\n);\nout body 30;';
       return fetchWithTimeout('https://overpass-api.de/api/interpreter',{method:'POST',body:q},25000)
         .then(function(r){return r.json();})
         .then(function(ov){
-          window._SGP=[];
-          var els=(ov.elements||[]).filter(function(e){
-            var tags=e.tags||{};
-            return tags.name&&tags.name.length>1;
-          });
-          var seen={};
-          var unique=[];
-          els.forEach(function(e){
-            var n=(e.tags.name||'').toLowerCase();
-            if(!seen[n]){seen[n]=1;unique.push(e);}
-          });
-          unique=unique.slice(0,30);
-          if(!unique.length){
-            el.innerHTML='<div class="no-results">No businesses found in '+city+' for that category.<br>Try "All Businesses" or a nearby larger city.</div>';
+          var items=(ov.elements||[]).filter(function(e){return e.tags&&e.tags.name;}).slice(0,25);
+          if(!items.length){
+            el.innerHTML='<div class="no-results">No results in '+city+' for that category.<br>Try a broader industry or nearby city.</div>';
             return;
           }
-          var cfg2=IC[ind]||IC.all;
-          window._SGP=unique.map(function(e){
-            var t=e.tags||{};
-            var center=e.center||{lat:lat,lon:lon};
-            var addr=[t['addr:housenumber'],t['addr:street']].filter(Boolean).join(' ');
-            var cityAddr=t['addr:city']||city;
-            var fullAddr=addr?(addr+', '+cityAddr):cityAddr;
-            return{
-              name:t.name||'Unknown',
-              company:t.name||'Unknown',
-              addr:fullAddr,
-              phone:t.phone||t['contact:phone']||t['contact:mobile']||'',
-              website:t.website||t['contact:website']||'',
-              type:(t.shop||t.leisure||t.amenity||t.craft||t.office||cfg2.label).replace(/_/g,' '),
-              emoji:cfg2.emoji
-            };
-          });
-          el.innerHTML='<div style="font-size:12px;color:#64748b;padding:8px 2px 6px;font-weight:600">'+window._SGP.length+' BUSINESSES FOUND IN '+city.toUpperCase()+'</div>'+
-            window._SGP.map(function(p,i){
-              return '<div class="prospect-card">'+
-                '<div class="pav">'+p.emoji+'</div>'+
-                '<div class="pinfo">'+
-                  '<div class="pname">'+p.name+'</div>'+
-                  '<div class="ptype">'+p.type+'</div>'+
-                  '<div class="paddr">'+p.addr+'</div>'+
-                  (p.phone?'<div class="pph">'+p.phone+'</div>':'')+
-                '</div>'+
-                '<button class="add-prospect-btn" id="padd-'+i+'" onclick="window.addProspectToList('+i+')">+ Add</button>'+
-              '</div>';
-            }).join('');
+          window._SGP=items;
+          renderProspects(items,cfg,city);
         });
     })
-    .catch(function(err){
-      var msg=err&&err.name==='AbortError'?'Search timed out - try a bigger city or check connection.':'Search failed - check your connection and try again.';
-      el.innerHTML='<div class="no-results">'+msg+'</div>';
+    .catch(function(e){
+      el.innerHTML='<div class="no-results">Search failed â check your connection and try again.</div>';
     });
 };
 
+function renderProspects(items,cfg,city){
+  var el=document.getElementById('prospect-results');
+  el.innerHTML='<div style="font-size:12px;color:#64748b;padding:8px 2px 4px;font-weight:600">'+items.length+' PROSPECTS FOUND &middot; '+city.toUpperCase()+'</div>'+
+    items.map(function(e,i){
+      var t=e.tags||{};
+      var name=t.name||'Unknown';
+      var addr=[t['addr:housenumber'],t['addr:street'],t['addr:city']].filter(Boolean).join(' ');
+      var phone=t.phone||t['contact:phone']||'';
+      var type=(t.shop||t.leisure||t.amenity||t.craft||t.office||t.industrial||cfg.label).replace(/_/g,' ');
+      return '<div class="prospect-card">'
+        +'<div class="pav">'+cfg.emoji+'</div>'
+        +'<div class="pinfo">'
+        +'<div class="pname">'+name+'</div>'
+        +'<div class="ptype">'+type+'</div>'
+        +(addr?'<div class="paddr">'+addr+'</div>':'')
+        +(phone?'<div class="pph">'+phone+'</div>':'')
+        +'</div>'
+        +'<button class="add-prospect-btn" id="padd-'+i+'" onclick="window.addProspectToList('+i+')">+ Add</button>'
+        +'</div>';
+    }).join('');
+}
+
 window.addProspectToList=function(i){
   var p=window._SGP[i];
-  if(!p)return;
+  if(!p) return;
   var btn=document.getElementById('padd-'+i);
-  if(!btn||btn.classList.contains('added'))return;
+  if(!btn||btn.classList.contains('added')) return;
+  var t=p.tags||{};
+  var name=t.name||'Unknown';
+  var addr=[t['addr:housenumber'],t['addr:street'],t['addr:city']].filter(Boolean).join(' ');
+  var phone=t.phone||t['contact:phone']||'';
+  var type=(t.shop||t.leisure||t.amenity||t.craft||t.office||t.industrial||'Business').replace(/_/g,' ');
   dayList.push({
     _lid:Date.now()+Math.random(),
     name:'',
-    company:p.company,
-    title:p.type,
-    phone:p.phone,
-    city:p.addr,
-    notes:p.website?'Website: '+p.website:'',
+    company:name,
+    title:type,
+    phone:phone,
+    city:addr,
+    notes:'',
     addedAt:new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})
   });
   btn.textContent='Added';
   btn.classList.add('added');
   renderList();
-  toast('Added: '+p.name);
+  toast('Added: '+name);
 };
 
 init();
@@ -356,3 +487,4 @@ init();
 </script>
 </body>
 </html>
+ 
