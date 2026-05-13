@@ -63,6 +63,7 @@ textarea{resize:none;height:70px;margin-bottom:0}
 .toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#16a34a;color:#fff;padding:10px 22px;border-radius:20px;font-weight:600;font-size:14px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
 .toast.show{opacity:1}
 .no-results{text-align:center;padding:36px 24px;color:#64748b;font-size:14px;line-height:1.6}
+.warn{background:#7c3aed22;border:1px solid #7c3aed55;border-radius:10px;padding:10px 14px;font-size:12px;color:#a78bfa;margin-bottom:8px}
 </style>
 </head>
 <body>
@@ -98,20 +99,20 @@ textarea{resize:none;height:70px;margin-bottom:0}
 <div class="page" id="page-prospect">
   <div class="search-bar">
     <h2>Prospect Finder</h2>
-    <input type="text" id="p-city" placeholder="City (e.g. Flint, MI)" style="margin-bottom:8px">
-    <select id="p-industry">
-      <option value="all">All Industries</option>
+    <input type="text" id="p-city" placeholder="City, State (e.g. Flint, MI)">
+    <select id="p-industry" style="margin-top:8px">
+      <option value="all">All Businesses</option>
       <option value="cosmetics">Cosmetics / Beauty</option>
       <option value="fitness">Fitness / Sports</option>
       <option value="food">Food &amp; Beverage</option>
       <option value="retail">Retail / Boutique</option>
       <option value="health">Health / Wellness</option>
-      <option value="manufacturing">Manufacturing / Industrial</option>
+      <option value="manufacturing">Manufacturing</option>
     </select>
-    <button class="btn btn-prospect" onclick="window.findProspects()">Find Prospects</button>
+    <button class="btn btn-prospect" style="margin-top:8px" onclick="window.findProspects()">🔍 Find Prospects</button>
   </div>
   <div class="prospect-results" id="prospect-results">
-    <div class="no-results" style="color:#475569">Enter a city above to find prospect accounts in your area.</div>
+    <div class="no-results" style="color:#475569;margin-top:8px">Enter a city above to find local businesses to prospect.</div>
   </div>
 </div>
 <div class="bottom-nav">
@@ -129,20 +130,227 @@ textarea{resize:none;height:70px;margin-bottom:0}
 var SB='https://zacyaawllbzqlhzlmfll.supabase.co';
 var SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InphY3lhYXdsbGJ6cWxoemxtZmxsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1ODYxMTQsImV4cCI6MjA5NDE2MjExNH0.D-ORaVoHs4So4NK-WLecEJIB-SlIdnmG9Z-yjLG-33k';
 var dayList=[];
-var existingContacts=[];
 window._SGP=[];
+
 function dot(ok){var e=document.getElementById('sdot');if(e)e.style.background=ok?'#22c55e':'#ef4444';}
 function toast(m,c){var t=document.getElementById('toast');if(!t)return;t.textContent=m;t.style.background=c||'#16a34a';t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
-function sbSet(k,v){return fetch(SB+'/rest/v1/sg_data',{method:'POST',headers:{'apikey':SK,'Authorization':'Bearer '+SK,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates'},body:JSON.stringify({key:k,value:v,updated_at:new Date().toISOString()})}).then(function(){dot(1);}).catch(function(){dot(0);});}
-function init(){fetch(SB+'/rest/v1/sg_data?key=eq.contacts&select=value',{headers:{'apikey':SK,'Authorization':'Bearer '+SK}}).then(function(r){return r.json();}).then(function(d){if(d.length&&Array.isArray(d[0].value))existingContacts=d[0].value;dot(1);}).catch(function(){dot(0);});}
-window.goTo=function(name,btn){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active');});var pg=document.getElementById('page-'+name);if(pg)pg.classList.add('active');if(btn)btn.classList.add('active');};
-window.addToList=function(){var first=document.getElementById('c-first').value.trim();var last=document.getElementById('c-last').value.trim();var co=document.getElementById('c-co').value.trim();if(!co&&!first){toast('Need at least a company or name','#dc2626');return;}var contact={_lid:Date.now()+Math.random(),name:(first+' '+last).trim()||'',company:co,title:document.getElementById('c-title').value.trim(),phone:document.getElementById('c-phone').value.trim(),city:document.getElementById('c-city').value.trim(),notes:document.getElementById('c-notes').value.trim(),addedAt:new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})};dayList.push(contact);['c-first','c-last','c-co','c-title','c-phone','c-city','c-notes'].forEach(function(id){document.getElementById(id).value='';});document.getElementById('c-first').focus();renderList();toast('Added: '+(contact.name||contact.company));};
-window.removeFromList=function(lid){dayList=dayList.filter(function(c){return c._lid!==lid;});renderList();};
-function renderList(){var el=document.getElementById('contact-list-area');var bar=document.getElementById('upload-bar');var badge=document.getElementById('list-badge');var upBtn=document.getElementById('upload-btn');if(!el)return;if(!dayList.length){el.innerHTML='<div class="empty-state"><div class="icon">📋</div><p>Your list is empty.<br>Add contacts above and upload<br>them all at the end of the day.</p></div>';if(bar)bar.style.display='none';if(badge)badge.style.display='none';return;}if(badge){badge.textContent=dayList.length;badge.style.display='inline-block';}if(upBtn)upBtn.textContent='Upload '+dayList.length+' Contact'+(dayList.length!==1?'s':'')+' to Dashboard';if(bar)bar.style.display='block';el.innerHTML=dayList.map(function(c){var ini=((c.name||c.company||'?').split(' ').map(function(w){return w[0]||'';}).join('').substring(0,2)||'?').toUpperCase();return '<div class="contact-card"><div class="av">'+ini+'</div><div class="info"><div class="name">'+(c.name||'&mdash;')+'</div><div class="co">'+(c.company||'&mdash;')+'</div>'+(c.phone?'<div class="ph">'+c.phone+'</div>':'')+(c.addedAt?'<div class="ph">Added '+c.addedAt+(c.city?' - '+c.city:'')+'</div>':'')+'</div><button class="del-btn" onclick="window.removeFromList('+c._lid+')">X</button></div>';}).join('');}
-window.uploadAll=function(){if(!dayList.length)return;var btn=document.getElementById('upload-btn');if(btn){btn.textContent='Uploading...';btn.disabled=true;}var ts=new Date().toISOString();var newContacts=dayList.map(function(c){return{id:'f'+Date.now()+Math.floor(Math.random()*99999),name:c.name,company:c.company,title:c.title||'',phone:c.phone||'',email:'',city:c.city||'',notes:c.notes||'',status:'cold',lastContact:ts,source:'mobile_field'};});var merged=newContacts.concat(existingContacts);sbSet('contacts',merged).then(function(){existingContacts=merged;var n=dayList.length;dayList=[];renderList();toast(n+' contact'+(n!==1?'s':'')+' added to dashboard!');if(btn)btn.disabled=false;});};
-var IC={all:{label:'Business',emoji:'🏢',tags:[['shop'],['office','company'],['craft']]},cosmetics:{label:'Cosmetics',emoji:'💄',tags:[['shop','cosmetics'],['shop','beauty'],['shop','hairdresser']]},fitness:{label:'Fitness',emoji:'💪',tags:[['leisure','fitness_centre'],['amenity','gym'],['shop','sports']]},food:{label:'Food',emoji:'🍽',tags:[['shop','deli'],['shop','beverages'],['amenity','restaurant']]},retail:{label:'Retail',emoji:'🛍',tags:[['shop','clothes'],['shop','gift'],['shop','jewelry']]},health:{label:'Health',emoji:'💊',tags:[['amenity','pharmacy'],['amenity','clinic'],['amenity','spa']]},manufacturing:{label:'Manufacturing',emoji:'🏭',tags:[['man_made','works'],['office','manufacturer']]}};
-window.findProspects=function(){var city=document.getElementById('p-city').value.trim();var ind=document.getElementById('p-industry').value;if(!city){toast('Enter a city first','#dc2626');return;}var el=document.getElementById('prospect-results');el.innerHTML='<div class="loading"><div class="spinner"></div>Looking for prospects in '+city+'...</div>';fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(city)+'&format=json&limit=1',{headers:{'User-Agent':'SGFieldApp/1.0'}}).then(function(r){return r.json();}).then(function(geo){if(!geo.length){el.innerHTML='<div class="no-results">City not found. Try adding state (e.g. "Flint, MI").</div>';return;}var lat=parseFloat(geo[0].lat);var lon=parseFloat(geo[0].lon);var d=0.08;var bbox=(lat-d)+','+(lon-d)+','+(lat+d)+','+(lon+d);var cfg=IC[ind]||IC.all;var tf=cfg.tags.map(function(t){return t.length===1?'node["'+t[0]+'"]('+bbox+');':'node["'+t[0]+'"="'+t[1]+'"]('+bbox+');';}).join(' ');var q='[out:json][timeout:25]; ( '+tf+' ); out body 30;';return fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:q}).then(function(r){return r.json();}).then(function(ov){window._SGP=[];var els=(ov.elements||[]).filter(function(e){return e.tags&&e.tags.name;}).slice(0,25);if(!els.length){el.innerHTML='<div class="no-results">No results in '+city+'. Try a broader industry or nearby city.</div>';return;}var cfg2=IC[ind]||IC.all;window._SGP=els.map(function(e){var t=e.tags||{};var name=t.name||'Unknown';var addr=[t['addr:housenumber'],t['addr:street'],t['addr:city']].filter(Boolean).join(' ');return{name:name,company:name,addr:addr||city,phone:t.phone||t['contact:phone']||'',type:(t.shop||t.leisure||t.amenity||t.craft||t.office||cfg2.label).replace(/_/g,' '),emoji:cfg2.emoji};});el.innerHTML='<div style="font-size:12px;color:#64748b;padding:8px 2px 4px;font-weight:600">'+window._SGP.length+' PROSPECTS - '+city.toUpperCase()+'</div>'+window._SGP.map(function(p,i){return '<div class="prospect-card"><div class="pav">'+p.emoji+'</div><div class="pinfo"><div class="pname">'+p.name+'</div><div class="ptype">'+p.type+'</div>'+(p.addr?'<div class="paddr">'+p.addr+'</div>':'')+(p.phone?'<div class="pph">'+p.phone+'</div>':'')+'</div><button class="add-prospect-btn" id="padd-'+i+'" onclick="window.addProspectToList('+i+')">+ Add</button></div>';}).join('');});}).catch(function(){el.innerHTML='<div class="no-results">Search failed - check connection and try again.</div>';});};
-window.addProspectToList=function(i){var p=window._SGP[i];if(!p)return;var btn=document.getElementById('padd-'+i);if(!btn||btn.classList.contains('added'))return;dayList.push({_lid:Date.now()+Math.random(),name:'',company:p.company,title:p.type,phone:p.phone,city:p.addr,notes:'',addedAt:new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})});btn.textContent='Added';btn.classList.add('added');renderList();toast('Added: '+p.name);};
+
+function sbHeaders(){return{'apikey':SK,'Authorization':'Bearer '+SK,'Content-Type':'application/json'};}
+
+function fetchContacts(){
+  return fetch(SB+'/rest/v1/sg_data?key=eq.contacts&select=value',{headers:sbHeaders()})
+    .then(function(r){return r.json();})
+    .then(function(d){return(d.length&&Array.isArray(d[0].value))?d[0].value:[];})
+    .catch(function(){return[];});
+}
+
+function init(){fetchContacts().then(function(){dot(1);}).catch(function(){dot(0);});}
+
+window.goTo=function(name,btn){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active');});
+  var pg=document.getElementById('page-'+name);
+  if(pg)pg.classList.add('active');
+  if(btn)btn.classList.add('active');
+};
+
+window.addToList=function(){
+  var first=document.getElementById('c-first').value.trim();
+  var last=document.getElementById('c-last').value.trim();
+  var co=document.getElementById('c-co').value.trim();
+  if(!co&&!first){toast('Need at least a company or name','#dc2626');return;}
+  var contact={
+    _lid:Date.now()+Math.random(),
+    name:(first+' '+last).trim()||'',
+    company:co,
+    title:document.getElementById('c-title').value.trim(),
+    phone:document.getElementById('c-phone').value.trim(),
+    city:document.getElementById('c-city').value.trim(),
+    notes:document.getElementById('c-notes').value.trim(),
+    addedAt:new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})
+  };
+  dayList.push(contact);
+  ['c-first','c-last','c-co','c-title','c-phone','c-city','c-notes'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('c-first').focus();
+  renderList();
+  toast('Added: '+(contact.name||contact.company));
+};
+
+window.removeFromList=function(lid){
+  dayList=dayList.filter(function(c){return c._lid!==lid;});
+  renderList();
+};
+
+function renderList(){
+  var el=document.getElementById('contact-list-area');
+  var bar=document.getElementById('upload-bar');
+  var badge=document.getElementById('list-badge');
+  var upBtn=document.getElementById('upload-btn');
+  if(!el)return;
+  if(!dayList.length){
+    el.innerHTML='<div class="empty-state"><div class="icon">📋</div><p>Your list is empty.<br>Add contacts above and upload<br>them all at the end of the day.</p></div>';
+    if(bar)bar.style.display='none';
+    if(badge)badge.style.display='none';
+    return;
+  }
+  if(badge){badge.textContent=dayList.length;badge.style.display='inline-block';}
+  if(upBtn)upBtn.textContent='Upload '+dayList.length+' Contact'+(dayList.length!==1?'s':'')+' to Dashboard';
+  if(bar)bar.style.display='block';
+  el.innerHTML=dayList.map(function(c){
+    var ini=((c.name||c.company||'?').split(' ').map(function(w){return w[0]||'';}).join('').substring(0,2)||'?').toUpperCase();
+    return '<div class="contact-card"><div class="av">'+ini+'</div><div class="info"><div class="name">'+(c.name||'&mdash;')+'</div><div class="co">'+(c.company||'&mdash;')+'</div>'+(c.phone?'<div class="ph">'+c.phone+'</div>':'')+(c.addedAt?'<div class="ph">Added '+c.addedAt+(c.city?' - '+c.city:'')+'</div>':'')+'</div><button class="del-btn" onclick="window.removeFromList('+c._lid+')">X</button></div>';
+  }).join('');
+}
+
+window.uploadAll=function(){
+  if(!dayList.length)return;
+  var btn=document.getElementById('upload-btn');
+  if(btn){btn.textContent='Syncing...';btn.disabled=true;}
+  var snapshot=dayList.slice();
+  fetchContacts().then(function(existing){
+    var existingMap={};
+    existing.forEach(function(c){if(c.id)existingMap[c.id]=c;});
+    var ts=new Date().toISOString();
+    var newContacts=snapshot.map(function(c){
+      return{id:'m'+Date.now()+Math.floor(Math.random()*99999),name:c.name,company:c.company,title:c.title||'',phone:c.phone||'',email:'',city:c.city||'',notes:c.notes||'',status:'cold',lastContact:ts,source:'mobile_field'};
+    });
+    newContacts.forEach(function(c){existingMap[c.id]=c;});
+    var merged=Object.keys(existingMap).map(function(k){return existingMap[k];});
+    return fetch(SB+'/rest/v1/sg_data',{method:'POST',headers:Object.assign({'Prefer':'resolution=merge-duplicates'},sbHeaders()),body:JSON.stringify({key:'contacts',value:merged,updated_at:ts})})
+      .then(function(){
+        dot(1);
+        dayList=dayList.filter(function(c){
+          return!snapshot.some(function(s){return s._lid===c._lid;});
+        });
+        renderList();
+        toast(snapshot.length+' contact'+(snapshot.length!==1?'s':'')+' added to dashboard!');
+        if(btn)btn.disabled=false;
+      });
+  }).catch(function(){
+    toast('Upload failed - check connection','#dc2626');
+    dot(0);
+    if(btn){btn.textContent='Retry Upload';btn.disabled=false;}
+  });
+};
+
+var IC={
+  all:{label:'Business',emoji:'🏢',tags:[['shop'],['office','company'],['craft'],['amenity','bank']]},
+  cosmetics:{label:'Cosmetics',emoji:'💄',tags:[['shop','cosmetics'],['shop','beauty'],['shop','hairdresser'],['amenity','beauty_salon']]},
+  fitness:{label:'Fitness',emoji:'💪',tags:[['leisure','fitness_centre'],['amenity','gym'],['shop','sports'],['leisure','sports_centre']]},
+  food:{label:'Food',emoji:'🍽',tags:[['shop','deli'],['shop','beverages'],['amenity','restaurant'],['shop','bakery']]},
+  retail:{label:'Retail',emoji:'🛍',tags:[['shop','clothes'],['shop','gift'],['shop','jewelry'],['shop','boutique']]},
+  health:{label:'Health',emoji:'💊',tags:[['amenity','pharmacy'],['amenity','clinic'],['amenity','spa'],['shop','health_food']]},
+  manufacturing:{label:'Manufacturing',emoji:'🏭',tags:[['man_made','works'],['office','manufacturer'],['building','industrial']]}
+};
+
+function fetchWithTimeout(url,opts,ms){
+  var ctrl=new AbortController();
+  var timer=setTimeout(function(){ctrl.abort();},ms||15000);
+  return fetch(url,Object.assign({},opts,{signal:ctrl.signal})).finally(function(){clearTimeout(timer);});
+}
+
+window.findProspects=function(){
+  var city=document.getElementById('p-city').value.trim();
+  var ind=document.getElementById('p-industry').value;
+  if(!city){toast('Enter a city first','#dc2626');return;}
+  var el=document.getElementById('prospect-results');
+  el.innerHTML='<div class="loading"><div class="spinner"></div>Finding prospects in '+city+'...</div>';
+
+  fetchWithTimeout('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(city),{},12000)
+    .then(function(r){return r.json();})
+    .then(function(geo){
+      if(!geo||!geo.length){
+        el.innerHTML='<div class="no-results">City not found. Try "Flint, MI" format.</div>';
+        return;
+      }
+      var lat=parseFloat(geo[0].lat);
+      var lon=parseFloat(geo[0].lon);
+      var d=0.1;
+      var bbox=(lat-d)+','+(lon-d)+','+(lat+d)+','+(lon+d);
+      var cfg=IC[ind]||IC.all;
+      var tf=cfg.tags.map(function(t){
+        return t.length===1?'node["'+t[0]+'"]('+bbox+');way["'+t[0]+'"]('+bbox+');':
+          'node["'+t[0]+'"="'+t[1]+'"]('+bbox+');way["'+t[0]+'"="'+t[1]+'"]('+bbox+');';
+      }).join('');
+      var q='[out:json][timeout:20];('+tf+');out center 40;';
+      return fetchWithTimeout('https://overpass-api.de/api/interpreter',{method:'POST',body:q},25000)
+        .then(function(r){return r.json();})
+        .then(function(ov){
+          window._SGP=[];
+          var els=(ov.elements||[]).filter(function(e){
+            var tags=e.tags||{};
+            return tags.name&&tags.name.length>1;
+          });
+          var seen={};
+          var unique=[];
+          els.forEach(function(e){
+            var n=(e.tags.name||'').toLowerCase();
+            if(!seen[n]){seen[n]=1;unique.push(e);}
+          });
+          unique=unique.slice(0,30);
+          if(!unique.length){
+            el.innerHTML='<div class="no-results">No businesses found in '+city+' for that category.<br>Try "All Businesses" or a nearby larger city.</div>';
+            return;
+          }
+          var cfg2=IC[ind]||IC.all;
+          window._SGP=unique.map(function(e){
+            var t=e.tags||{};
+            var center=e.center||{lat:lat,lon:lon};
+            var addr=[t['addr:housenumber'],t['addr:street']].filter(Boolean).join(' ');
+            var cityAddr=t['addr:city']||city;
+            var fullAddr=addr?(addr+', '+cityAddr):cityAddr;
+            return{
+              name:t.name||'Unknown',
+              company:t.name||'Unknown',
+              addr:fullAddr,
+              phone:t.phone||t['contact:phone']||t['contact:mobile']||'',
+              website:t.website||t['contact:website']||'',
+              type:(t.shop||t.leisure||t.amenity||t.craft||t.office||cfg2.label).replace(/_/g,' '),
+              emoji:cfg2.emoji
+            };
+          });
+          el.innerHTML='<div style="font-size:12px;color:#64748b;padding:8px 2px 6px;font-weight:600">'+window._SGP.length+' BUSINESSES FOUND IN '+city.toUpperCase()+'</div>'+
+            window._SGP.map(function(p,i){
+              return '<div class="prospect-card">'+
+                '<div class="pav">'+p.emoji+'</div>'+
+                '<div class="pinfo">'+
+                  '<div class="pname">'+p.name+'</div>'+
+                  '<div class="ptype">'+p.type+'</div>'+
+                  '<div class="paddr">'+p.addr+'</div>'+
+                  (p.phone?'<div class="pph">'+p.phone+'</div>':'')+
+                '</div>'+
+                '<button class="add-prospect-btn" id="padd-'+i+'" onclick="window.addProspectToList('+i+')">+ Add</button>'+
+              '</div>';
+            }).join('');
+        });
+    })
+    .catch(function(err){
+      var msg=err&&err.name==='AbortError'?'Search timed out - try a bigger city or check connection.':'Search failed - check your connection and try again.';
+      el.innerHTML='<div class="no-results">'+msg+'</div>';
+    });
+};
+
+window.addProspectToList=function(i){
+  var p=window._SGP[i];
+  if(!p)return;
+  var btn=document.getElementById('padd-'+i);
+  if(!btn||btn.classList.contains('added'))return;
+  dayList.push({
+    _lid:Date.now()+Math.random(),
+    name:'',
+    company:p.company,
+    title:p.type,
+    phone:p.phone,
+    city:p.addr,
+    notes:p.website?'Website: '+p.website:'',
+    addedAt:new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})
+  });
+  btn.textContent='Added';
+  btn.classList.add('added');
+  renderList();
+  toast('Added: '+p.name);
+};
+
 init();
 })();
 </script>
