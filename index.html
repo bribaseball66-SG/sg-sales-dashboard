@@ -62,7 +62,7 @@ input,textarea,select{font-family:inherit}
 .contact-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:13px 15px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .15s;margin-bottom:8px}
 .contact-card:hover{border-color:var(--red);box-shadow:var(--shadow)}
 .contact-card.warm{border-left:3px solid var(--red)}
-.contact-card.stale{border-left:3px solid var(--yellow)}
+.contact-card.stale{border-left:3px solid var(--yellow)}.contact-card.tagged{border-right:3px solid var(--green)}.ind-badge{display:inline-block;font-size:10px;padding:1px 7px;border-radius:10px;font-weight:600;background:#EEF2FF;color:var(--navy);margin-left:4px}.pill.ind{background:#F3F4F6;color:#374151;border:1px solid #E5E7EB}.pill.ind.active{background:var(--navy);color:white}.act.tagged-on{color:var(--green)!important;font-weight:bold}.contacted-btn{color:var(--green)!important}
 .avatar{width:40px;height:40px;border-radius:50%;background:var(--red);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
 .avatar.navy{background:var(--navy)}.avatar.green{background:var(--green)}
 .contact-info{flex:1;min-width:0}
@@ -267,6 +267,14 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
       <button class="btn btn-secondary btn-sm" onclick="syncHubSpot()">🔄 Sync HubSpot</button>
       <button class="btn btn-primary btn-sm" onclick="openModal('addContact')">+ Add Contact</button>
     </div>
+  </div>
+  <div class="filter-row" id="ind-filter">
+    <span class="pill ind active" data-ind="all" onclick="setIndFilter(this,'all')">All Industries</span>
+    <span class="pill ind" data-ind="fitness" onclick="setIndFilter(this,'fitness')">💪 Fitness</span>
+    <span class="pill ind" data-ind="cosmetics" onclick="setIndFilter(this,'cosmetics')">💄 Cosmetics</span>
+    <span class="pill ind" data-ind="auto" onclick="setIndFilter(this,'auto')">🔧 Auto/Mfg</span>
+    <span class="pill ind" data-ind="food" onclick="setIndFilter(this,'food')">🍎 Food & Bev</span>
+    <span class="pill ind" data-ind="tagged" onclick="setIndFilter(this,'tagged')">🏷️ Tagged</span>
   </div>
   <div id="contacts-list"></div>
 </div>
@@ -788,6 +796,7 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
             <option value="hot">🌡️ Hot</option>
             <option value="cold">❄️ Cold</option>
           </select>
+        <div class="form-group"><label>Industry</label><select class="form-control" id="ac-industry"><option value="">— Select Industry —</option><option value="fitness">💪 Fitness</option><option value="cosmetics">💄 Cosmetics</option><option value="auto">🔧 Auto / Manufacturing</option><option value="food">🍎 Food & Beverage</option><option value="other">📦 Other</option></select></div>
         </div>
         <div class="form-group"><label>Follow-Up Date</label><input class="form-control" id="ac-followup" type="date"></div>
       </div>
@@ -1337,15 +1346,20 @@ function buildDayAlerts() {
 // ─── CONTACTS ─────────────────────────────────────────────────
 function renderContacts() {
   const q = (document.getElementById('contacts-search')||{}).value?.toLowerCase()||'';
+  const ind = state.indFilter||'all';
   let list = state.contacts.filter(c => {
     if(state.contactFilter==='warm') return c.priority==='warm';
     if(state.contactFilter==='hot') return c.priority==='hot';
     if(state.contactFilter==='stale') return isStale(c);
     return true;
-  }).filter(c => !q || `${c.firstName} ${c.lastName} ${c.company} ${c.phone} ${c.email}`.toLowerCase().includes(q));
+  }).filter(c => {
+    if(ind==='tagged') return c.tagged;
+    if(ind!=='all') return (c.industry||''). toLowerCase()===ind;
+    return true;
+  }).filter(c => !q || (fName(c)+' '+lName(c)+' '+(c.name||'')+' '+(c.company||'')+' '+(c.phone||'')+' '+(c.email||'')).toLowerCase().includes(q));
   list.sort((a,b) => { const s = p=>p==='hot'?3:p==='warm'?2:1; return s(b.priority)-s(a.priority)||daysAgo(a.lastContact)-daysAgo(b.lastContact); });
   const el = document.getElementById('contacts-list');
-  document.getElementById('contacts-count').textContent = `${list.length} contact${list.length!==1?'s':''}`;
+  document.getElementById('contacts-count').textContent = list.length+' contact'+(list.length!==1?'s':'');
   if(!list.length) { el.innerHTML = '<div class="empty-state"><div class="ei">👥</div><h3>No contacts found</h3><p>Add contacts or adjust filters</p></div>'; return; }
   el.innerHTML = list.map(c => contactCardHTML(c, false)).join('');
 }
@@ -1354,18 +1368,22 @@ function contactCardHTML(c, compact=false) {
   const staleFlag = isStale(c) ? '<span class="tag red">⚠️ Stale</span>' : '';
   const fu = state.followups.find(f=>f.contactId===c.id&&f.status!=='done');
   const fuFlag = fu ? `<span class="tag ${isOverdue(fu.dueDate)?'red':''}">${isOverdue(fu.dueDate)?'🔴':'📅'} ${isOverdue(fu.dueDate)?Math.abs(daysUntil(fu.dueDate))+'d overdue':fmtDate(fu.dueDate)}</span>` : '';
-  const callLink = c.phone ? `<a class="act call" href="tel:${c.phone.replace(/\D/g,'')}" title="Call ${c.firstName}">📞</a>` : '';
-  const mailLink = c.email ? `<a class="act" href="mailto:${c.email}" title="Email ${c.firstName}">✉️</a>` : '';
-  return `<div class="contact-card ${c.priority==='warm'?'warm':isStale(c)?'stale':''}" onclick="openBrief('${c.id}')">
+  const callLink = c.phone ? `<a class="act call" href="tel:${c.phone.replace(/\D/g,'')}" title="Call">📞</a>` : '';
+  const mailLink = c.email ? `<a class="act" href="mailto:${c.email}" title="Email">✉️</a>` : '';
+  const tagBtn = `<button class="act${c.tagged?' tagged-on':''}" onclick="toggleTagged('${c.id}')" title="${c.tagged?'Untag':'Tag'}">🏷️</button>`;
+  const contactedBtn = `<button class="act contacted-btn" onclick="markContacted('${c.id}')" title="Mark contacted today">✓</button>`;
+  const indBadge = c.industry ? `<span class="ind-badge">${c.industry}</span>` : '';
+  const taggedClass = c.tagged ? ' tagged' : '';
+  return `<div class="contact-card ${c.priority==='warm'?'warm':isStale(c)?'stale':''}${taggedClass}" onclick="openBrief('${c.id}')">
     <div class="avatar ${priorityColor(c.priority)}">${initials(c)}</div>
     <div class="contact-info">
-      <div class="name">${fName(c)} ${lName(c)||''} ${staleFlag} ${fuFlag}</div>
-      <div class="sub">${c.title||''}${c.title&&c.company?' · ':''}${c.company||''}</div>${c.email||c.phone||c.city?'<div style="font-size:11px;color:#888;margin-top:2px;line-height:1.4">'+[c.email?'✉️ '+c.email:'',c.phone?'📞 '+c.phone:'',c.city?(c.city+(c.state?', '+c.state:'')):''].filter(Boolean).join(' · ')+'</div>':''}
+      <div class="name">${fName(c)} ${lName(c)||''} ${staleFlag} ${fuFlag}${indBadge}</div>
+      <div class="sub">${c.title||''} ${c.title&&c.company?'·':''} ${c.company||''}</div>
       ${!compact&&c.email?`<div class="sub" style="font-size:11px;color:var(--text-muted)">${c.email}</div>`:''}
     </div>
     <div class="contact-actions" onclick="event.stopPropagation()">
-      ${callLink}${mailLink}
-      <button class="act" onclick="openBrief('${c.id}')" title="Pre-Call Brief">📋</button>
+      ${callLink}${mailLink}${contactedBtn}${tagBtn}
+      <button class="act" onclick="openBrief('${c.id}')" title="Brief">📋</button>
       <button class="act" onclick="quickLog('${c.id}')" title="Log Call">⚡</button>
       <button class="act" onclick="editContact('${c.id}')" title="Edit">✏️</button>
       <button class="act" onclick="deleteContact('${c.id}')" title="Delete" style="color:var(--text-muted)">🗑️</button>
@@ -1378,6 +1396,27 @@ function setContactFilter(el, f) {
   document.querySelectorAll('[data-filter]').forEach(e=>e.classList.remove('active'));
   el.classList.add('active');
   renderContacts();
+}
+
+function setIndFilter(el, f) {
+  state.indFilter = f;
+  document.querySelectorAll('[data-ind]').forEach(e=>e.classList.remove('active'));
+  el.classList.add('active');
+  renderContacts();
+}
+function toggleTagged(id) {
+  const c = state.contacts.find(x=>x.id===id);
+  if(!c) return;
+  c.tagged = !c.tagged;
+  saveAll(); renderAll();
+  toast(c.tagged?'🏷️ Account tagged':'Tag removed','success');
+}
+function markContacted(id) {
+  const c = state.contacts.find(x=>x.id===id);
+  if(!c) return;
+  c.lastContact = new Date().toISOString().split('T')[0];
+  saveAll(); renderAll();
+  toast('✓ Marked as contacted today','success');
 }
 
 // ─── WARM LEADS ───────────────────────────────────────────────
@@ -1742,6 +1781,7 @@ function saveContact() {
     email: document.getElementById('ac-email').value.trim(),
     phone: document.getElementById('ac-phone').value.trim(),
     priority: document.getElementById('ac-priority').value,
+    industry: document.getElementById('ac-industry').value,
     notes: document.getElementById('ac-notes').value.trim(),
     lastContact: new Date().toISOString().split('T')[0],
     nextFollowUp: document.getElementById('ac-followup').value,
@@ -1767,6 +1807,7 @@ function editContact(id) {
   document.getElementById('ac-email').value=c.email||'';
   document.getElementById('ac-phone').value=c.phone||'';
   document.getElementById('ac-priority').value=c.priority||'cold';
+  document.getElementById('ac-industry').value=c.industry||'';
   document.getElementById('ac-notes').value=c.notes||'';
   document.getElementById('ac-followup').value=c.nextFollowUp||'';
   // Switch save button to update mode
@@ -1783,7 +1824,8 @@ function updateContact(id) {
   c.title=document.getElementById('ac-title').value.trim();
   c.email=document.getElementById('ac-email').value.trim();
   c.phone=document.getElementById('ac-phone').value.trim();
-  c.priority=document.getElementById('ac-priority').value;
+  c.priority=document.getElementById('ac-priority').value
+  c.industry=document.getElementById('ac-industry').value;;
   c.notes=document.getElementById('ac-notes').value.trim();
   c.nextFollowUp=document.getElementById('ac-followup').value;
   saveAll(); closeModal('addContact'); renderAll();
