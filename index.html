@@ -62,7 +62,7 @@ input,textarea,select{font-family:inherit}
 .contact-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:13px 15px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .15s;margin-bottom:8px}
 .contact-card:hover{border-color:var(--red);box-shadow:var(--shadow)}
 .contact-card.warm{border-left:3px solid var(--red)}
-.contact-card.stale{border-left:3px solid var(--yellow)}.contact-card.tagged{border-right:3px solid var(--green)}.ind-badge{display:inline-block;font-size:10px;padding:1px 7px;border-radius:10px;font-weight:600;background:#EEF2FF;color:var(--navy);margin-left:4px}.pill.ind{background:#F3F4F6;color:#374151;border:1px solid #E5E7EB}.pill.ind.active{background:var(--navy);color:white}.act.tagged-on{color:var(--green)!important;font-weight:bold}.contacted-btn{color:var(--green)!important}
+.contact-card.stale{border-left:3px solid var(--yellow)}.contact-card.tagged{border-right:3px solid var(--green)}.ind-badge{display:inline-block;font-size:10px;padding:1px 7px;border-radius:10px;font-weight:600;background:#EEF2FF;color:var(--navy);margin-left:4px}.pill.ind{background:#F3F4F6;color:#374151;border:1px solid #E5E7EB}.pill.ind.active{background:var(--navy);color:white}.tag-toggle{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:12px;border:1.5px solid #D1D5DB;background:#F9FAFB;color:#9CA3AF;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;line-height:1.4}.tag-toggle:hover{border-color:#6B7280;color:#6B7280}.tag-toggle.on{background:#DCFCE7;border-color:var(--green);color:#15803D}.tag-toggle-dot{width:8px;height:8px;border-radius:50%;background:#D1D5DB;transition:all .2s;flex-shrink:0}.tag-toggle.on .tag-toggle-dot{background:var(--green)}.contacted-btn{color:var(--green)!important}
 .avatar{width:40px;height:40px;border-radius:50%;background:var(--red);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
 .avatar.navy{background:var(--navy)}.avatar.green{background:var(--green)}
 .contact-info{flex:1;min-width:0}
@@ -1370,7 +1370,7 @@ function contactCardHTML(c, compact=false) {
   const fuFlag = fu ? `<span class="tag ${isOverdue(fu.dueDate)?'red':''}">${isOverdue(fu.dueDate)?'🔴':'📅'} ${isOverdue(fu.dueDate)?Math.abs(daysUntil(fu.dueDate))+'d overdue':fmtDate(fu.dueDate)}</span>` : '';
   const callLink = c.phone ? `<a class="act call" href="tel:${c.phone.replace(/\D/g,'')}" title="Call">📞</a>` : '';
   const mailLink = c.email ? `<a class="act" href="mailto:${c.email}" title="Email">✉️</a>` : '';
-  const tagBtn = `<button class="act${c.tagged?' tagged-on':''}" onclick="toggleTagged('${c.id}')" title="${c.tagged?'Untag':'Tag'}">🏷️</button>`;
+  const tagBtn = `<button class="tag-toggle${c.tagged?' on':''}" onclick="toggleTagged('${c.id}');event.stopPropagation()" title="${c.tagged?'Click to untag':'Click to tag account'}"><span class="tag-toggle-dot"></span>${c.tagged?'Tagged':'Tag'}</button>`;
   const contactedBtn = `<button class="act contacted-btn" onclick="markContacted('${c.id}')" title="Mark contacted today">✓</button>`;
   const indBadge = c.industry ? `<span class="ind-badge">${c.industry}</span>` : '';
   const taggedClass = c.tagged ? ' tagged' : '';
