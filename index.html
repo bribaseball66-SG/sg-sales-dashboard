@@ -789,6 +789,7 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
         <div class="form-group"><label>Email</label><input class="form-control" id="ac-email" type="email" placeholder="name@company.com"></div>
         <div class="form-group"><label>Phone</label><input class="form-control" id="ac-phone" type="tel" placeholder="(555) 000-0000"></div>
       </div>
+      <div class="form-group"><label>Business Address</label><input class="form-control" id="ac-address" placeholder="123 Main St, City, ST 00000"></div>
       <div class="form-row">
         <div class="form-group"><label>Priority</label>
           <select class="form-control" id="ac-priority">
@@ -1146,22 +1147,22 @@ function seedDefaultData() {
 
   state.contacts = [
     { id: uid(), firstName:'Aneri', lastName:'', company:'Entity Supplements', title:'Owner / Founder',
-      email:'aneri@entitysupplements.com', phone:'', priority:'warm', lastContact: daysAgo(5),
+      email:'aneri@entitysupplements.com', phone:'', address:'', priority:'warm', lastContact: daysAgo(5),
       nextFollowUp: daysFromNow(1), notes:'Hot prospect — custom supplement packaging. Interested in bottles + labels. Had great first call.', tags:['fitness','warm'], calls:[], quotes:[] },
     { id: uid(), firstName:'Imtahaj', lastName:'', company:'Iroquois Industries', title:'Procurement Manager',
-      email:'', phone:'', priority:'warm', lastContact: daysAgo(8),
+      email:'', phone:'', address:'24400 Hoover Rd, Warren, MI 48089', priority:'warm', lastContact: daysAgo(8),
       nextFollowUp: daysAgo(1), notes:'Industrial packaging opportunity. Supply chain pain points. Follow up on RFQ sent last week.', tags:['industrial','warm'], calls:[], quotes:[] },
     { id: uid(), firstName:'Sam', lastName:'', company:'Private Label Labs', title:'Co-Founder',
-      email:'', phone:'', priority:'warm', lastContact: daysAgo(3),
+      email:'', phone:'', address:'29445 Beck Rd Ste A104, Wixom, MI 48393', priority:'warm', lastContact: daysAgo(3),
       nextFollowUp: daysFromNow(2), notes:'Private label supplement company growing fast. Looking for packaging partner at scale. Also talk to Aidan.', tags:['supplements','warm'], calls:[], quotes:[] },
     { id: uid(), firstName:'Aidan', lastName:'', company:'Private Label Labs', title:'Co-Founder',
-      email:'', phone:'', priority:'warm', lastContact: daysAgo(3),
+      email:'', phone:'', address:'29445 Beck Rd Ste A104, Wixom, MI 48393', priority:'warm', lastContact: daysAgo(3),
       nextFollowUp: daysFromNow(2), notes:'Works with Sam. Operations + procurement side. Key decision maker on vendors.', tags:['supplements','warm'], calls:[], quotes:[] },
     { id: uid(), firstName:'Patrick', lastName:'', company:'Clean and Kind', title:'CEO',
-      email:'', phone:'', priority:'warm', lastContact: daysAgo(12),
+      email:'', phone:'', address:'', priority:'warm', lastContact: daysAgo(12),
       nextFollowUp: daysAgo(5), notes:"Clean beauty brand. Eco-friendly packaging focus. Haven't heard back — definitely follow up. Great fit for SG.", tags:['cosmetics','warm'], calls:[], quotes:[] },
     { id: uid(), firstName:'Angela', lastName:'', company:'Elba Laboratories', title:'Director of Operations',
-      email:'', phone:'', priority:'warm', lastContact: daysAgo(6),
+      email:'', phone:'', address:'1925 W Maple Rd, Troy, MI 48084', priority:'warm', lastContact: daysAgo(6),
       nextFollowUp: daysFromNow(3), notes:'Lab / OEM contract manufacturer. High volume packaging needs. Building relationship — ask about Q3 forecast.', tags:['labs','warm'], calls:[], quotes:[] },
   ];
 
@@ -1380,6 +1381,7 @@ function contactCardHTML(c, compact=false) {
       <div class="name">${fName(c)} ${lName(c)||''} ${staleFlag} ${fuFlag}${indBadge}</div>
       <div class="sub">${c.title||''} ${c.title&&c.company?'·':''} ${c.company||''}</div>
       ${!compact&&c.email?`<div class="sub" style="font-size:11px;color:var(--text-muted)">${c.email}</div>`:''}
+      ${!compact&&c.address?`<div class="sub" style="font-size:11px;color:var(--text-muted)">📍 ${c.address}</div>`:''}
     </div>
     <div class="contact-actions" onclick="event.stopPropagation()">
       ${callLink}${mailLink}${contactedBtn}${tagBtn}
@@ -1737,6 +1739,7 @@ function openBrief(id) {
         <div><strong>Phone:</strong> ${c.phone||'—'}</div>
         <div><strong>Last Contact:</strong> ${lastTouched}</div>
         <div><strong>Priority:</strong> <span class="badge badge-${c.priority==='warm'?'orange':'navy'}">${c.priority||'—'}</span></div>
+        ${c.address?`<div style="grid-column:1/-1"><strong>Address:</strong> 📍 ${c.address}</div>`:''}
       </div>
     </div>
     <div class="card" style="margin-bottom:10px;padding:14px">
@@ -1780,6 +1783,7 @@ function saveContact() {
     title: document.getElementById('ac-title').value.trim(),
     email: document.getElementById('ac-email').value.trim(),
     phone: document.getElementById('ac-phone').value.trim(),
+    address: document.getElementById('ac-address').value.trim(),
     priority: document.getElementById('ac-priority').value,
     industry: document.getElementById('ac-industry').value,
     notes: document.getElementById('ac-notes').value.trim(),
@@ -1793,7 +1797,7 @@ function saveContact() {
     state.followups.push({ id:uid(), contactId:c.id, contactName:`${c.firstName} — ${c.company}`, dueDate:c.nextFollowUp, type:'call', notes:'Initial follow-up', status:'pending', createdAt: new Date().toISOString() });
   }
   saveAll(); closeModal('addContact'); renderAll();
-  ['ac-first','ac-last','ac-company','ac-title','ac-email','ac-phone','ac-notes','ac-followup'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  ['ac-first','ac-last','ac-company','ac-title','ac-email','ac-phone','ac-address','ac-notes','ac-followup'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
   toast(`✅ ${c.firstName} added!`,'success');
 }
 
@@ -1806,6 +1810,7 @@ function editContact(id) {
   document.getElementById('ac-title').value=c.title||'';
   document.getElementById('ac-email').value=c.email||'';
   document.getElementById('ac-phone').value=c.phone||'';
+  document.getElementById('ac-address').value=c.address||'';
   document.getElementById('ac-priority').value=c.priority||'cold';
   document.getElementById('ac-industry').value=c.industry||'';
   document.getElementById('ac-notes').value=c.notes||'';
@@ -1824,6 +1829,7 @@ function updateContact(id) {
   c.title=document.getElementById('ac-title').value.trim();
   c.email=document.getElementById('ac-email').value.trim();
   c.phone=document.getElementById('ac-phone').value.trim();
+  c.address=document.getElementById('ac-address').value.trim();
   c.priority=document.getElementById('ac-priority').value
   c.industry=document.getElementById('ac-industry').value;;
   c.notes=document.getElementById('ac-notes').value.trim();
@@ -2017,7 +2023,7 @@ async function syncHubSpot() {
         existing.hubspotId = r.id;
         updated++;
       } else if(p.firstname||p.email) {
-        state.contacts.push({ id:uid(), firstName:p.firstname||'', lastName:p.lastname||'', company:p.company||'', title:p.jobtitle||'', email:p.email||'', phone:p.phone||'', address:p.address||'', city:p.city||'', state:p.state||'', zip:p.zip||'', country:p.country||'', priority:'cold', notes:'Imported from HubSpot', lastContact:new Date().toISOString().split('T')[0], tags:[], calls:[], quotes:[], hubspotId:r.id, createdAt:new Date().toISOString() });
+        state.contacts.push({ id:uid(), firstName:p.firstname||'', lastName:p.lastname||'', company:p.company||'', title:p.jobtitle||'', email:p.email||'', phone:p.phone||'', address:[p.address,p.city,p.state,p.zip,p.country].filter(Boolean).join(', ')||'', priority:'cold', notes:'Imported from HubSpot', lastContact:new Date().toISOString().split('T')[0], tags:[], calls:[], quotes:[], hubspotId:r.id, createdAt:new Date().toISOString() });
         added++;
       }
     });
