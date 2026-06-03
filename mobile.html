@@ -148,7 +148,7 @@ textarea{resize:none;height:70px;margin-bottom:0}
 var SB='https://zacyaawllbzqlhzlmfll.supabase.co';
 var SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InphY3lhYXdsbGJ6cWxoemxtZmxsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1ODYxMTQsImV4cCI6MjA5NDE2MjExNH0.D-ORaVoHs4So4NK-WLecEJIB-SlIdnmG9Z-yjLG-33k';
 
-/* ---- HubSpot backup â auto-restored if contacts are missing/dirty ---- */
+/* ---- HubSpot backup — auto-restored if contacts are missing/dirty ---- */
 var HS_BACKUP=[
 {id:'hs_csv_0_1778639281',name:'Imtahaj Zaman',company:'Iroquois Industries',title:'',phone:'',email:'',notes:'Has given me 2 projects. Both were a little out of range but keep relationship going.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
 {id:'hs_csv_1_1778639281',name:'Paige Hoffman',company:'Autoform Tool & Mfg',title:'',phone:'',email:'',notes:'Need to get pricing to Paige ASAP. Overdue.',status:'in_progress',source:'hubspot',addedAt:'2026-05-13T00:55:36.607Z'},
@@ -351,7 +351,7 @@ window.uploadAll=function(){
   if(btn){btn.textContent='Uploading...';btn.disabled=true;}
   var ts=new Date().toISOString();
   var snapshot=dayList.slice();
-  /* Always fetch fresh from Supabase before merging â prevents overwrite on slow connections */
+  /* Always fetch fresh from Supabase before merging — prevents overwrite on slow connections */
   fetchContacts().then(function(existing){
     var idMap={};
     existing.forEach(function(c){if(c.id) idMap[c.id]=c;});
@@ -381,19 +381,19 @@ window.uploadAll=function(){
       if(btn){btn.textContent='Upload Contacts to Dashboard';btn.disabled=false;}
     });
   }).catch(function(){
-    toast('Upload failed â check connection','#dc2626');
+    toast('Upload failed — check connection','#dc2626');
     if(btn){btn.textContent='Retry Upload';btn.disabled=false;}
   });
 };
 
 var industryConfig={
-  all:{label:'Business',emoji:'ð¢',tags:[['shop'],['office','company'],['office','manufacturer'],['amenity','bank'],['craft']]},
-  cosmetics:{label:'Cosmetics / Beauty',emoji:'ð',tags:[['shop','cosmetics'],['shop','beauty'],['shop','hairdresser'],['craft','beauty_salon'],['shop','perfumery']]},
-  fitness:{label:'Fitness / Sports',emoji:'ðª',tags:[['leisure','fitness_centre'],['leisure','sports_centre'],['amenity','gym'],['shop','sports']]},
-  food:{label:'Food & Beverage',emoji:'ð½ï¸',tags:[['shop','deli'],['shop','beverages'],['shop','bakery'],['amenity','restaurant'],['shop','supermarket']]},
-  retail:{label:'Retail',emoji:'ðï¸',tags:[['shop','clothes'],['shop','boutique'],['shop','gift'],['shop','jewelry'],['shop','department_store']]},
-  health:{label:'Health / Wellness',emoji:'ð',tags:[['amenity','pharmacy'],['amenity','clinic'],['shop','health_food'],['shop','herbalist'],['amenity','spa']]},
-  manufacturing:{label:'Manufacturing',emoji:'ð­',tags:[['man_made','works'],['industrial','factory'],['building','industrial'],['office','manufacturer']]}
+  all:{label:'Business',emoji:'🏢',tags:[['shop'],['office','company'],['office','manufacturer'],['amenity','bank'],['craft']]},
+  cosmetics:{label:'Cosmetics / Beauty',emoji:'💄',tags:[['shop','cosmetics'],['shop','beauty'],['shop','hairdresser'],['craft','beauty_salon'],['shop','perfumery']]},
+  fitness:{label:'Fitness / Sports',emoji:'💪',tags:[['leisure','fitness_centre'],['leisure','sports_centre'],['amenity','gym'],['shop','sports']]},
+  food:{label:'Food & Beverage',emoji:'🍽️',tags:[['shop','deli'],['shop','beverages'],['shop','bakery'],['amenity','restaurant'],['shop','supermarket']]},
+  retail:{label:'Retail',emoji:'🛍️',tags:[['shop','clothes'],['shop','boutique'],['shop','gift'],['shop','jewelry'],['shop','department_store']]},
+  health:{label:'Health / Wellness',emoji:'💊',tags:[['amenity','pharmacy'],['amenity','clinic'],['shop','health_food'],['shop','herbalist'],['amenity','spa']]},
+  manufacturing:{label:'Manufacturing',emoji:'🏭',tags:[['man_made','works'],['industrial','factory'],['building','industrial'],['office','manufacturer']]}
 };
 
 window.findProspects=function(){
@@ -404,7 +404,7 @@ window.findProspects=function(){
   el.innerHTML='<div class="loading"><div class="spinner"></div>Looking for prospects in '+city+'...</div>';
   window._SGP=[];
 
-  /* No User-Agent header â forbidden in browsers, breaks mobile Safari */
+  /* No User-Agent header — forbidden in browsers, breaks mobile Safari */
   fetchWithTimeout('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(city),{},12000)
     .then(function(r){return r.json();})
     .then(function(geo){
@@ -430,7 +430,7 @@ window.findProspects=function(){
         });
     })
     .catch(function(e){
-      el.innerHTML='<div class="no-results">Search failed â check your connection and try again.</div>';
+      el.innerHTML='<div class="no-results">Search failed — check your connection and try again.</div>';
     });
 };
 
