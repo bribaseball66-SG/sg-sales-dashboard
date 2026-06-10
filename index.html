@@ -922,7 +922,6 @@ function init() {
   renderAll();
   runAIAnalysis();
   updateBadges();
-  backfillAddresses(); // auto-fill missing business addresses (once/day)
 
   // Auto-run AI analysis every 5 minutes
   setInterval(runAIAnalysis, 5*60*1000);
