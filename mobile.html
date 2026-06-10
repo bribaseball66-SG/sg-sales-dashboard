@@ -227,21 +227,26 @@ function fetchWithTimeout(url,opts,ms){
   return fetch(url,Object.assign({},opts,{signal:ctrl.signal})).finally(function(){clearTimeout(timer);});
 }
 
+/* Contacts now live in the Supabase `contacts` TABLE (one row per contact,
+   jsonb in `data`). Row-level upserts mean the phone can never clobber the
+   desktop's data with a stale whole-array write. */
 function fetchContacts(){
-  return fetch(SB+'/rest/v1/sg_data?key=eq.contacts&select=value',{headers:sbHeaders()})
-    .then(function(r){return r.json();})
-    .then(function(d){return(d.length&&Array.isArray(d[0].value))?d[0].value:[];})
-    .catch(function(){return[];});
+  return fetch(SB+'/rest/v1/contacts?select=data&order=updated_at.asc',{headers:sbHeaders()})
+    .then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
+    .then(function(rows){return rows.map(function(x){return x.data;}).filter(Boolean);});
 }
 
-function sbSet(k,v){
-  return fetch(SB+'/rest/v1/sg_data',{
+function sbUpsertContacts(list){
+  var now=new Date().toISOString();
+  var body=list.filter(function(c){return c&&c.id;}).map(function(c){return {id:String(c.id),data:c,updated_at:now};});
+  if(!body.length) return Promise.resolve();
+  return fetch(SB+'/rest/v1/contacts?on_conflict=id',{
     method:'POST',
     headers:Object.assign({},sbHeaders(),{'Prefer':'resolution=merge-duplicates'}),
-    body:JSON.stringify({key:k,value:v,updated_at:new Date().toISOString()})
+    body:JSON.stringify(body)
   })
-  .then(function(){dot(1);})
-  .catch(function(){dot(0);});
+  .then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);dot(1);})
+  .catch(function(e){dot(0);throw e;});
 }
 
 function dot(ok){
@@ -267,13 +272,11 @@ function needsRestore(contacts){
 function init(){
   fetchContacts().then(function(contacts){
     if(needsRestore(contacts)){
-      /* Auto-restore from HubSpot backup */
-      var nonHS=contacts.filter(function(c){return c.source!=='hubspot'&&c.name&&c.name!=='undefined';});
-      var restored=HS_BACKUP.concat(nonHS);
-      sbSet('contacts',restored).then(function(){
+      /* Auto-restore from HubSpot backup — row upserts, never overwrites others */
+      sbUpsertContacts(HS_BACKUP).then(function(){
         dot(1);
-        toast('Contacts restored ('+restored.length+')', '#2563eb');
-      });
+        toast('Contacts restored ('+HS_BACKUP.length+')', '#2563eb');
+      }).catch(function(){dot(0);});
     } else {
       dot(1);
     }
@@ -351,35 +354,30 @@ window.uploadAll=function(){
   if(btn){btn.textContent='Uploading...';btn.disabled=true;}
   var ts=new Date().toISOString();
   var snapshot=dayList.slice();
-  /* Always fetch fresh from Supabase before merging — prevents overwrite on slow connections */
-  fetchContacts().then(function(existing){
-    var idMap={};
-    existing.forEach(function(c){if(c.id) idMap[c.id]=c;});
-    var newContacts=snapshot.map(function(c){
-      return {
-        id:'f'+Date.now()+Math.floor(Math.random()*99999),
-        name:(c.name||c.company||'').trim()||'Unknown',
-        company:c.company||'',
-        title:c.title||'',
-        phone:c.phone||'',
-        email:'',
-        city:c.city||'',
-        notes:c.notes||'',
-        status:'cold',
-        lastContact:ts,
-        source:'mobile_field',
-        addedAt:ts
-      };
-    });
-    newContacts.forEach(function(c){idMap[c.id]=c;});
-    var merged=Object.values(idMap);
-    return sbSet('contacts',merged).then(function(){
-      var n=snapshot.length;
-      dayList=[];
-      renderList();
-      toast(n+' contact'+(n!==1?'s':'')+' added to dashboard!');
-      if(btn){btn.textContent='Upload Contacts to Dashboard';btn.disabled=false;}
-    });
+  var newContacts=snapshot.map(function(c){
+    return {
+      id:'f'+Date.now()+Math.floor(Math.random()*99999),
+      name:(c.name||c.company||'').trim()||'Unknown',
+      company:c.company||'',
+      title:c.title||'',
+      phone:c.phone||'',
+      email:'',
+      city:c.city||'',
+      notes:c.notes||'',
+      status:'cold',
+      priority:'cold',
+      lastContact:ts.split('T')[0],
+      source:'mobile_field',
+      addedAt:ts
+    };
+  });
+  /* Row-level upsert — no merge needed, can't clobber other devices */
+  sbUpsertContacts(newContacts).then(function(){
+    var n=snapshot.length;
+    dayList=[];
+    renderList();
+    toast(n+' contact'+(n!==1?'s':'')+' added to dashboard!');
+    if(btn){btn.textContent='Upload Contacts to Dashboard';btn.disabled=false;}
   }).catch(function(){
     toast('Upload failed — check connection','#dc2626');
     if(btn){btn.textContent='Retry Upload';btn.disabled=false;}

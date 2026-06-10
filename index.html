@@ -183,15 +183,11 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
 <div id="app">
 <!-- SIDEBAR -->
 <nav id="sidebar">
-  <div id="sidebar-logo">
-    <svg class="logo-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M18 4l3.5 2.5 4-.5 2 3.5 3.5 2-1 4 1 4-3.5 2-2 3.5-4-.5L18 32l-3.5-2.5-4 .5-2-3.5-3.5-2 1-4-1-4 3.5-2 2-3.5 4 .5z" fill="#C8391D"/>
-      <circle cx="18" cy="18" r="7" fill="white"/>
-      <circle cx="18" cy="18" r="4" fill="#C8391D"/>
-    </svg>
-    <div class="logo-text">
-      <span class="brand">Stephen Gould</span>
-      <span class="subtitle">Sales Dashboard</span>
+  <div id="sidebar-logo" style="display:block;padding:10px 12px">
+    <img src="assets/sg-logo.png" alt="Stephen Gould — Within Reach." style="width:100%;display:block;border-radius:10px">
+    <div style="display:flex;align-items:center;gap:6px;margin-top:6px;justify-content:center">
+      <span style="font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:rgba(255,255,255,.55)">Sales Dashboard</span>
+      <span id="sync-dot" title="Sync status" style="width:8px;height:8px;border-radius:50%;background:#9CA3AF;display:inline-block"></span>
     </div>
   </div>
   <div id="nav-menu">
@@ -200,18 +196,13 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
     <div class="nav-item" data-tab="contacts"><span class="icon">👥</span>Contacts<span class="nav-badge" id="badge-contacts">0</span></div>
     <div class="nav-item" data-tab="warmleads"><span class="icon">🔥</span>Warm Leads<span class="nav-badge" id="badge-warmleads">5</span></div>
     <div class="nav-item" data-tab="followups"><span class="icon">📋</span>Follow-Ups<span class="nav-badge" id="badge-followups">0</span></div>
-    <div class="nav-section">Pipeline</div>
-    <div class="nav-item" data-tab="quotes"><span class="icon">💰</span>Quotes</div>
-    <div class="nav-item" data-tab="projects"><span class="icon">📁</span>Projects</div>
-    <div class="nav-item" data-tab="calllog"><span class="icon">📞</span>Call Log</div>
     <div class="nav-section">Growth</div>
-    <div class="nav-item" data-tab="prospecting" onclick="renderProspects()"><span class="icon">💼</span>Prospects</div>
+    <div class="nav-item" data-tab="prospecting" onclick="renderProspects()"><span class="icon">💼</span>Prospects<span class="nav-badge" id="badge-approvals">0</span></div>
         <div class="nav-item" data-tab="content" onclick="showTab('content')"><span class="icon">✍️</span>LinkedIn</div>
     <div class="nav-item" data-tab="social"><span class="icon">💬</span>Social</div>
     <div class="nav-item" data-tab="suppliers"><span class="icon">🏭</span>Suppliers</div>
     <div class="nav-section">Tools</div>
     <div class="nav-item" data-tab="ocr"><span class="icon">📸</span>Screenshot OCR</div>
-    <div class="nav-item" data-tab="outlook"><span class="icon">✉️</span>Sequences</div>
     <div class="nav-item" data-tab="ai"><span class="icon">🤖</span>AI Assistant<span class="nav-badge" id="badge-ai">0</span></div>
     <div class="nav-item" data-tab="settings"><span class="icon">⚙️</span>Settings</div>
   </div>
@@ -243,12 +234,16 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
     </div>
     <div>
       <div class="card">
-        <div class="card-header"><h3>⚠️ Needs Your Attention</h3></div>
-        <div id="today-alerts"></div>
+        <div class="card-header"><h3>📞 Due Today — Follow-Ups & Warm Leads</h3></div>
+        <div id="today-due"></div>
       </div>
       <div class="card">
         <div class="card-header"><h3>📬 Overdue Follow-Ups</h3></div>
         <div id="today-overdue"></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>⚠️ Needs Your Attention</h3></div>
+        <div id="today-alerts"></div>
       </div>
     </div>
   </div>
@@ -265,6 +260,7 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
     <span class="pill" data-filter="hot" onclick="setContactFilter(this,'hot')">🌡️ Hot</span>
     <div style="margin-left:auto;display:flex;gap:6px">
       <button class="btn btn-secondary btn-sm" onclick="syncHubSpot()">🔄 Sync HubSpot</button>
+      <button class="btn btn-secondary btn-sm" onclick="backfillAddresses(true)">📍 Fill Missing Addresses</button>
       <button class="btn btn-primary btn-sm" onclick="openModal('addContact')">+ Add Contact</button>
     </div>
   </div>
@@ -306,115 +302,6 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
   </div>
   <div id="followup-list"></div>
   <button class="btn btn-primary" style="margin-top:8px" onclick="openModal('addFollowup')">+ Schedule Follow-Up</button>
-</div>
-
-<!-- ===== TAB: QUOTES ===== -->
-<div class="tab-pane" id="tab-quotes">
-  <div class="sec-title">Quotes & Tariff Analyzer</div>
-  <div class="subtabs">
-    <div class="subtab active" data-qtab="tracker" onclick="setQTab(this,'tracker')">Quote Tracker</div>
-    <div class="subtab" data-qtab="calculator" onclick="setQTab(this,'calculator')">Landed Cost Calc</div>
-  </div>
-  <div id="qtab-tracker">
-    <div class="filter-row">
-      <span class="pill active" data-qf="all" onclick="setQFilter(this,'all')">All</span>
-      <span class="pill" data-qf="draft" onclick="setQFilter(this,'draft')">Draft</span>
-      <span class="pill" data-qf="sent" onclick="setQFilter(this,'sent')">Sent</span>
-      <span class="pill" data-qf="accepted" onclick="setQFilter(this,'accepted')">Accepted</span>
-      <span class="pill" data-qf="lost" onclick="setQFilter(this,'lost')">Lost</span>
-      <button class="btn btn-primary btn-sm" style="margin-left:auto" onclick="openModal('addQuote')">+ New Quote</button>
-    </div>
-    <div class="card" style="overflow-x:auto;padding:0">
-      <table class="data-table">
-        <thead><tr><th>Client</th><th>Product</th><th>Supplier</th><th>Sell Price</th><th>Margin</th><th>Status</th><th>Tariff ⚠️</th><th>Actions</th></tr></thead>
-        <tbody id="quotes-tbody"></tbody>
-      </table>
-    </div>
-  </div>
-  <div id="qtab-calculator" style="display:none">
-    <div class="grid-2">
-      <div class="card">
-        <div class="card-header"><h3>🧮 Landed Cost Calculator</h3></div>
-        <div class="form-group"><label>Product Description</label><input class="form-control" id="calc-desc" placeholder="e.g. 500ml PET Bottles"></div>
-        <div class="form-row">
-          <div class="form-group"><label>Unit Cost (USD)</label><input class="form-control" id="calc-cost" type="number" step="0.01" placeholder="0.00" oninput="calcLanded()"></div>
-          <div class="form-group"><label>Quantity</label><input class="form-control" id="calc-qty" type="number" placeholder="1000" oninput="calcLanded()"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label>Freight Cost (USD total)</label><input class="form-control" id="calc-freight" type="number" step="0.01" placeholder="0.00" oninput="calcLanded()"></div>
-          <div class="form-group"><label>Country of Origin</label>
-            <select class="form-control" id="calc-country" onchange="calcLanded()">
-              <option value="china">China 🇨🇳</option>
-              <option value="us">USA 🇺🇸</option>
-              <option value="mexico">Mexico 🇲🇽</option>
-              <option value="vietnam">Vietnam 🇻🇳</option>
-              <option value="india">India 🇮🇳</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label>HTS Tariff Rate (%)</label><input class="form-control" id="calc-tariff" type="number" step="0.1" placeholder="0" oninput="calcLanded()"></div>
-          <div class="form-group"><label>Section 301 Add-On (%)</label><input class="form-control" id="calc-301" type="number" step="0.1" placeholder="0" oninput="calcLanded()"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label>Target Sell Price (USD/unit)</label><input class="form-control" id="calc-sell" type="number" step="0.01" placeholder="0.00" oninput="calcLanded()"></div>
-          <div class="form-group"><label>Your Commission (%)</label><input class="form-control" id="calc-comm" type="number" step="0.1" placeholder="5" oninput="calcLanded()"></div>
-        </div>
-        <button class="btn btn-secondary btn-sm" onclick="setChina301()">⚡ Auto-fill China 301 Tariff</button>
-      </div>
-      <div class="card" id="calc-results">
-        <div class="card-header"><h3>📊 Cost Breakdown</h3></div>
-        <div id="calc-output"><div class="empty-state"><div class="ei">🧮</div><p>Enter values to see breakdown</p></div></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ===== TAB: PROJECTS ===== -->
-<div class="tab-pane" id="tab-projects">
-  <div class="sec-title">Projects</div>
-  <div class="filter-row">
-    <span class="pill active" data-pf="all" onclick="setPFilter(this,'all')">All</span>
-    <span class="pill" data-pf="active" onclick="setPFilter(this,'active')">Active</span>
-    <span class="pill" data-pf="won" onclick="setPFilter(this,'won')">Won</span>
-    <span class="pill" data-pf="lost" onclick="setPFilter(this,'lost')">Lost</span>
-    <button class="btn btn-primary btn-sm" style="margin-left:auto" onclick="openModal('addProject')">+ New Project</button>
-  </div>
-  <div id="projects-list"></div>
-</div>
-
-<!-- ===== TAB: CALL LOG ===== -->
-<div class="tab-pane" id="tab-calllog">
-  <div class="sec-title">Call Log</div>
-  <div class="card">
-    <div class="card-header"><h3>⚡ Quick Log a Call</h3></div>
-    <div class="form-row">
-      <div class="form-group"><label>Contact</label>
-        <select class="form-control" id="log-contact"><option value="">Select contact...</option></select>
-      </div>
-      <div class="form-group"><label>Outcome</label>
-        <select class="form-control" id="log-outcome">
-          <option value="connected">✅ Connected</option>
-          <option value="voicemail">📱 Voicemail</option>
-          <option value="no-answer">🔕 No Answer</option>
-          <option value="meeting-set">🗓️ Meeting Set</option>
-          <option value="not-interested">❌ Not Interested</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>Notes</label><textarea class="form-control" id="log-notes" placeholder="What happened? Any key info?" rows="2"></textarea></div>
-      <div class="form-group"><label>Follow-Up Date</label><input class="form-control" id="log-followup" type="date"></div>
-    </div>
-    <button class="btn btn-primary" onclick="logCall()">📞 Log Call</button>
-  </div>
-  <div class="card" style="overflow-x:auto;padding:0">
-    <table class="data-table">
-      <thead><tr><th>Date</th><th>Contact</th><th>Outcome</th><th>Notes</th><th>Follow-Up</th></tr></thead>
-      <tbody id="calllog-tbody"></tbody>
-    </table>
-  </div>
 </div>
 
 <!-- ===== TAB: PROSPECTING ===== -->
@@ -526,6 +413,11 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
     </div>
     <div id="prospect-cards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px"></div>
   </div>
+  <div class="card" style="margin-top:18px" id="approvals-card">
+    <div class="card-header"><h3>📤 Outreach Approvals</h3></div>
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">No cold email goes out without your sign-off. Queue prospects with the 📤 button, submit the list, then approve or reject each draft here (your Claude Dispatch gets the list too).</p>
+    <div id="approvals-body"></div>
+  </div>
 </div>
 
 <!-- ===== TAB: SOCIAL ===== -->
@@ -582,12 +474,8 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
     <div class="card-header"><h3>🔍 Search Emerging Brands</h3></div>
     <div class="form-row">
       <div class="form-group"><label>Platform</label>
-        <select class="form-control" id="social-platform">
-          <option value="linkedin">LinkedIn</option>
-          <option value="instagram">Instagram</option>
-          <option value="tiktok">TikTok</option>
-          <option value="all">All Platforms</option>
-        </select>
+        <input class="form-control" value="LinkedIn" disabled style="color:var(--text-muted)">
+        <input type="hidden" id="social-platform" value="linkedin">
       </div>
       <div class="form-group"><label>Vertical / Keyword</label>
         <input class="form-control" id="social-keyword" placeholder="e.g. Michigan supplement brand, Detroit cosmetics...">
@@ -595,7 +483,6 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
     </div>
     <button class="btn btn-primary" onclick="searchSocial()">🔍 Find Brands</button>
     <button class="btn btn-navy" style="margin-left:8px" onclick="window.open('https://www.linkedin.com/sales/search/people','_blank')">↗ Open Sales Navigator</button>
-    <button class="btn btn-secondary" style="margin-left:8px" onclick="window.open('https://www.instagram.com/explore/','_blank')">📷 Instagram Explore</button>
   </div>
   <div id="social-results"></div>
   <div class="card" id="social-saved">
@@ -633,86 +520,6 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
   <div id="ocr-results"></div>
 </div>
 
-<!-- ===== TAB: OUTLOOK ===== -->
-<div class="tab-pane" id="tab-outlook">
-          <h2>✉️ Cold Email Sequences</h2>
-
-          <!-- Stats row -->
-          <div style="display:flex;gap:12px;margin-bottom:18px;flex-wrap:wrap" id="seq-stats-row">
-            <div style="flex:1;min-width:140px;background:white;border-radius:8px;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.07)">
-              <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Active</div>
-              <div style="font-size:22px;font-weight:700" id="seq-stat-active">0</div>
-            </div>
-            <div style="flex:1;min-width:140px;background:white;border-radius:8px;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.07)">
-              <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Follow-Up Due</div>
-              <div style="font-size:22px;font-weight:700;color:var(--red)" id="seq-stat-due">0</div>
-            </div>
-            <div style="flex:1;min-width:140px;background:white;border-radius:8px;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.07)">
-              <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Replied</div>
-              <div style="font-size:22px;font-weight:700;color:#27ae60" id="seq-stat-replied">0</div>
-            </div>
-            <div style="flex:1;min-width:140px;background:white;border-radius:8px;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.07)">
-              <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Total Sent</div>
-              <div style="font-size:22px;font-weight:700" id="seq-stat-total">0</div>
-            </div>
-          </div>
-
-          <!-- Add sequence -->
-          <div class="card" style="margin-bottom:18px">
-            <div class="card-header" style="cursor:pointer;user-select:none" onclick="toggleSeqForm()">
-              <h3>➕ Add to Sequence <span id="seq-form-arrow" style="font-size:12px;float:right;margin-top:2px">▼</span></h3>
-            </div>
-            <div id="seq-form" style="padding:16px;display:none">
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-                <div>
-                  <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">First Name</label>
-                  <input id="seq-fname" type="text" placeholder="Jane" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px">
-                </div>
-                <div>
-                  <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Company</label>
-                  <input id="seq-company" type="text" placeholder="Acme Supplements" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px">
-                </div>
-                <div>
-                  <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Title / Role</label>
-                  <input id="seq-title" type="text" placeholder="VP of Operations" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px">
-                </div>
-                <div>
-                  <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Email</label>
-                  <input id="seq-email" type="email" placeholder="jane@acme.com" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px">
-                </div>
-              </div>
-              <div style="margin-bottom:12px">
-                <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Context / Notes (optional)</label>
-                <textarea id="seq-notes" placeholder="What their company does, why you're reaching out, any packaging needs you noticed..." style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;height:70px;resize:vertical"></textarea>
-              </div>
-              <div style="display:flex;gap:10px;align-items:center">
-                <button class="btn-primary" onclick="addToSequence()" style="padding:9px 20px">Add to Sequence</button>
-                <button class="btn-sm" onclick="draftColdEmail()" style="padding:9px 20px;background:var(--gray-bg);color:var(--text);border:1px solid var(--border);border-radius:6px;font-size:13px;cursor:pointer">🤖 Draft Cold Email First</button>
-              </div>
-              <div id="seq-draft-output" style="display:none;margin-top:14px;background:#f8f8f8;border-radius:8px;padding:14px;font-size:13px;white-space:pre-wrap;font-family:inherit"></div>
-            </div>
-          </div>
-
-          <!-- Sequences table -->
-          <div class="card">
-            <div class="card-header" style="display:flex;align-items:center;justify-content:space-between">
-              <h3>📋 Active Sequences</h3>
-              <div style="display:flex;gap:8px">
-                <select id="seq-filter" onchange="renderSequences()" style="font-size:12px;padding:4px 8px;border:1px solid var(--border);border-radius:6px;background:white">
-                  <option value="all">All</option>
-                  <option value="due">Follow-Up Due</option>
-                  <option value="active">Active</option>
-                  <option value="replied">Replied</option>
-                </select>
-              </div>
-            </div>
-            <div id="seq-table-body" style="padding:0">
-              <div style="padding:32px;text-align:center;color:var(--text-muted);font-size:13px">No sequences yet — add your first cold outreach contact above</div>
-            </div>
-          </div>
-</div>
-
-
 <div class="tab-pane" id="tab-ai">
   <div class="sec-title">🤖 AI Assistant <span id="ai-alert-count"></span></div>
   <div class="card" style="background:linear-gradient(135deg,var(--navy),var(--navy-light));color:white;margin-bottom:14px">
@@ -720,10 +527,15 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
       <span style="font-size:24px">🤖</span>
       <div>
         <div style="font-weight:700;font-size:15px">Proactive Sales Coach</div>
-        <div style="font-size:12px;opacity:.7">Running in the background — monitoring your contacts, follow-ups, quotes & projects</div>
+        <div style="font-size:12px;opacity:.7">Running in the background — monitoring your contacts, follow-ups & prospects</div>
       </div>
       <button class="btn btn-sm" style="margin-left:auto;background:var(--red);color:white" onclick="runAIAnalysis()">🔄 Refresh Analysis</button>
     </div>
+  </div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-header"><h3>🎯 Today's Game Plan</h3></div>
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">Built from your live contacts, follow-ups, and prospects — exactly who to call and what to say, in order.</p>
+    <div id="gameplan-body"></div>
   </div>
   <div id="ai-alerts-list"></div>
   <div class="card" style="margin-top:14px">
@@ -847,87 +659,6 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
   </div>
 </div>
 
-<!-- Add Quote Modal -->
-<div class="modal-overlay" id="modal-addQuote">
-  <div class="modal">
-    <div class="modal-header"><h2>New Quote</h2><button class="modal-close" onclick="closeModal('addQuote')">×</button></div>
-    <div class="modal-body">
-      <div class="form-row">
-        <div class="form-group"><label>Client Name</label><input class="form-control" id="aq-client" placeholder="Company / Contact"></div>
-        <div class="form-group"><label>Product Description</label><input class="form-control" id="aq-product" placeholder="e.g. 2oz Glass Bottles"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Supplier Name</label><input class="form-control" id="aq-supplier" placeholder="e.g. Yuyao Blooming"></div>
-        <div class="form-group"><label>Country of Origin</label>
-          <select class="form-control" id="aq-country">
-            <option value="china">China 🇨🇳</option>
-            <option value="usa">USA 🇺🇸</option>
-            <option value="mexico">Mexico 🇲🇽</option>
-            <option value="vietnam">Vietnam 🇻🇳</option>
-            <option value="india">India 🇮🇳</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Supplier Unit Cost (USD)</label><input class="form-control" id="aq-cost" type="number" step="0.01" placeholder="0.00"></div>
-        <div class="form-group"><label>Quantity</label><input class="form-control" id="aq-qty" type="number" placeholder="5000"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Freight (USD total)</label><input class="form-control" id="aq-freight" type="number" step="0.01" placeholder="0.00"></div>
-        <div class="form-group"><label>Tariff Rate (%)</label><input class="form-control" id="aq-tariff" type="number" step="0.1" placeholder="0"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Sell Price (USD/unit)</label><input class="form-control" id="aq-sell" type="number" step="0.01" placeholder="0.00"></div>
-        <div class="form-group"><label>Status</label>
-          <select class="form-control" id="aq-status">
-            <option value="draft">Draft</option>
-            <option value="sent">Sent to Client</option>
-            <option value="accepted">Accepted</option>
-            <option value="lost">Lost</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-group"><label>Notes</label><textarea class="form-control" id="aq-notes" placeholder="Specs, lead time, MOQ, client requirements..."></textarea></div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('addQuote')">Cancel</button>
-      <button class="btn btn-primary" onclick="saveQuote()">Save Quote</button>
-    </div>
-  </div>
-</div>
-
-<!-- Add Project Modal -->
-<div class="modal-overlay" id="modal-addProject">
-  <div class="modal">
-    <div class="modal-header"><h2>New Project</h2><button class="modal-close" onclick="closeModal('addProject')">×</button></div>
-    <div class="modal-body">
-      <div class="form-row">
-        <div class="form-group"><label>Project Name</label><input class="form-control" id="ap-name" placeholder="Client — Product Type"></div>
-        <div class="form-group"><label>Client</label><input class="form-control" id="ap-client" placeholder="Company name"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Status</label>
-          <select class="form-control" id="ap-status">
-            <option value="active">Active</option>
-            <option value="quoting">Quoting</option>
-            <option value="sampling">Sampling</option>
-            <option value="won">Won</option>
-            <option value="lost">Lost</option>
-            <option value="on-hold">On Hold</option>
-          </select>
-        </div>
-        <div class="form-group"><label>Est. Value (USD)</label><input class="form-control" id="ap-value" type="number" placeholder="0"></div>
-      </div>
-      <div class="form-group"><label>Notes</label><textarea class="form-control" id="ap-notes" placeholder="Key details, requirements, next steps..."></textarea></div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('addProject')">Cancel</button>
-      <button class="btn btn-primary" onclick="saveProject()">Save Project</button>
-    </div>
-  </div>
-</div>
-
 <!-- Add Supplier Modal -->
 <div class="modal-overlay" id="modal-addSupplier">
   <div class="modal">
@@ -978,7 +709,7 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
         <div class="form-group"><label>Brand / Company</label><input class="form-control" id="sl-brand" placeholder="Brand name"></div>
         <div class="form-group"><label>Platform Found</label>
           <select class="form-control" id="sl-platform">
-            <option>LinkedIn</option><option>Instagram</option><option>TikTok</option><option>Website</option><option>Trade Show</option><option>Referral</option>
+            <option>LinkedIn</option><option>Website</option><option>Trade Show</option><option>Referral</option>
           </select>
         </div>
       </div>
@@ -992,33 +723,6 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('addSocialLead')">Cancel</button>
       <button class="btn btn-primary" onclick="saveSocialLead()">Save Brand</button>
-    </div>
-  </div>
-</div>
-
-<!-- Cold Call Route Modal -->
-<div class="modal-overlay" id="modal-coldRoute">
-  <div class="modal">
-    <div class="modal-header"><h2>🗺️ Cold Call Route Planner</h2><button class="modal-close" onclick="closeModal('coldRoute')">×</button></div>
-    <div class="modal-body">
-      <div class="form-row">
-        <div class="form-group"><label>Starting City</label><input class="form-control" id="route-start" placeholder="e.g. Detroit, MI"></div>
-        <div class="form-group"><label>Target City</label>
-          <select class="form-control" id="route-city">
-            <option>Grand Rapids</option><option>Ann Arbor</option><option>Lansing</option><option>Kalamazoo</option><option>Troy</option><option>Novi</option><option>Flint</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-group"><label>Date of Visit</label><input class="form-control" id="route-date" type="date"></div>
-      <div class="form-group"><label>Target Industry</label>
-        <select class="form-control" id="route-industry">
-          <option>Fitness & Supplements</option><option>Cosmetics & Beauty</option><option>Food & Beverage</option><option>Nutraceuticals</option><option>All</option>
-        </select>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('coldRoute')">Cancel</button>
-      <button class="btn btn-primary" onclick="planRoute()">Generate Route Plan</button>
     </div>
   </div>
 </div>
@@ -1064,60 +768,152 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
 //  Built for packaging sales: fitness, cosmetics, F&B, nutra
 // ============================================================
 
-// ─── STATE ───────────────────────────────────────────────────
+// ─── STATE & SUPABASE DATA LAYER ─────────────────────────────
+// All dashboard data lives in Supabase (source of truth) so it syncs
+// across every device and can never be lost. localStorage is only an
+// offline read-cache.
 const SB_URL = 'https://zacyaawllbzqlhzlmfll.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InphY3lhYXdsbGJ6cWxoemxtZmxsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1ODYxMTQsImV4cCI6MjA5NDE2MjExNH0.D-ORaVoHs4So4NK-WLecEJIB-SlIdnmG9Z-yjLG-33k';
+const SB_TABLES = ['contacts','followups','suppliers','socialleads','prospects','sequences','approvals'];
+const KV_KEYS = ['settings','aiAlerts','dismissed','gameplan'];
+let sbOnline = false;
+
+function sbHeaders(extra) {
+  return Object.assign({'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'}, extra||{});
+}
+async function sbLoadTable(table) {
+  const r = await fetch(`${SB_URL}/rest/v1/${table}?select=id,data&order=updated_at.asc`, { headers: sbHeaders() });
+  if (!r.ok) throw new Error(`${table}: HTTP ${r.status}`);
+  const rows = await r.json();
+  return rows.map(row => row.data).filter(Boolean);
+}
+async function sbUpsertRows(table, items) {
+  if (!items || !items.length) return;
+  const now = new Date().toISOString();
+  const body = items.filter(it=>it&&it.id).map(it => ({ id: String(it.id), data: it, updated_at: now }));
+  const r = await fetch(`${SB_URL}/rest/v1/${table}?on_conflict=id`, {
+    method:'POST',
+    headers: sbHeaders({'Prefer':'resolution=merge-duplicates'}),
+    body: JSON.stringify(body)
+  });
+  if (!r.ok) throw new Error(`${table} upsert: HTTP ${r.status}`);
+}
+async function sbDeleteRow(table, id) {
+  try {
+    await fetch(`${SB_URL}/rest/v1/${table}?id=eq.${encodeURIComponent(String(id))}`, { method:'DELETE', headers: sbHeaders() });
+  } catch(e) { console.warn('Supabase delete failed:', table, id, e); _queueRetry(); }
+}
 async function sbSet(k, v) {
   try {
     await fetch(SB_URL+'/rest/v1/sg_data', {
       method:'POST',
-      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates'},
-      body:JSON.stringify({key:k, value:v, updated_at:new Date().toISOString()})
+      headers: sbHeaders({'Prefer':'resolution=merge-duplicates'}),
+      body: JSON.stringify({key:k, value:v, updated_at:new Date().toISOString()})
     });
-  } catch(e) { console.warn('Supabase write failed:',e); }
+  } catch(e) { console.warn('Supabase kv write failed:',k,e); _queueRetry(); }
 }
-async function syncFromSupabase() {
-  try {
-    const r = await fetch(SB_URL+'/rest/v1/sg_data?select=key,value', {
-      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
-    });
-    const rows = await r.json();
-    if (Array.isArray(rows)) rows.forEach(row => localStorage.setItem('sg_'+row.key, JSON.stringify(row.value)));
-    console.log('Synced',Array.isArray(rows)?rows.length:0,'keys from Supabase');
-  } catch(e) { console.warn('Supabase sync failed, using local data:',e); }
+async function sbGetKV() {
+  const r = await fetch(SB_URL+'/rest/v1/sg_data?select=key,value', { headers: sbHeaders() });
+  if (!r.ok) throw new Error('sg_data: HTTP '+r.status);
+  const rows = await r.json();
+  const kv = {};
+  (rows||[]).forEach(row => kv[row.key] = row.value);
+  return kv;
 }
+
+// Write-through save: localStorage cache + Supabase rows.
+let _dirty = {};
+function saveCollection(key) {
+  try { localStorage.setItem('sg_'+key, JSON.stringify(state[key])); } catch(e){}
+  if (SB_TABLES.includes(key)) {
+    sbUpsertRows(key, state[key]).then(()=>{ delete _dirty[key]; _syncDot(true); })
+      .catch(e => { console.warn('Sync failed:', key, e); _dirty[key]=true; _syncDot(false); _queueRetry(); });
+  } else {
+    sbSet(key, state[key]);
+  }
+}
+function _queueRetry() {
+  if (window._sgRetryTimer) return;
+  window._sgRetryTimer = setTimeout(() => {
+    window._sgRetryTimer = null;
+    Object.keys(_dirty).forEach(k => saveCollection(k));
+  }, 30000);
+}
+function _syncDot(ok) {
+  sbOnline = ok;
+  const el = document.getElementById('sync-dot');
+  if (el) { el.style.background = ok ? 'var(--green, #16A34A)' : '#DC2626'; el.title = ok ? 'Synced to cloud' : 'Offline — will retry'; }
+}
+
+// Legacy-compatible kv helper
 const DB = {
   get: k => { try { return JSON.parse(localStorage.getItem('sg_'+k)||'null'); } catch(e){ return null; } },
-  set: (k,v) => { localStorage.setItem('sg_'+k, JSON.stringify(v)); sbSet(k,v); },
-  keys: ['contacts','followups','quotes','calllog','projects','suppliers','socialleads','aiAlerts','settings','sequences','prospecting']
+  set: (k,v) => { try { localStorage.setItem('sg_'+k, JSON.stringify(v)); } catch(e){} if(SB_TABLES.includes(k)) saveCollection(k); else sbSet(k,v); },
+  keys: ['contacts','followups','suppliers','socialleads','prospects','sequences','approvals']
 };
 
+// ─── LOAD + ONE-TIME MIGRATION ───────────────────────────────
+async function loadAllData() {
+  let kv = {};
+  try { kv = await sbGetKV(); sbOnline = true; } catch(e) { console.warn('Supabase unreachable, using local cache', e); sbOnline = false; }
+
+  // kv-backed state (settings, dismissed alerts, etc.)
+  KV_KEYS.forEach(k => {
+    const v = (kv[k] !== undefined) ? kv[k] : DB.get(k);
+    if (v) { state[k] = (k==='settings') ? {...state.settings, ...v} : v;
+      try { localStorage.setItem('sg_'+k, JSON.stringify(state[k])); } catch(e){} }
+  });
+
+  if (!sbOnline) {
+    // Offline: run from local cache
+    SB_TABLES.forEach(k => { const v = DB.get(k); if (Array.isArray(v)) state[k] = v; });
+    return;
+  }
+
+  // Load each entity table; migrate legacy data the first time.
+  for (const table of SB_TABLES) {
+    let rows = [];
+    try { rows = await sbLoadTable(table); } catch(e) { console.warn('Load failed:', table, e); const v = DB.get(table); state[table] = Array.isArray(v)?v:[]; continue; }
+    if (!rows.length && !kv['migrated_'+table]) {
+      // Legacy sources: sg_data kv arrays + old raw localStorage keys
+      let legacy = Array.isArray(kv[table]) ? kv[table] : null;
+      if (!legacy) { try { legacy = JSON.parse(localStorage.getItem('sg_'+table)||'null'); } catch(e){} }
+      if (!legacy && table==='prospects') { try { legacy = JSON.parse(localStorage.getItem('sg_prospects')||'null'); } catch(e){} }
+      if (!legacy && table==='sequences') { try { legacy = JSON.parse(localStorage.getItem('sg_sequences')||'null'); } catch(e){} }
+      if (Array.isArray(legacy) && legacy.length) {
+        legacy = legacy.filter(x=>x).map(x => { if(!x.id) x.id = uid(); return x; });
+        try { await sbUpsertRows(table, legacy); rows = legacy; console.log('Migrated', legacy.length, 'legacy rows →', table); } catch(e) { console.warn('Migration failed:', table, e); rows = legacy; }
+      }
+      sbSet('migrated_'+table, new Date().toISOString());
+    }
+    state[table] = rows;
+    try { localStorage.setItem('sg_'+table, JSON.stringify(rows)); } catch(e){}
+  }
+  _syncDot(true);
+}
+
 let state = {
-  contacts: [], followups: [], quotes: [], calllog: [],
-  projects: [], suppliers: [], socialleads: [], aiAlerts: [],
-  dismissed: [],
+  contacts: [], followups: [], suppliers: [], socialleads: [],
+  prospects: [], sequences: [], approvals: [], aiAlerts: [],
+  dismissed: [], gameplan: null,
   settings: { name:'Brian', company:'Stephen Gould Corporation', email:'', phone:'', stale:7,
     hubspot:'', apollo:'', claude:'', msgraph:'' },
   contactFilter: 'all', wlFilter: 'all', fuTab: 'overdue',
-  qTab: 'tracker', qFilter: 'all', pFilter: 'all',
   currentTab: 'today'
 };
 
 // ─── INIT ─────────────────────────────────────────────────────
 function init() {
-  DB.keys.forEach(k => { const v = DB.get(k); if(v) state[k] = v; });
-  const s = DB.get('settings'); if(s) state.settings = {...state.settings, ...s};
-
   // Normalize contacts from mobile.html format
   state.contacts=state.contacts.map(function(c){if(!c.firstName&&c.name){var p=(c.name||'').trim().split(' ');c.firstName=p[0]||'';c.lastName=p.slice(1).join(' ')||'';}return c;});
-  // Migration: backfill address field for contacts saved before it was added
+  // Backfill known addresses for contacts saved before the address field existed
   const _knownAddr={'Iroquois Industries':'24400 Hoover Rd, Warren, MI 48089','Private Label Labs':'29445 Beck Rd Ste A104, Wixom, MI 48393','Elba Laboratories':'1925 W Maple Rd, Troy, MI 48084'};
   let _migrated=false;
   state.contacts.forEach(function(c){if(c.address===undefined){c.address=_knownAddr[c.company]||'';_migrated=true;}});
-  if(_migrated) DB.set('contacts',state.contacts);
-  // Seed warm leads if first launch
-  if (!state.contacts.length) seedDefaultData();
-  if (!state.suppliers.length) seedDefaultSuppliers();
+  if(_migrated) saveCollection('contacts');
+  // Seed only on a confirmed-empty cloud database (never when offline)
+  if (sbOnline && !state.contacts.length) seedDefaultData();
+  if (sbOnline && !state.suppliers.length) seedDefaultSuppliers();
 
   loadSettingsForm();
   updateTabTitle('today');
@@ -1126,6 +922,7 @@ function init() {
   renderAll();
   runAIAnalysis();
   updateBadges();
+  backfillAddresses(); // auto-fill missing business addresses (once/day)
 
   // Auto-run AI analysis every 5 minutes
   setInterval(runAIAnalysis, 5*60*1000);
@@ -1196,12 +993,17 @@ function seedDefaultData() {
   saveAll();
 }
 
-function saveAll() { DB.keys.forEach(k => DB.set(k, state[k])); DB.set('settings', state.settings); }
+function saveAll() { SB_TABLES.forEach(k => saveCollection(k)); sbSet('settings', state.settings); }
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
-function fmtDate(s) { if(!s) return '—'; const d = new Date(s+'T00:00:00'); return d.toLocaleDateString('en-US',{month:'short',day:'numeric'}); }
+// Date helpers — compare DATE to DATE (midnight-to-midnight), never date to "now".
+// The old version compared due-date-midnight against the current timestamp, which made
+// everything due *today* show up as overdue. Fixed.
+function _dateOnly(s) { return new Date(String(s).slice(0,10)+'T00:00:00'); }
+function _todayMid() { const d=new Date(); d.setHours(0,0,0,0); return d; }
+function fmtDate(s) { if(!s) return '—'; const d = _dateOnly(s); return d.toLocaleDateString('en-US',{month:'short',day:'numeric'}); }
 function fmtDateLong(d) { return d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}); }
-function daysAgo(dateStr) { if(!dateStr) return 999; const diff = (new Date() - new Date(dateStr+'T00:00:00'))/(1000*60*60*24); return Math.floor(diff); }
-function daysUntil(dateStr) { if(!dateStr) return 999; const diff = (new Date(dateStr+'T00:00:00') - new Date())/(1000*60*60*24); return Math.floor(diff); }
+function daysAgo(dateStr) { if(!dateStr) return 999; return Math.round((_todayMid() - _dateOnly(dateStr))/86400000); }
+function daysUntil(dateStr) { if(!dateStr) return 999; return Math.round((_dateOnly(dateStr) - _todayMid())/86400000); }
 function isOverdue(dateStr) { return dateStr && daysUntil(dateStr) < 0; }
 function isToday(dateStr) { return dateStr && daysUntil(dateStr) === 0; }
 function isThisWeek(dateStr) { const d = daysUntil(dateStr); return d >= 0 && d <= 7; }
@@ -1221,10 +1023,10 @@ function calcMargin(cost, sell) { if(!cost||!sell||sell<=0) return null; return 
 // ─── TAB NAVIGATION ──────────────────────────────────────────
 const TAB_TITLES = {
   today:'Today\'s Briefing', contacts:'Contacts', warmleads:'Warm Leads',
-  followups:'Follow-Up Tracker', quotes:'Quotes & Tariff Analyzer',
-  projects:'Projects', calllog:'Call Log', prospecting:'Lead Generation',
+  followups:'Follow-Up Tracker', prospecting:'Lead Generation',
+  content:'LinkedIn Content Studio',
   social:'Social Prospecting', suppliers:'Suppliers',
-  ocr:'Screenshot → Contacts', outlook:'Outlook Follow-Ups',
+  ocr:'Screenshot → Contacts',
   ai:'AI Assistant', settings:'Settings'
 };
 function showTab(tab) {
@@ -1244,17 +1046,15 @@ function renderTab(tab) {
   if(tab==='contacts') renderContacts();
   if(tab==='warmleads') renderWarmLeads();
   if(tab==='followups') renderFollowUps();
-  if(tab==='quotes') renderQuotes();
-  if(tab==='projects') renderProjects();
-  if(tab==='calllog') renderCallLog();
   if(tab==='suppliers') renderSuppliers();
   if(tab==='social') renderSocial();
-  if(tab==='ai') renderAIAlerts();
+  if(tab==='prospecting') { renderProspects(); renderApprovals(); }
+  if(tab==='ai') { renderAIAlerts(); renderGamePlan(); }
   if(tab==='settings') renderIntegrationStatus();
 }
 function renderAll() {
-  renderContacts(); renderWarmLeads(); renderFollowUps(); renderQuotes();
-  renderProjects(); renderCallLog(); renderSuppliers(); renderSocial();
+  renderContacts(); renderWarmLeads(); renderFollowUps();
+  renderSuppliers(); renderSocial(); renderProspects(); renderApprovals();
   populateContactSelects(); updateBadges();
 }
 
@@ -1282,14 +1082,24 @@ function refreshBriefing() {
   // Stats row
   const overdue = state.followups.filter(f=>f.status!=='done'&&isOverdue(f.dueDate));
   const dueToday = state.followups.filter(f=>f.status!=='done'&&isToday(f.dueDate));
-  const staleContacts = state.contacts.filter(isStale);
-  const openQuotes = state.quotes.filter(q=>q.status==='sent');
+  const warmToCall = warmLeadsToCallToday();
+  const accountsOpened = state.contacts.filter(isWonContact);
   document.getElementById('today-stats').innerHTML = `
     <div class="stat-card s-red"><div class="lbl">Overdue Follow-Ups</div><div class="val">${overdue.length}</div><div class="sub">Need action now</div></div>
-    <div class="stat-card s-yellow"><div class="lbl">Due Today</div><div class="val">${dueToday.length}</div><div class="sub">Calls to make</div></div>
-    <div class="stat-card"><div class="lbl">Stale Contacts</div><div class="val">${staleContacts.length}</div><div class="sub">7+ days no touch</div></div>
-    <div class="stat-card s-green"><div class="lbl">Quotes Out</div><div class="val">${openQuotes.length}</div><div class="sub">Awaiting response</div></div>
+    <div class="stat-card s-yellow"><div class="lbl">Due Today</div><div class="val">${dueToday.length}</div><div class="sub">Follow-ups dated today</div></div>
+    <div class="stat-card"><div class="lbl">Warm Leads to Call</div><div class="val">${warmToCall.length}</div><div class="sub">Stay top of mind</div></div>
+    <div class="stat-card s-green"><div class="lbl">Accounts Opened</div><div class="val">${accountsOpened.length}</div><div class="sub">Marked Won in HubSpot</div></div>
   `;
+
+  // Due Today list (follow-ups dated today + warm leads to call)
+  const dt = document.getElementById('today-due');
+  if (dt) {
+    const rows = [
+      ...dueToday.map(f=>`<div class="priority-item" onclick="showTab('followups')"><span style="font-size:16px">📅</span><div class="pi-info"><div class="pi-name">${f.contactName}</div><div class="pi-reason">${f.notes||f.type||'Follow up'}</div></div><div class="pi-meta">Due today</div></div>`),
+      ...warmToCall.map(c=>`<div class="priority-item" onclick="openBrief('${c.id}')"><span style="font-size:16px">🔥</span><div class="pi-info"><div class="pi-name">${fName(c)} ${lName(c)||''} — ${c.company||''}</div><div class="pi-reason">Warm lead — ${daysAgo(c.lastContact)>=900?'never contacted':daysAgo(c.lastContact)+'d since last touch'}</div></div><div class="pi-meta">Call today</div></div>`)
+    ];
+    dt.innerHTML = rows.length ? rows.join('') : '<div style="padding:10px;color:var(--green);font-size:13px">✅ Nothing due today — go prospect!</div>';
+  }
 
   // Call priorities
   const priorities = buildPriorityList();
@@ -1342,11 +1152,24 @@ function buildDayAlerts() {
   const alerts = [];
   const stale = state.contacts.filter(isStale);
   if(stale.length) alerts.push({ type:'warning', icon:'⚠️', title:`${stale.length} contacts going stale`, body:`${stale.map(c=>c.firstName+(c.company?' @ '+c.company:'')).slice(0,3).join(', ')} — no contact in 7+ days.` });
-  const oldQuotes = state.quotes.filter(q=>q.status==='sent'&&daysAgo(q.createdAt)>=5);
-  if(oldQuotes.length) alerts.push({ type:'urgent', icon:'💰', title:`${oldQuotes.length} quote(s) need follow-up`, body:`Quotes to ${oldQuotes.map(q=>q.client).slice(0,2).join(', ')} have been out 5+ days with no update.` });
   const warmNoTouch = state.contacts.filter(c=>c.priority==='warm'&&daysAgo(c.lastContact)>=5);
   if(warmNoTouch.length) alerts.push({ type:'urgent', icon:'🔥', title:`${warmNoTouch.length} warm lead(s) need attention`, body:`Don\'t let warm leads go cold: ${warmNoTouch.map(c=>c.firstName).join(', ')}.` });
+  const pendingAppr = state.approvals.filter(a=>a.status==='pending');
+  if(pendingAppr.length) alerts.push({ type:'info', icon:'📤', title:`${pendingAppr.length} outreach batch(es) awaiting your approval`, body:'Review and approve in Prospects → Outreach Approvals before any cold email goes out.' });
   return alerts;
+}
+
+// Warm leads that should get a call today: warm priority and either their
+// contact-level next follow-up is today/overdue, or no touch in 3+ days.
+function warmLeadsToCallToday() {
+  return state.contacts.filter(c => c.priority==='warm' && (
+    (c.nextFollowUp && daysUntil(c.nextFollowUp) <= 0) || daysAgo(c.lastContact) >= 3
+  ));
+}
+// "Won" in HubSpot → accounts opened
+function isWonContact(c) {
+  const s = String(c.leadStatus||'').toLowerCase(), l = String(c.lifecycle||'').toLowerCase();
+  return /won/.test(s) || l==='customer' || /won/.test(l);
 }
 
 // ─── CONTACTS ─────────────────────────────────────────────────
@@ -1391,7 +1214,6 @@ function contactCardHTML(c, compact=false) {
     <div class="contact-actions" onclick="event.stopPropagation()">
       ${callLink}${mailLink}${contactedBtn}${tagBtn}
       <button class="act" onclick="openBrief('${c.id}')" title="Brief">📋</button>
-      <button class="act" onclick="quickLog('${c.id}')" title="Log Call">⚡</button>
       <button class="act" onclick="editContact('${c.id}')" title="Edit">✏️</button>
       <button class="act" onclick="deleteContact('${c.id}')" title="Delete" style="color:var(--text-muted)">🗑️</button>
     </div>
@@ -1483,174 +1305,9 @@ function markFUDone(id) {
   if(fu) { fu.status='done'; saveAll(); renderFollowUps(); updateBadges(); toast('✅ Follow-up marked done!','success'); }
 }
 function deleteFU(id) {
+  sbDeleteRow('followups',id);
   state.followups = state.followups.filter(f=>f.id!==id);
-  saveAll(); renderFollowUps(); updateBadges();
-}
-
-// ─── QUOTES ───────────────────────────────────────────────────
-function renderQuotes() {
-  let list = state.quotes;
-  if(state.qFilter!=='all') list = list.filter(q=>q.status===state.qFilter);
-  const tb = document.getElementById('quotes-tbody');
-  if(!tb) return;
-  if(!list.length) { tb.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text-muted)">No quotes yet. Add your first quote.</td></tr>'; return; }
-  tb.innerHTML = list.map(q => {
-    const lc = landedCostPerUnit(q);
-    const margin = lc&&q.sellPrice ? ((q.sellPrice-lc)/q.sellPrice*100).toFixed(1) : null;
-    const tariffFlag = (q.country==='china'||q.country==='China') ? '<span class="badge badge-red">⚠️ CH</span>' : '';
-    return `<tr>
-      <td><strong>${q.client}</strong></td>
-      <td>${q.product}</td>
-      <td>${q.supplier||'—'}</td>
-      <td>${q.sellPrice?fmtUSD(q.sellPrice):fmtUSD(lc)}</td>
-      <td>${margin?`<span style="color:${margin>20?'var(--green)':margin>10?'var(--yellow)':'var(--red)'}">${margin}%</span>`:'—'}</td>
-      <td>${statusBadge(q.status)}</td>
-      <td>${tariffFlag}</td>
-      <td><button class="btn btn-sm btn-secondary" onclick="deleteQuote('${q.id}')">🗑️</button></td>
-    </tr>`;
-  }).join('');
-}
-function setQFilter(el, f) {
-  state.qFilter=f;
-  document.querySelectorAll('[data-qf]').forEach(e=>e.classList.remove('active'));
-  el.classList.add('active');
-  renderQuotes();
-}
-function setQTab(el, t) {
-  state.qTab=t;
-  document.querySelectorAll('[data-qtab]').forEach(e=>e.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('qtab-tracker').style.display = t==='tracker'?'':'none';
-  document.getElementById('qtab-calculator').style.display = t==='calculator'?'':'none';
-}
-function landedCostPerUnit(q) {
-  if(!q.supplierCost&&!q.cost) return null;
-  const cost = parseFloat(q.supplierCost||q.cost||0);
-  const qty = parseInt(q.qty||q.quantity||1);
-  const freight = parseFloat(q.freight||0);
-  const tariff = parseFloat(q.tariff||0)/100;
-  if(!cost||!qty) return null;
-  return ((cost + freight/qty) * (1+tariff));
-}
-function deleteQuote(id) {
-  if(!confirm('Delete this quote?')) return;
-  state.quotes = state.quotes.filter(q=>q.id!==id);
-  saveAll(); renderQuotes();
-}
-
-function calcLanded() {
-  const cost = parseFloat(document.getElementById('calc-cost').value)||0;
-  const qty = parseInt(document.getElementById('calc-qty').value)||1;
-  const freight = parseFloat(document.getElementById('calc-freight').value)||0;
-  const tariff = parseFloat(document.getElementById('calc-tariff').value)||0;
-  const t301 = parseFloat(document.getElementById('calc-301').value)||0;
-  const sell = parseFloat(document.getElementById('calc-sell').value)||0;
-  const comm = parseFloat(document.getElementById('calc-comm').value)||0;
-  const country = document.getElementById('calc-country').value;
-  if(!cost) { document.getElementById('calc-output').innerHTML='<div class="empty-state"><div class="ei">🧮</div><p>Enter a unit cost to start</p></div>'; return; }
-  const totalSupplierCost = cost*qty;
-  const freightPerUnit = qty>0?freight/qty:0;
-  const totalTariffRate = (tariff+t301)/100;
-  const landedPerUnit = (cost+freightPerUnit)*(1+totalTariffRate);
-  const totalLanded = landedPerUnit*qty;
-  const marginPct = sell>0?((sell-landedPerUnit)/sell*100):null;
-  const commPct = comm>0?(sell*(comm/100)):null;
-  const profitPerUnit = sell>0?sell-landedPerUnit:null;
-  const chinaWarning = (country==='china'&&(tariff+t301)<20)?`<div class="tariff-flag"><div class="tfh">⚠️ China Tariff Alert</div><p>For China-origin packaging, total tariff exposure is typically 28–35%+ (base HTS + Section 301). Your current rate of ${tariff+t301}% looks too low. Verify HTS code and apply correct Section 301 surcharge before quoting your client or you will lose margin.</p></div>`:'';
-  document.getElementById('calc-output').innerHTML = `
-    <div class="calc-row"><span>Supplier Unit Cost</span><span>${fmtUSD(cost)}</span></div>
-    <div class="calc-row"><span>Total Supplier Cost (×${qty.toLocaleString()})</span><span>${fmtUSD(totalSupplierCost)}</span></div>
-    <div class="calc-row"><span>Freight per Unit</span><span>${fmtUSD(freightPerUnit)}</span></div>
-    <div class="calc-row"><span>Tariff Rate (${tariff}% + ${t301}% 301)</span><span>${(tariff+t301).toFixed(1)}%</span></div>
-    <div class="calc-row hl"><span>Tariff Cost per Unit</span><span>${fmtUSD((cost+freightPerUnit)*totalTariffRate)}</span></div>
-    <div class="calc-row total"><span>Landed Cost / Unit</span><span>${fmtUSD(landedPerUnit)}</span></div>
-    <div class="calc-row total"><span>Total Landed Cost</span><span>${fmtUSD(totalLanded)}</span></div>
-    ${sell>0?`<hr class="divider">
-    <div class="calc-row"><span>Sell Price / Unit</span><span>${fmtUSD(sell)}</span></div>
-    <div class="calc-row ${marginPct>20?'':'hl'}"><span>Gross Margin</span><span style="font-weight:700;color:${marginPct>20?'var(--green)':marginPct>10?'var(--yellow)':'var(--red)'}">${marginPct?marginPct.toFixed(1)+'%':'—'}</span></div>
-    ${profitPerUnit>0?`<div class="calc-row"><span>Profit per Unit</span><span>${fmtUSD(profitPerUnit)}</span></div>`:''}
-    ${commPct?`<div class="calc-row"><span>Your Commission (${comm}%)</span><span style="color:var(--green);font-weight:700">${fmtUSD(commPct)}/unit</span></div>`:''}
-    ${commPct?`<div class="calc-row"><span>Total Commission</span><span style="color:var(--green);font-weight:700">${fmtUSD(commPct*qty)}</span></div>`:''}
-    `:''}
-    ${chinaWarning}
-  `;
-}
-function setChina301() {
-  document.getElementById('calc-country').value='china';
-  document.getElementById('calc-tariff').value='6';
-  document.getElementById('calc-301').value='25';
-  calcLanded();
-  toast('⚠️ China tariffs set: 6% base + 25% Section 301 = 31% total','warning');
-}
-
-// ─── PROJECTS ─────────────────────────────────────────────────
-function renderProjects() {
-  let list = state.projects;
-  if(state.pFilter!=='all') list = list.filter(p=>p.status===state.pFilter);
-  const el = document.getElementById('projects-list');
-  if(!el) return;
-  if(!list.length) { el.innerHTML='<div class="empty-state"><div class="ei">📁</div><h3>No projects yet</h3><p>Create a project to organize clients, quotes, and notes in one place.</p></div>'; return; }
-  el.innerHTML = list.map(p => `
-    <div class="card">
-      <div class="card-header">
-        <h3>📁 ${p.name}</h3>
-        ${statusBadge(p.status)}
-        ${p.value?`<span class="badge badge-green">${fmtUSD(p.value)}</span>`:''}
-        <button class="btn btn-sm btn-secondary" style="margin-left:auto" onclick="deleteProject('${p.id}')">🗑️</button>
-      </div>
-      <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px">Client: <strong style="color:var(--text)">${p.client||'—'}</strong></div>
-      ${p.notes?`<div style="font-size:13px;color:var(--text-muted);line-height:1.5">${p.notes}</div>`:''}
-      <div style="margin-top:10px;font-size:11px;color:var(--text-muted)">Created ${fmtDate(p.createdAt)}</div>
-    </div>`).join('');
-}
-function setPFilter(el, f) {
-  state.pFilter=f;
-  document.querySelectorAll('[data-pf]').forEach(e=>e.classList.remove('active'));
-  el.classList.add('active');
-  renderProjects();
-}
-function deleteProject(id) {
-  if(!confirm('Delete this project?')) return;
-  state.projects=state.projects.filter(p=>p.id!==id);
-  saveAll(); renderProjects();
-}
-
-// ─── CALL LOG ─────────────────────────────────────────────────
-function renderCallLog() {
-  const tb = document.getElementById('calllog-tbody');
-  if(!tb) return;
-  const list = [...state.calllog].sort((a,b)=>new Date(b.date)-new Date(a.date));
-  if(!list.length) { tb.innerHTML='<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--text-muted)">No calls logged yet. Use the quick log above.</td></tr>'; return; }
-  const icons = {connected:'✅',voicemail:'📱','no-answer':'🔕','meeting-set':'🗓️','not-interested':'❌'};
-  tb.innerHTML = list.map(c=>`<tr>
-    <td style="white-space:nowrap">${new Date(c.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</td>
-    <td><strong>${c.contactName}</strong></td>
-    <td>${icons[c.outcome]||'📞'} ${c.outcome}</td>
-    <td style="max-width:260px;font-size:12px">${c.notes||'—'}</td>
-    <td>${c.followupDate?fmtDate(c.followupDate):'—'}</td>
-  </tr>`).join('');
-}
-function logCall() {
-  const cid = document.getElementById('log-contact').value;
-  const outcome = document.getElementById('log-outcome').value;
-  const notes = document.getElementById('log-notes').value;
-  const fu = document.getElementById('log-followup').value;
-  const contact = state.contacts.find(c=>c.hubspotId===r.id)||state.contacts.find(c=>c.id===cid);
-  if(!cid) { toast('Select a contact first','error'); return; }
-  const entry = { id:uid(), contactId:cid, contactName:`${contact?.firstName||''} ${contact?.lastName||''}`.trim()+' — '+(contact?.company||''), date:new Date().toISOString(), outcome, notes, followupDate:fu };
-  state.calllog.push(entry);
-  if(contact) { contact.lastContact = new Date().toISOString().split('T')[0]; }
-  if(fu && contact) {
-    state.followups.push({ id:uid(), contactId:cid, contactName:`${contact.firstName} — ${contact.company}`, dueDate:fu, type:'call', notes:notes||'Follow-up from call', status:'pending', createdAt:new Date().toISOString() });
-  }
-  document.getElementById('log-notes').value='';
-  document.getElementById('log-followup').value='';
-  saveAll(); renderCallLog(); renderFollowUps(); updateBadges();
-  toast('📞 Call logged!','success');
-}
-function quickLog(cid) {
-  showTab('calllog');
-  document.getElementById('log-contact').value=cid;
+  saveCollection('followups'); renderFollowUps(); updateBadges();
 }
 
 // ─── SUPPLIERS ────────────────────────────────────────────────
@@ -1682,8 +1339,9 @@ function renderSuppliers() {
 }
 function deleteSupplier(id) {
   if(!confirm('Delete this supplier?')) return;
+  sbDeleteRow('suppliers',id);
   state.suppliers=state.suppliers.filter(s=>s.id!==id);
-  saveAll(); renderSuppliers();
+  saveCollection('suppliers'); renderSuppliers();
 }
 
 // ─── SOCIAL ───────────────────────────────────────────────────
@@ -1706,7 +1364,7 @@ function renderSocial() {
       </div>
     </div>`).join('');
 }
-function deleteSocialLead(id) { state.socialleads=state.socialleads.filter(s=>s.id!==id); saveAll(); renderSocial(); }
+function deleteSocialLead(id) { sbDeleteRow('socialleads',id); state.socialleads=state.socialleads.filter(s=>s.id!==id); saveCollection('socialleads'); renderSocial(); }
 function convertSocialToContact(id) {
   const s = state.socialleads.find(l=>l.id===id);
   if(!s) return;
@@ -1721,8 +1379,6 @@ function openBrief(id) {
   const c = state.contacts.find(x=>x.id===id);
   if(!c) return;
   const fu = state.followups.filter(f=>f.contactId===id&&f.status!=='done');
-  const calls = state.calllog.filter(l=>l.contactId===id).slice(0,3);
-  const quotes = state.quotes.filter(q=>q.client?.toLowerCase().includes(c.company?.toLowerCase()||'notfound')).slice(0,3);
   const lastTouched = c.lastContact ? `${daysAgo(c.lastContact)} days ago (${fmtDate(c.lastContact)})` : 'Never';
   const staleWarn = isStale(c) ? `<div class="alert-card urgent" style="margin-bottom:10px"><span class="alert-icon">⚠️</span><div class="alert-content"><strong>Stale Contact</strong><p>Last contact was ${daysAgo(c.lastContact)} days ago. Touch base today.</p></div></div>` : '';
   document.getElementById('brief-header').innerHTML = `
@@ -1755,19 +1411,11 @@ function openBrief(id) {
       <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px">Open Follow-Ups</div>
       ${fu.map(f=>`<div class="alert-card ${isOverdue(f.dueDate)?'urgent':'warning'}" style="margin-bottom:4px"><span class="alert-icon">${isOverdue(f.dueDate)?'🔴':'📅'}</span><div class="alert-content"><strong>${f.type} ${isOverdue(f.dueDate)?'— OVERDUE':''}</strong><p>${f.notes} · ${fmtDate(f.dueDate)}</p></div></div>`).join('')}
     </div>`:''}
-    ${calls.length?`<div class="card" style="margin-bottom:10px;padding:14px">
-      <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px">Recent Call History</div>
-      ${calls.map(cl=>`<div style="font-size:13px;padding:6px 0;border-bottom:1px solid var(--border)"><strong>${new Date(cl.date).toLocaleDateString()}</strong> · ${cl.outcome} · ${cl.notes||'No notes'}</div>`).join('')}
-    </div>`:''}
-    ${quotes.length?`<div class="card" style="padding:14px">
-      <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px">Open Quotes</div>
-      ${quotes.map(q=>`<div style="font-size:13px;padding:6px 0;border-bottom:1px solid var(--border)">${q.product} · ${statusBadge(q.status)} · ${q.sellPrice?fmtUSD(q.sellPrice)+'/unit':'Quote pending'}</div>`).join('')}
-    </div>`:''}
   `;
   document.getElementById('brief-footer').innerHTML = `
     <button class="btn btn-secondary" onclick="closeModal('contactBrief')">Close</button>
     <button class="btn btn-secondary" onclick="editContact('${c.id}');closeModal('contactBrief')">✏️ Edit</button>
-    <button class="btn btn-primary" onclick="quickLog('${c.id}');closeModal('contactBrief')">⚡ Log Call</button>
+    <button class="btn btn-primary" onclick="markContacted('${c.id}');closeModal('contactBrief')">✓ Mark Contacted</button>
     <button class="btn btn-navy" onclick="openFUFromBrief('${c.id}')">📅 Schedule Follow-Up</button>
   `;
   openModal('contactBrief');
@@ -1847,9 +1495,11 @@ function updateContact(id) {
 }
 function deleteContact(id) {
   if(!confirm('Delete this contact?')) return;
+  state.followups.filter(f=>f.contactId===id).forEach(f=>sbDeleteRow('followups',f.id));
+  sbDeleteRow('contacts',id);
   state.contacts=state.contacts.filter(c=>c.id!==id);
   state.followups=state.followups.filter(f=>f.contactId!==id);
-  saveAll(); renderAll(); toast('Contact deleted','success');
+  saveCollection('contacts'); saveCollection('followups'); renderAll(); toast('Contact deleted','success');
 }
 
 function saveFollowup() {
@@ -1863,35 +1513,6 @@ function saveFollowup() {
   saveAll(); closeModal('addFollowup'); renderFollowUps(); updateBadges();
   ['fu-contact','fu-date','fu-notes'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
   toast('📅 Follow-up scheduled!','success');
-}
-
-function saveQuote() {
-  const q = {
-    id:uid(), client:document.getElementById('aq-client').value.trim(),
-    product:document.getElementById('aq-product').value.trim(),
-    supplier:document.getElementById('aq-supplier').value.trim(),
-    country:document.getElementById('aq-country').value,
-    cost:parseFloat(document.getElementById('aq-cost').value)||0,
-    supplierCost:parseFloat(document.getElementById('aq-cost').value)||0,
-    qty:parseInt(document.getElementById('aq-qty').value)||0,
-    quantity:parseInt(document.getElementById('aq-qty').value)||0,
-    freight:parseFloat(document.getElementById('aq-freight').value)||0,
-    tariff:parseFloat(document.getElementById('aq-tariff').value)||0,
-    sellPrice:parseFloat(document.getElementById('aq-sell').value)||0,
-    status:document.getElementById('aq-status').value,
-    notes:document.getElementById('aq-notes').value.trim(),
-    createdAt:new Date().toISOString()
-  };
-  if(!q.client) { toast('Client name required','error'); return; }
-  state.quotes.push(q);
-  saveAll(); closeModal('addQuote'); renderQuotes(); toast('💰 Quote saved!','success');
-}
-
-function saveProject() {
-  const p = { id:uid(), name:document.getElementById('ap-name').value.trim(), client:document.getElementById('ap-client').value.trim(), status:document.getElementById('ap-status').value, value:parseFloat(document.getElementById('ap-value').value)||0, notes:document.getElementById('ap-notes').value.trim(), createdAt:new Date().toISOString() };
-  if(!p.name) { toast('Project name required','error'); return; }
-  state.projects.push(p);
-  saveAll(); closeModal('addProject'); renderProjects(); toast('📁 Project created!','success');
 }
 
 function saveSupplier() {
@@ -1926,7 +1547,7 @@ function closeModal(name) {
 document.addEventListener('click', e => { if(e.target.classList.contains('modal-overlay')) closeModal(e.target.id.replace('modal-','')); });
 
 function populateContactSelects() {
-  ['log-contact','fu-contact'].forEach(id => {
+  ['fu-contact'].forEach(id => {
     const el = document.getElementById(id);
     if(!el) return;
     const cur = el.value;
@@ -1948,6 +1569,8 @@ function updateBadges() {
   set('badge-warmleads', state.contacts.filter(c=>c.priority==='warm').length||'');
   set('badge-followups', overdue||'');
   set('badge-ai', aiAlerts||'');
+  const pendingAppr = (state.approvals||[]).reduce((n,b)=>n+(b.status==='pending'?b.prospects.filter(p=>p.status==='pending').length:0),0) + (state.prospects||[]).filter(p=>p.queued).length;
+  set('badge-approvals', pendingAppr||'');
   set('notif-count', (urgent+aiAlerts)||'');
   const aiCount = document.getElementById('ai-alert-count');
   if(aiCount) aiCount.textContent = aiAlerts ? `${aiAlerts} active` : '';
@@ -2010,34 +1633,46 @@ async function syncHubSpot() {
   toast('🔄 Syncing HubSpot contacts...','info');
   try {
     let added=0, updated=0, after='', page=0;
-    const BASE = 'https://sg-hubspot-proxy.bribaseball66sg.workers.dev/hubspot/crm/v3/objects/contacts?limit=100&properties=firstname,lastname,company,jobtitle,email,phone,hs_lead_status,address,city,state,zip,country';
+    const BASE = 'https://sg-hubspot-proxy.bribaseball66sg.workers.dev/hubspot/crm/v3/objects/contacts?limit=100&properties=firstname,lastname,company,jobtitle,email,phone,hs_lead_status,lifecyclestage,address,city,state,zip,country,notes_last_updated';
     do {
       const url = after ? `${BASE}&after=${encodeURIComponent(after)}` : BASE;
       const res = await fetch(url, {
         headers: { Authorization: `Bearer ${state.settings.hubspot}`, 'Content-Type': 'application/json' }
       });
-      if(!res.ok) { const err=await res.json(); throw new Error(err.message||'HubSpot error'); }
+      if(!res.ok) {
+        let msg = 'HTTP '+res.status;
+        try { const err = await res.json(); msg = err.message || err.error || msg; } catch(e) {}
+        if (res.status===401||res.status===403) msg += ' — check that your HubSpot private app token (pat-na1-...) is valid and has crm.objects.contacts.read scope.';
+        throw new Error(msg);
+      }
       const data = await res.json();
       (data.results||[]).forEach(r => {
-      const p = r.properties;
-      const existing = state.contacts.find(c=>c.email&&c.email===p.email);
-      if(existing) {
-        existing.company = p.company||existing.company;
-        existing.title = p.jobtitle||existing.title;
-        existing.phone = p.phone||existing.phone;
-        existing.hubspotId = r.id;
-        updated++;
-      } else if(p.firstname||p.email) {
-        state.contacts.push({ id:uid(), firstName:p.firstname||'', lastName:p.lastname||'', company:p.company||'', title:p.jobtitle||'', email:p.email||'', phone:p.phone||'', address:[p.address,p.city,p.state,p.zip,p.country].filter(Boolean).join(', ')||'', priority:'cold', notes:'Imported from HubSpot', lastContact:new Date().toISOString().split('T')[0], tags:[], calls:[], quotes:[], hubspotId:r.id, createdAt:new Date().toISOString() });
-        added++;
-      }
-    });
+        const p = r.properties || {};
+        const hsAddress = [p.address,p.city,p.state,p.zip,p.country].filter(Boolean).join(', ');
+        const existing = state.contacts.find(c=>c.hubspotId===r.id) || state.contacts.find(c=>c.email&&p.email&&c.email.toLowerCase()===p.email.toLowerCase());
+        if(existing) {
+          existing.firstName = existing.firstName || p.firstname || '';
+          existing.lastName = existing.lastName || p.lastname || '';
+          existing.company = p.company||existing.company;
+          existing.title = p.jobtitle||existing.title;
+          existing.phone = p.phone||existing.phone;
+          existing.email = existing.email||p.email||'';
+          if (hsAddress && !(existing.address||'').trim()) existing.address = hsAddress;
+          existing.leadStatus = p.hs_lead_status || existing.leadStatus || '';
+          existing.lifecycle = p.lifecyclestage || existing.lifecycle || '';
+          existing.hubspotId = r.id;
+          updated++;
+        } else if(p.firstname||p.email||p.company) {
+          state.contacts.push({ id:uid(), firstName:p.firstname||'', lastName:p.lastname||'', company:p.company||'', title:p.jobtitle||'', email:p.email||'', phone:p.phone||'', address:hsAddress||'', priority:'cold', leadStatus:p.hs_lead_status||'', lifecycle:p.lifecyclestage||'', notes:'Imported from HubSpot', lastContact:new Date().toISOString().split('T')[0], tags:[], hubspotId:r.id, createdAt:new Date().toISOString() });
+          added++;
+        }
+      });
       after = data.paging?.next?.after || '';
       page++;
       if(page > 50) break;
     } while(after);
-    saveAll(); renderAll();
-    toast(`✅ HubSpot sync done: ${added} added, ${updated} updated`,'success');
+    saveCollection('contacts'); renderAll(); refreshBriefing();
+    toast(`✅ HubSpot sync done: ${added} added, ${updated} updated · ${state.contacts.filter(isWonContact).length} accounts opened`,'success');
   } catch(e) { toast('HubSpot sync failed: '+e.message,'error'); }
 }
 
@@ -2062,8 +1697,116 @@ function openLinkedInSearch() {
   const kw=[title,industry,city].filter(Boolean).join(" ")||"packaging procurement Michigan";
   window.open("https://www.linkedin.com/search/results/people/?keywords="+encodeURIComponent(kw),"_blank");
 }
-function getProspects(){try{return JSON.parse(localStorage.getItem("sg_prospects")||"[]");}catch{return [];}}
-function saveProspects(arr){localStorage.setItem("sg_prospects",JSON.stringify(arr));}
+function getProspects(){ return state.prospects||[]; }
+function saveProspects(arr){ state.prospects=arr; saveCollection('prospects'); updateBadges(); }
+
+// ─── COLD OUTREACH APPROVAL WORKFLOW ──────────────────────────
+// Nothing gets enrolled or emailed until Brian approves the list.
+// Queue prospects → submit for approval (drafts written by AI) →
+// approve in the Approvals queue (also surfaced to Claude/Dispatch) →
+// email opens to send + contact card created with stage "Contacted".
+function queueForOutreach(id) {
+  const p = getProspects().find(x=>x.id===id);
+  if(!p) return;
+  if(!p.email) { toast('Add an email to this prospect first — outreach needs an address','error'); editProspect(id); return; }
+  p.queued = !p.queued;
+  saveProspects(getProspects());
+  renderProspects(); renderApprovals();
+  toast(p.queued ? `📤 ${p.name||p.company} queued for outreach approval` : 'Removed from outreach queue','info');
+}
+
+async function submitForApproval() {
+  const queued = getProspects().filter(p=>p.queued);
+  if(!queued.length) { toast('Queue at least one prospect first (📤 button on a prospect card)','error'); return; }
+  const btn = document.getElementById('appr-submit-btn');
+  if(btn){ btn.disabled = true; btn.textContent = '🤖 Drafting emails...'; }
+  const items = [];
+  for (const p of queued) {
+    let draft = '';
+    try {
+      const d = await callAI({ model:'claude-sonnet-4-6', max_tokens:400,
+        system:'You are a concise sales copywriter for Brian Blakeslee, an outside sales rep at Stephen Gould Corporation specializing in custom packaging and supply chain. Write natural, non-salesy cold emails that get responses.',
+        messages:[{role:'user',content:`Write a short, personalized cold email to ${p.name||'the buyer'} at ${p.company||'their company'}${p.title?' ('+p.title+')':''}. Context: ${p.notes||'custom packaging prospect'}. Under 100 words. Strong hook first line, one value prop, soft CTA. First line of your reply must be "Subject: ..." then a blank line then the body. No other commentary.`}] });
+      draft = d.content?.[0]?.text || '';
+    } catch(e) { draft = 'Subject: Quick question about '+(p.company||'your packaging')+'\n\n(Draft failed to generate — write your own or hit Regenerate later.)'; }
+    items.push({ id:p.id, name:p.name||'', company:p.company||'', title:p.title||'', email:p.email||'', notes:p.notes||'', draft, status:'pending' });
+  }
+  const batch = { id:uid(), createdAt:new Date().toISOString(), status:'pending', prospects:items };
+  state.approvals.push(batch);
+  // un-queue + mark stage
+  getProspects().forEach(p=>{ if(p.queued){ p.queued=false; p.stage='pending_approval'; } });
+  saveProspects(getProspects());
+  saveCollection('approvals');
+  if(btn){ btn.disabled = false; btn.textContent = '📤 Submit Queue for Approval'; }
+  renderProspects(); renderApprovals(); updateBadges();
+  toast(`📤 ${items.length} prospect(s) submitted for your approval — nothing sends until you approve`,'success');
+}
+
+function renderApprovals() {
+  const el = document.getElementById('approvals-body');
+  if(!el) return;
+  const queued = getProspects().filter(p=>p.queued);
+  const pending = state.approvals.filter(a=>a.status==='pending');
+  let html = '';
+  if (queued.length) html += `<div style="font-size:13px;margin-bottom:8px"><strong>${queued.length} queued:</strong> ${queued.map(p=>p.name||p.company).join(', ')}</div>
+    <button class="btn btn-primary btn-sm" id="appr-submit-btn" onclick="submitForApproval()">📤 Submit Queue for Approval</button><hr style="border:none;border-top:1px solid var(--border);margin:12px 0">`;
+  if (!pending.length && !queued.length) { el.innerHTML = '<div style="padding:10px;color:var(--text-muted);font-size:13px">No outreach awaiting approval. Queue prospects with the 📤 button on their cards.</div>'; return; }
+  pending.forEach(b => {
+    const open = b.prospects.filter(i=>i.status==='pending');
+    html += `<div style="font-size:12px;color:var(--text-muted);margin-bottom:6px">Batch from ${new Date(b.createdAt).toLocaleDateString()} · ${open.length} awaiting decision (also sent to your Claude Dispatch)</div>`;
+    b.prospects.forEach(i => {
+      if (i.status!=='pending') { html += `<div style="font-size:12px;padding:6px 0;color:var(--text-muted)">${i.status==='approved'?'✅':'❌'} ${i.name||i.company} — ${i.status}</div>`; return; }
+      html += `<div class="card" style="padding:12px;margin-bottom:10px">
+        <div style="font-weight:600;font-size:14px">${i.name||'—'} — ${i.company||''} <span style="font-weight:400;color:var(--text-muted);font-size:12px">${i.email}</span></div>
+        <textarea id="appr-draft-${b.id}-${i.id}" style="width:100%;margin-top:8px;min-height:120px;font-size:12px;padding:8px;border:1px solid var(--border);border-radius:6px;font-family:inherit">${(i.draft||'').replace(/</g,'&lt;')}</textarea>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="btn btn-green btn-sm" onclick="approveOutreach('${b.id}','${i.id}')">✅ Approve & Send</button>
+          <button class="btn btn-secondary btn-sm" onclick="rejectOutreach('${b.id}','${i.id}')">❌ Reject</button>
+        </div>
+      </div>`;
+    });
+  });
+  el.innerHTML = html;
+}
+
+function approveOutreach(batchId, pid) {
+  const b = state.approvals.find(x=>x.id===batchId); if(!b) return;
+  const i = b.prospects.find(x=>x.id===pid); if(!i) return;
+  const ta = document.getElementById(`appr-draft-${batchId}-${pid}`);
+  const draft = (ta ? ta.value : i.draft) || '';
+  const m = draft.match(/^Subject:\s*(.+)$/m);
+  const subject = m ? m[1].trim() : ('Custom packaging — ' + (i.company||''));
+  const body = draft.replace(/^Subject:.*\n?/,'').trim();
+  // 1) open the email ready to send from Brian's real account
+  window.open(`mailto:${encodeURIComponent(i.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank');
+  // 2) mark approved
+  i.status='approved'; i.approvedAt=new Date().toISOString();
+  if (b.prospects.every(x=>x.status!=='pending')) b.status='done';
+  saveCollection('approvals');
+  // 3) prospect stage → contacted
+  const p = getProspects().find(x=>x.id===pid);
+  if(p){ p.stage='contacted'; saveProspects(getProspects()); }
+  // 4) create contact card with stage "Contacted"
+  const parts=(i.name||'').trim().split(' ');
+  if(!state.contacts.find(c=>c.email&&c.email.toLowerCase()===i.email.toLowerCase())) {
+    state.contacts.push({ id:uid(), firstName:parts[0]||'', lastName:parts.slice(1).join(' ')||'', company:i.company||'', title:i.title||'', email:i.email||'', phone:'', address:'', priority:'cold', stage:'Contacted', notes:(i.notes?i.notes+' · ':'')+'Cold outreach sent '+new Date().toLocaleDateString(), lastContact:new Date().toISOString().split('T')[0], tags:['outreach'], createdAt:new Date().toISOString() });
+    saveCollection('contacts');
+  }
+  renderApprovals(); renderContacts(); updateBadges();
+  toast(`✅ Approved — email opened to send. ${i.name||i.company} added to Contacts as "Contacted".`,'success');
+}
+
+function rejectOutreach(batchId, pid) {
+  const b = state.approvals.find(x=>x.id===batchId); if(!b) return;
+  const i = b.prospects.find(x=>x.id===pid); if(!i) return;
+  i.status='rejected';
+  if (b.prospects.every(x=>x.status!=='pending')) b.status='done';
+  saveCollection('approvals');
+  const p = getProspects().find(x=>x.id===pid);
+  if(p){ p.stage='new'; saveProspects(getProspects()); }
+  renderApprovals(); updateBadges();
+  toast('❌ Rejected — nothing was sent','info');
+}
 function renderProspects(){
   const prospects=getProspects();
   const fs=document.getElementById("prospect-filter-stage")?.value||"";
@@ -2076,8 +1819,8 @@ function renderProspects(){
     return ms&&mt;
   });
   if(!filtered.length){c.innerHTML='<div style="color:var(--text-muted);padding:20px;text-align:center">No prospects yet — add one or adjust filters.</div>';return;}
-  const sc={new:"#6B7A99",contacted:"#D97706",replied:"#16A34A",meeting:"#2563EB",qualified:"#7C3AED",passed:"#DC2626"};
-  const sl={new:"New",contacted:"Contacted",replied:"Replied",meeting:"Meeting Set",qualified:"Qualified",passed:"Passed"};
+  const sc={new:"#6B7A99",pending_approval:"#D97706",contacted:"#D97706",replied:"#16A34A",meeting:"#2563EB",qualified:"#7C3AED",passed:"#DC2626"};
+  const sl={new:"New",pending_approval:"Pending Approval",contacted:"Contacted",replied:"Replied",meeting:"Meeting Set",qualified:"Qualified",passed:"Passed"};
   c.innerHTML=filtered.map(p=>{
     const stageColor=sc[p.stage]||"#6B7A99";
     const stageLabel=sl[p.stage]||p.stage||"New";
@@ -2090,13 +1833,14 @@ function renderProspects(){
     const liRow=p.linkedin?'<a href="'+p.linkedin+'" target="_blank" style="font-size:12px;color:#0A66C2;font-weight:500;text-decoration:none;display:block;margin-bottom:8px">🔗 LinkedIn Profile</a>':"" ;
     const opts=Object.entries(sl).map(([v,l])=>'<option value="'+v+'"'+(p.stage===v?' selected':'')+'>'+l+'</option>').join("");
     const stageSelect='<select style="flex:1;padding:4px 6px;border:1px solid var(--border);border-radius:4px;font-size:12px" onchange="updateProspectStage(\''+(p.id||"")+'\',this.value)">'+opts+'</select>';
+    const queueBtn='<button title="'+(p.queued?'Remove from outreach queue':'Queue for outreach approval')+'" style="font-size:12px;padding:4px 8px;border:1px solid '+(p.queued?'var(--red)':'var(--border)')+';border-radius:4px;cursor:pointer'+(p.queued?';background:#FEF2F0':'')+'" onclick="queueForOutreach(\''+(p.id||"")+'\')">📤</button>';
     const editBtn='<button style="font-size:12px;padding:4px 8px;border:1px solid var(--border);border-radius:4px;cursor:pointer" onclick="editProspect(\''+( p.id||"")+'\')">✏️</button>';
     const delBtn='<button style="font-size:12px;padding:4px 8px;border:1px solid var(--red);color:var(--red);border-radius:4px;cursor:pointer" onclick="deleteProspect(\''+( p.id||"")+'\')">🗑️</button>';
-    return '<div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:14px">'+ '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px"><div>'+nameRow+subtitleRow+'</div>'+stagePill+'</div>'+cityRow+contactRow+notesRow+liRow+'<div style="display:flex;gap:6px;margin-top:8px;border-top:1px solid var(--border);padding-top:8px">'+stageSelect+editBtn+delBtn+'</div></div>';
+    return '<div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:14px">'+ '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px"><div>'+nameRow+subtitleRow+'</div>'+stagePill+'</div>'+cityRow+contactRow+notesRow+liRow+'<div style="display:flex;gap:6px;margin-top:8px;border-top:1px solid var(--border);padding-top:8px">'+stageSelect+queueBtn+editBtn+delBtn+'</div></div>';
   }).join("");
 }
 function updateProspectStage(id,stage){const a=getProspects();const p=a.find(x=>x.id===id);if(p){p.stage=stage;saveProspects(a);renderProspects();}}
-function deleteProspect(id){if(!confirm("Delete this prospect?"))return;saveProspects(getProspects().filter(x=>x.id!==id));renderProspects();}
+function deleteProspect(id){if(!confirm("Delete this prospect?"))return;sbDeleteRow('prospects',id);saveProspects(getProspects().filter(x=>x.id!==id));renderProspects();}
 function editProspect(id){
   const p=getProspects().find(x=>x.id===id);if(!p)return;
   window._editingProspectId=id;
@@ -2117,34 +1861,23 @@ function saveProspect(){
 
 async function searchSocial() {
   const keyword = document.getElementById('social-keyword').value.trim();
-  const platform = document.getElementById('social-platform').value;
   if(!keyword) { toast('Enter a search keyword first','error'); return; }
   const el = document.getElementById('social-results');
   el.innerHTML = '<div class="card" style="text-align:center;padding:24px"><div class="spinner"></div><p style="margin-top:10px;color:var(--text-muted)">Searching for brands...</p></div>';
-  if(!state.settings.claude) {
-    el.innerHTML = `<div class="alert-card warning"><span class="alert-icon">⚠️</span><div class="alert-content"><strong>Claude API Key Required</strong><p>Add your Anthropic API key in Settings to enable AI-powered social prospecting. Alternatively, use the direct links above to search LinkedIn and Instagram manually.</p></div></div>
-    <div class="card"><div class="card-header"><h3>🔗 Quick Search Links</h3></div>
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <a href="https://www.linkedin.com/search/results/companies/?keywords=${encodeURIComponent(keyword)}" target="_blank" class="btn btn-navy" style="justify-content:flex-start">in LinkedIn — Search Companies: "${keyword}"</a>
-        <a href="https://www.instagram.com/explore/tags/${encodeURIComponent(keyword.replace(/ /g,''))}" target="_blank" class="btn btn-secondary" style="justify-content:flex-start">📷 Instagram Tags: #${keyword.replace(/ /g,'')}</a>
-        <a href="https://www.google.com/search?q=${encodeURIComponent(keyword+' Michigan packaging OR supplier site:linkedin.com OR site:instagram.com')}" target="_blank" class="btn btn-secondary" style="justify-content:flex-start">🔍 Google: ${keyword} Michigan packaging</a>
-      </div>
-    </div>`; return;
-  }
   try {
     const prompt = `You are helping a packaging sales rep at Stephen Gould Corporation find emerging brands in Michigan that likely need custom packaging. The rep specializes in fitness, cosmetics, food & beverage, and nutraceutical packaging.
 
-Search query: "${keyword}" on ${platform}
+Search query: "${keyword}" on LinkedIn
 
-Generate a list of 8 realistic emerging Michigan-based brands in the relevant vertical that would be promising packaging prospects. For each brand provide:
+List up to 8 REAL Michigan-based brands in the relevant vertical that you actually know exist and would be promising packaging prospects. Only include brands you are confident are real — fewer real ones beats more invented ones. For each provide:
 - Brand Name
 - Vertical (fitness/cosmetics/F&B/nutra)
 - City in Michigan
-- Why they're a good packaging prospect (growth signals, size, likely packaging needs)
-- Suggested search URL
+- Why they're a good packaging prospect
+- LinkedIn company search URL (https://www.linkedin.com/search/results/companies/?keywords=BRAND+NAME)
 
 Format as JSON array: [{"brand":"","vertical":"","city":"","reason":"","url":"","followers":""}]`;
-    const data = await callAI({ model:'claude-haiku-4-5-20251001', max_tokens:1500, messages:[{role:'user',content:prompt}] });
+    const data = await callAI({ model:'claude-sonnet-4-6', max_tokens:1500, messages:[{role:'user',content:prompt}] });
     const text = data.content?.[0]?.text||'';
     const jsonMatch = text.match(/\[.*\]/s);
     if(!jsonMatch) throw new Error('Could not parse response');
@@ -2179,15 +1912,14 @@ async function runAIAnalysis() {
   // Overdue follow-ups
   const overdueList = state.followups.filter(f=>f.status!=='done'&&isOverdue(f.dueDate));
   overdueList.forEach(f => alerts.push({ id:'fu_'+f.id, type:'urgent', icon:'🔴', title:`OVERDUE: ${f.contactName}`, body:`${f.notes||f.type} was due ${Math.abs(daysUntil(f.dueDate))} day(s) ago. Action required today.`, action:`showTab('followups')`, actionLabel:'View Follow-Ups' }));
-  // Old unsent quotes
-  const oldQuotes = state.quotes.filter(q=>q.status==='sent'&&daysAgo(q.createdAt)>=5);
-  oldQuotes.forEach(q => alerts.push({ id:'quote_'+q.id, type:'warning', icon:'💰', title:`Quote to ${q.client} needs follow-up`, body:`Your quote for ${q.product} has been out ${daysAgo(q.createdAt)} days with no update. Did they receive it? Push for a decision.`, action:`showTab('quotes')`, actionLabel:'View Quotes' }));
   // Warm leads with no recent follow-up scheduled
   const warmNoFU = state.contacts.filter(c=>c.priority==='warm'&&!state.followups.find(f=>f.contactId===c.id&&f.status!=='done'&&!isOverdue(f.dueDate)));
   warmNoFU.forEach(c => alerts.push({ id:'warmnofu_'+c.id, type:'warning', icon:'🔥', title:`${c.firstName} @ ${c.company} — no follow-up scheduled`, body:`Warm lead with no upcoming follow-up. Schedule one now to stay top of mind.`, action:`openFUFromBrief('${c.id}')`, actionLabel:'Schedule' }));
-  // No calls today
-  const todayCalls = state.calllog.filter(c=>new Date(c.date).toDateString()===new Date().toDateString());
-  if(todayCalls.length===0 && new Date().getHours()>=9) alerts.push({ id:'nocalls_today', type:'info', icon:'📞', title:'No calls logged today yet', body:'Your pipeline grows one conversation at a time. Who\'s your first call?', action:`showTab('today')`, actionLabel:'See Priorities' });
+  // Prospects sitting in "new" too long
+  const staleProspects = (state.prospects||[]).filter(p=>(p.stage||'new')==='new'&&daysAgo((p.createdAt||'').slice(0,10))>=7);
+  if(staleProspects.length) alerts.push({ id:'stale_prospects', type:'info', icon:'💼', title:`${staleProspects.length} prospect(s) sitting untouched 7+ days`, body:`${staleProspects.slice(0,3).map(p=>p.name||p.company).join(', ')} — queue them for outreach or pass.`, action:`showTab('prospecting')`, actionLabel:'View Prospects' });
+  // Pending outreach approvals
+  (state.approvals||[]).filter(a=>a.status==='pending').forEach(a => alerts.push({ id:'appr_'+a.id, type:'info', icon:'📤', title:'Outreach batch awaiting approval', body:`${(a.prospects||[]).length} prospect(s) queued. Nothing sends until you approve.`, action:`showTab('prospecting')`, actionLabel:'Review' }));
   state.aiAlerts = alerts;
   DB.set('aiAlerts', alerts);
   if(state.currentTab==='ai') renderAIAlerts();
@@ -2231,27 +1963,97 @@ async function callAI(payload) {
   return res.json();
 }
 
+// Build a live snapshot of EVERYTHING so the AI gives specific, named advice.
+function buildAIContext() {
+  const today = new Date().toISOString().slice(0,10);
+  const fuOpen = state.followups.filter(f=>f.status!=='done');
+  const cLine = c => `- ${`${fName(c)} ${lName(c)||''}`.trim()||'?'} @ ${c.company||'?'} | priority:${c.priority||'cold'} | last touch:${c.lastContact||'never'} (${daysAgo(c.lastContact)}d ago) | next:${c.nextFollowUp||'—'}${c.leadStatus?' | hubspot:'+c.leadStatus:''}${c.notes?' | notes:'+String(c.notes).slice(0,120):''}`;
+  const warm = state.contacts.filter(c=>c.priority==='warm').map(cLine).join('\n');
+  const overdueL = fuOpen.filter(f=>isOverdue(f.dueDate)).map(f=>`- ${f.contactName}: ${f.type||''} ${Math.abs(daysUntil(f.dueDate))}d overdue — ${f.notes||''}`).join('\n');
+  const todayL = fuOpen.filter(f=>isToday(f.dueDate)).map(f=>`- ${f.contactName}: ${f.type||''} due today — ${f.notes||''}`).join('\n');
+  const stale = state.contacts.filter(c=>isStale(c)&&c.priority!=='warm').slice(0,15).map(cLine).join('\n');
+  const prospects = (state.prospects||[]).slice(0,25).map(p=>`- ${p.name||'?'} @ ${p.company||'?'} | stage:${p.stage||'new'}${p.notes?' | '+String(p.notes).slice(0,80):''}`).join('\n');
+  return `You are an elite sales coach for Brian Blakeslee, an outside sales rep at Stephen Gould Corporation specializing in custom packaging and supply chain. Verticals: fitness/supplements, cosmetics, food & beverage, industrial — mostly Michigan. Brian's goal: build a book of business and move toward 1099 straight commission. Push him toward action, not analysis. Be direct, punchy, specific — name names.
+
+Today: ${today}
+
+WARM LEADS:
+${warm||'(none)'}
+
+OVERDUE FOLLOW-UPS:
+${overdueL||'(none)'}
+
+DUE TODAY:
+${todayL||'(none)'}
+
+GOING STALE (no touch ${state.settings.stale||7}+ days):
+${stale||'(none)'}
+
+PROSPECT TRACKER:
+${prospects||'(none)'}
+
+Totals: ${state.contacts.length} contacts, ${fuOpen.length} open follow-ups, ${(state.prospects||[]).length} prospects, ${state.contacts.filter(isWonContact).length} accounts opened (Won).`;
+}
+
 async function askAI() {
   const question = document.getElementById('ai-question').value.trim();
   if(!question) { toast('Type a question first','error'); return; }
   const el = document.getElementById('ai-answer');
   el.innerHTML = '<div style="display:flex;align-items:center;gap:8px;padding:12px;color:var(--text-muted)"><div class="spinner"></div> Thinking...</div>';
-  const context = `You are an elite sales coach for Brian Blakeslee, an outside sales rep at Stephen Gould Corporation specializing in custom packaging and supply chain. Brian focuses on fitness, cosmetics, food & beverage, and nutraceuticals packaging in Michigan.
-
-Current pipeline snapshot:
-- Contacts: ${state.contacts.length} (${state.contacts.filter(c=>c.priority==='warm').length} warm leads)
-- Overdue follow-ups: ${state.followups.filter(f=>f.status!=='done'&&isOverdue(f.dueDate)).length}
-- Open quotes: ${state.quotes.filter(q=>q.status==='sent').length}
-- Stale contacts (7+ days): ${state.contacts.filter(isStale).length}
-- Priority warm leads: Aneri @ Entity Supplements, Imtahaj @ Iroquois Industries, Sam & Aidan @ Private Label Labs, Patrick @ Clean and Kind, Angela @ Elba Laboratories
-- Known suppliers: Bespoke Luxe Design (Vince, US aluminum packaging), Yuyao Blooming/Belle Mao (China plastic bottles)
-
-Brian's goal: Build a book of business, move toward 1099 straight commission. Push him toward action, not analysis. Be direct, punchy, specific.`;
   try {
-    const data = await callAI({ model:'claude-sonnet-4-6', max_tokens:1000, system:context, messages:[{role:'user',content:question}] });
+    const data = await callAI({ model:'claude-sonnet-4-6', max_tokens:1000, system:buildAIContext(), messages:[{role:'user',content:question}] });
     const text = data.content?.[0]?.text||'No response';
     el.innerHTML = `<div class="card" style="border-left:3px solid var(--red);padding:16px"><div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px">AI Coach says:</div><div style="font-size:14px;line-height:1.7;white-space:pre-wrap">${text}</div></div>`;
   } catch(e) { el.innerHTML=`<div class="alert-card urgent"><span class="alert-icon">❌</span><div class="alert-content"><strong>Error</strong><p>${e.message}</p></div></div>`; }
+}
+
+// ─── DAILY GAME PLAN ──────────────────────────────────────────
+async function generateGamePlan(force) {
+  const el = document.getElementById('gameplan-body');
+  if (!el) return;
+  const today = new Date().toISOString().slice(0,10);
+  if (!force && state.gameplan && state.gameplan.date === today) { el.innerHTML = _gameplanHTML(state.gameplan.text); return; }
+  el.innerHTML = '<div style="display:flex;align-items:center;gap:8px;padding:12px;color:var(--text-muted)"><div class="spinner"></div> Building today\'s game plan from your contacts, follow-ups & prospects...</div>';
+  try {
+    const data = await callAI({ model:'claude-sonnet-4-6', max_tokens:1200, system: buildAIContext(),
+      messages:[{role:'user',content:'Build my game plan for today. Give me: 1) My top 5 calls/emails in priority order — exact name, company, and the one-line reason plus what to say or ask. 2) Anything overdue I must clean up. 3) One prospecting action to fill the pipeline. Number everything. Keep it tight — no fluff, no preamble.'}] });
+    const text = data.content?.[0]?.text || 'No plan generated.';
+    state.gameplan = { date: today, text };
+    DB.set('gameplan', state.gameplan);
+    el.innerHTML = _gameplanHTML(text);
+  } catch(e) { el.innerHTML = `<div class="alert-card urgent"><span class="alert-icon">❌</span><div class="alert-content"><strong>Couldn\'t build game plan</strong><p>${e.message}</p></div></div>`; }
+}
+function _gameplanHTML(text) {
+  return `<div style="font-size:14px;line-height:1.7;white-space:pre-wrap">${text}</div><button class="btn btn-secondary btn-sm" style="margin-top:10px" onclick="generateGamePlan(true)">↻ Regenerate</button>`;
+}
+function renderGamePlan() { generateGamePlan(false); }
+
+// ─── ADDRESS BACKFILL ─────────────────────────────────────────
+// Fill in missing business addresses automatically (AI lookup, once per day).
+async function backfillAddresses(manual) {
+  const missing = state.contacts.filter(c => c.company && !(c.address||'').trim());
+  if (!missing.length) { if (manual) toast('All contacts have addresses ✅','success'); return; }
+  const today = new Date().toISOString().slice(0,10);
+  if (!manual && DB.get('addrBackfillRan') === today) return;
+  DB.set('addrBackfillRan', today);
+  if (manual) toast(`🔍 Looking up addresses for ${missing.length} compan${missing.length===1?'y':'ies'}...`,'info');
+  try {
+    const batch = missing.slice(0, 25);
+    const list = batch.map(c => `${c.id} | ${c.company}${c.city?' | '+c.city:''}`).join('\n');
+    const data = await callAI({ model:'claude-sonnet-4-6', max_tokens:1500,
+      system:'You look up business addresses for companies. Most are small/mid-size companies in Michigan, USA (packaging sales territory). Only return an address when you are confident it is the real main address for that company. If unsure, return an empty string — a wrong address is worse than no address.',
+      messages:[{role:'user',content:`For each company below return its main business address (street, city, state, zip). Input format: id | company | city(optional).\n\n${list}\n\nReturn ONLY a JSON array: [{"id":"","address":""}] — empty address string when not confident. No other text.`}] });
+    const text = data.content?.[0]?.text||'[]';
+    const m = text.match(/\[.*\]/s);
+    if(!m) return;
+    let filled = 0;
+    JSON.parse(m[0]).forEach(r => {
+      const c = state.contacts.find(x=>x.id===r.id);
+      if (c && r.address && !(c.address||'').trim()) { c.address = r.address; c.addressSource = 'ai-lookup'; filled++; }
+    });
+    if (filled) { saveCollection('contacts'); renderContacts(); toast(`📍 Filled ${filled} business address${filled===1?'':'es'} (AI lookup — verify before visiting)`,'success'); }
+    else if (manual) toast('No confident address matches found','info');
+  } catch(e) { console.warn('Address backfill failed:', e); if (manual) toast('Address lookup failed: '+e.message,'error'); }
 }
 
 // ─── SCREENSHOT OCR ───────────────────────────────────────────
@@ -2305,7 +2107,7 @@ async function processOCRImage(dataUrl, filename) {
             <button class="btn btn-secondary btn-sm" onclick="document.getElementById('ocr-card-${i}').remove()">Skip</button>
           </div>
         </div>`).join('');
-  } catch(e) { results.innerHTML=`<div class="alert-card urgent"><span class="alert-icon">❌</span><div class="alert-content"><strong>OCR Failed</strong><p>${e.message}. Make sure your Claude API key is valid.</p></div></div>`; }
+  } catch(e) { results.innerHTML=`<div class="alert-card urgent"><span class="alert-icon">❌</span><div class="alert-content"><strong>OCR Failed</strong><p>${e.message}. Try a clearer image.</p></div></div>`; }
 }
 function importOCRContact(i, encoded) {
   const base = JSON.parse(decodeURIComponent(encoded));
@@ -2321,74 +2123,6 @@ function importOCRContact(i, encoded) {
   state.contacts.push(c); saveAll(); renderContacts(); updateBadges();
   document.getElementById(`ocr-card-${i}`).innerHTML = `<div class="alert-card success"><span class="alert-icon">✅</span><div class="alert-content"><strong>${c.firstName} ${c.lastName} added!</strong><p>Contact is now in your dashboard.</p></div></div>`;
   toast(`✅ ${c.firstName} added!`,'success');
-}
-
-// ─── OUTLOOK / MS GRAPH ───────────────────────────────────────
-async function scanOutlook() {
-  if(!state.settings.msgraph) { toast('Add Microsoft Graph token in Settings first','error'); showTab('settings'); return; }
-  const days = parseInt(document.getElementById('outlook-days').value)||30;
-  const tone = document.getElementById('outlook-tone').value;
-  const status = document.getElementById('outlook-status');
-  const results = document.getElementById('outlook-results');
-  status.innerHTML = '<div style="display:flex;align-items:center;gap:8px;padding:10px;color:var(--text-muted)"><div class="spinner"></div> Scanning sent emails...</div>';
-  try {
-    const since = new Date(); since.setDate(since.getDate()-days);
-    const filter = encodeURIComponent(`sentDateTime ge ${since.toISOString()}`);
-    const res = await fetch(`https://graph.microsoft.com/v1.0/me/mailFolders/sentItems/messages?$filter=${filter}&$top=50&$select=subject,toRecipients,sentDateTime,body`, {
-      headers:{ Authorization:`Bearer ${state.settings.msgraph}` }
-    });
-    if(!res.ok) { const e=await res.json(); throw new Error(e.error?.message||'Graph API error'); }
-    const data = await res.json();
-    const sent = data.value||[];
-    if(!sent.length) { status.innerHTML='<div class="alert-card info"><span class="alert-icon">ℹ️</span><div class="alert-content"><strong>No sent emails found</strong><p>No emails sent in the last '+days+' days.</p></div></div>'; return; }
-    // Check which have replies
-    const noReplies = [];
-    for(const email of sent.slice(0,20)) {
-      const recipient = email.toRecipients?.[0]?.emailAddress;
-      if(!recipient) continue;
-      const inboxRes = await fetch(`https://graph.microsoft.com/v1.0/me/messages?$filter=${encodeURIComponent(`from/emailAddress/address eq '${recipient.address}' and receivedDateTime ge ${email.sentDateTime}`)}&$top=1&$select=id`, { headers:{ Authorization:`Bearer ${state.settings.msgraph}` } });
-      const inbox = await inboxRes.json();
-      if(!(inbox.value||[]).length) noReplies.push({ email, recipient });
-    }
-    if(!noReplies.length) { status.innerHTML='<div class="alert-card success"><span class="alert-icon">✅</span><div class="alert-content"><strong>Everyone replied!</strong><p>No unreplied cold emails found.</p></div></div>'; return; }
-    status.innerHTML = `<div class="alert-card warning"><span class="alert-icon">📬</span><div class="alert-content"><strong>${noReplies.length} unreplied emails found</strong><p>Generating follow-up drafts...</p></div></div>`;
-    {
-      for(const {email, recipient} of noReplies.slice(0,5)) {
-        const draftData = await callAI({ model:'claude-haiku-4-5-20251001', max_tokens:400, messages:[{ role:'user', content:`Write a short ${tone} follow-up email (3-4 sentences) from Brian Blakeslee at Stephen Gould Corporation to ${recipient.name||recipient.address} who hasn't replied to his cold outreach about packaging solutions. Original subject: "${email.subject}". Be natural, not pushy. No subject line needed, just the email body.` }] });
-        const draftBody = draftData.content?.[0]?.text||'';
-        // Create draft in Outlook
-        await fetch('https://graph.microsoft.com/v1.0/me/messages', {
-          method:'POST', headers:{ Authorization:`Bearer ${state.settings.msgraph}`, 'Content-Type':'application/json' },
-          body:JSON.stringify({ subject:`Re: ${email.subject}`, body:{ contentType:'Text', content:draftBody }, toRecipients:[{ emailAddress:{ address:recipient.address, name:recipient.name||'' } }], isDraft:true })
-        });
-      }
-      results.innerHTML = `<div class="alert-card success"><span class="alert-icon">✅</span><div class="alert-content"><strong>Follow-up drafts created!</strong><p>${Math.min(noReplies.length,5)} draft emails have been saved to your Outlook Drafts folder. Review and send when ready.</p></div></div>`;
-    }
-    status.innerHTML = '';
-  } catch(e) { status.innerHTML=`<div class="alert-card urgent"><span class="alert-icon">❌</span><div class="alert-content"><strong>Error</strong><p>${e.message}</p></div></div>`; }
-}
-function draftEmailManual(emailEnc, subjectEnc) {
-  const email = decodeURIComponent(emailEnc);
-  const subject = decodeURIComponent(subjectEnc);
-  window.open(`mailto:${email}?subject=Re: ${subject}&body=Hi, following up on my previous message about packaging solutions at Stephen Gould...`, '_blank');
-}
-
-// ─── COLD CALL ROUTE PLANNER ──────────────────────────────────
-function planRoute() {
-  const city = document.getElementById('route-city').value;
-  const date = document.getElementById('route-date').value;
-  const industry = document.getElementById('route-industry').value;
-  closeModal('coldRoute');
-  const results = document.getElementById('apollo-results');
-  results.innerHTML = `<div class="card" style="border-left:3px solid var(--red)">
-    <div class="card-header"><h3>🗺️ Cold Call Route — ${city}, MI</h3><span class="badge badge-navy">${date?new Date(date).toLocaleDateString():'Plan'}</span></div>
-    <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">${industry} companies in ${city}, Michigan — optimized route</p>
-    <div class="alert-card info" style="margin-bottom:8px"><span class="alert-icon">ℹ️</span><div class="alert-content"><strong>Pro Tips for ${city} Cold Calls</strong><p>Hit industrial parks off 23/94 corridor. Business parks near downtown ${city} have high density of mid-size brands. Aim for 8–12 drop-ins per day. Best time: 9–11am and 2–4pm.</p></div></div>
-    <a href="https://www.google.com/maps/search/${encodeURIComponent(industry+' company '+city+' Michigan')}" target="_blank" class="btn btn-primary" style="margin-right:8px">📍 Open Google Maps Route</a>
-    <button class="btn btn-secondary" onclick="searchApollo()">🔍 Find Leads in ${city}</button>
-  </div>`;
-  document.getElementById('apollo-city').value = city;
-  toast(`🗺️ Route planned for ${city}!`,'success');
 }
 
 // ─── DATA IMPORT/EXPORT ───────────────────────────────────────
@@ -2432,7 +2166,7 @@ if(window.location.hash.includes('access_token')) {
 }
 
 // ─── BOOT ─────────────────────────────────────────────────────
-syncFromSupabase().then(() => init());
+loadAllData().then(() => init()).catch(e => { console.error('Boot error', e); init(); });
 </script>
 <script id="sg-li-apollo">
 // ====================================================
@@ -2639,7 +2373,6 @@ syncFromSupabase().then(() => init());
       <div class="sg-intel-tabs">
         <button class="sg-intel-tab on" data-tab="linkedin" onclick="sgSwitchTab('linkedin',this)">🔗 LinkedIn</button>
         <button class="sg-intel-tab" data-tab="hubspot" onclick="sgSwitchTab('hubspot',this)">📋 HubSpot</button>
-        <button class="sg-intel-tab" data-tab="quotes" onclick="sgSwitchTab('quotes',this)">💰 Quotes</button>
         <button class="sg-intel-tab" data-tab="notes" onclick="sgSwitchTab('notes',this)">🗒 Notes</button>
       </div>
       <div class="sg-intel-body" id="sg-intel-body"></div>
@@ -2883,23 +2616,6 @@ syncFromSupabase().then(() => init());
       _loadHubSpot(nm, coName);
     }
 
-    else if (tab === 'quotes') {
-      const hits = _matchQuotes(nm, coName);
-      if (!hits.length) {
-        body.innerHTML = `<div class="sg-intel-empty">No saved quotes for this prospect yet.</div>
-          <div class="sg-intel-actions" style="justify-content:center;margin-top:8px">
-            <a href="https://app.hubspot.com/contacts/new" target="_blank" class="sg-intel-btn primary">+ Open HubSpot Deal</a>
-          </div>`;
-      } else {
-        body.innerHTML = `<div class="sg-intel-sec"><div class="sg-intel-sec-title">${hits.length} Quote${hits.length>1?'s':''} Found</div>
-          ${hits.map(q => `<div class="sg-intel-note">
-            <div class="sg-intel-note-date">${q.date || ''}</div>
-            <div class="sg-intel-note-text">${[q.company||q.account, q.item||q.description||'Quote'].filter(Boolean).join(' · ')}</div>
-          </div>`).join('')}
-        </div>`;
-      }
-    }
-
     else if (tab === 'notes') {
       const notes = data.notes || '';
       body.innerHTML = `
@@ -2973,18 +2689,6 @@ syncFromSupabase().then(() => init());
     } catch(e) {
       body.innerHTML = `<div class="sg-intel-empty">HubSpot error: ${e.message}</div>`;
     }
-  }
-
-  function _matchQuotes(personName, companyName) {
-    try {
-      const evts = JSON.parse(localStorage.getItem('events_data') || '[]');
-      const pn = (personName || '').toLowerCase();
-      const cn = (companyName || '').toLowerCase();
-      return evts.filter(e => {
-        const s = JSON.stringify(e).toLowerCase();
-        return (pn && s.includes(pn)) || (cn && s.includes(cn));
-      }).slice(0, 8);
-    } catch { return []; }
   }
 
   // ─── GLOBAL: SALES NAV SEARCH ────────────────────────
@@ -3346,175 +3050,6 @@ function clearResearch() {
   document.getElementById('res-results').textContent = '';
 }
 
-      function runInboxScanNow() {
-        showTab('ai');
-        setTimeout(() => {
-          const ta = document.querySelector('#tab-ai textarea');
-          if (ta) {
-            ta.value = 'Please scan my Outlook inbox now. Look for: unanswered cold outreach replies, RFQs I have not responded to, sent quotes with no reply, and any emails I should follow up on. Organize results into: Needs Response Now, Follow Up This Week, FYI.';
-            ta.dispatchEvent(new Event('input', { bubbles: true }));
-            ta.focus();
-          }
-        }, 350);
-      }
-
-      // ── Cold Email Sequencing ──────────────────────────────
-      const SEQ_KEY = 'sg_sequences';
-      function loadSeqs() { try { return JSON.parse(localStorage.getItem(SEQ_KEY)||'[]'); } catch(e){ return []; } }
-      function saveSeqs(arr) { localStorage.setItem(SEQ_KEY, JSON.stringify(arr)); }
-
-      function toggleSeqForm() {
-        const f = document.getElementById('seq-form');
-        const a = document.getElementById('seq-form-arrow');
-        const open = f.style.display === 'block';
-        f.style.display = open ? 'none' : 'block';
-        a.textContent = open ? '▼' : '▲';
-      }
-
-      function addToSequence() {
-        const fname = document.getElementById('seq-fname').value.trim();
-        const company = document.getElementById('seq-company').value.trim();
-        const title = document.getElementById('seq-title').value.trim();
-        const email = document.getElementById('seq-email').value.trim();
-        const notes = document.getElementById('seq-notes').value.trim();
-        if (!fname || !company) { alert('First name and company are required.'); return; }
-        const seqs = loadSeqs();
-        seqs.unshift({
-          id: Date.now(),
-          fname, company, title, email, notes,
-          status: 'active',
-          step: 1,
-          startedAt: new Date().toISOString(),
-          lastContactAt: new Date().toISOString(),
-          nextFollowUp: new Date(Date.now() + 3*86400000).toISOString(),
-          history: [{ step: 1, date: new Date().toISOString(), note: 'Initial email sent' }]
-        });
-        saveSeqs(seqs);
-        ['seq-fname','seq-company','seq-title','seq-email','seq-notes'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
-        document.getElementById('seq-draft-output').style.display = 'none';
-        renderSequences();
-        updateSeqStats();
-      }
-
-      function markSeqStep(id, action) {
-        const seqs = loadSeqs();
-        const s = seqs.find(x => x.id === id);
-        if (!s) return;
-        if (action === 'replied') {
-          s.status = 'replied';
-          s.history.push({ step: s.step, date: new Date().toISOString(), note: 'Replied!' });
-        } else if (action === 'followup') {
-          s.step++;
-          s.lastContactAt = new Date().toISOString();
-          const days = s.step <= 2 ? 3 : s.step <= 3 ? 5 : 7;
-          s.nextFollowUp = new Date(Date.now() + days*86400000).toISOString();
-          s.history.push({ step: s.step, date: new Date().toISOString(), note: 'Follow-up ' + (s.step-1) + ' sent' });
-        } else if (action === 'stop') {
-          s.status = 'stopped';
-        }
-        saveSeqs(seqs);
-        renderSequences();
-        updateSeqStats();
-      }
-
-      async function draftSeqEmail(id) {
-        const seqs = loadSeqs();
-        const s = seqs.find(x => x.id === id);
-        if (!s) return;
-        const btn = document.getElementById('draft-btn-'+id);
-        if (btn) { btn.disabled = true; btn.textContent = 'Drafting...'; }
-        const isFollowUp = s.step > 1;
-        const prompt = isFollowUp
-          ? 'Write a short, natural follow-up #' + (s.step-1) + ' cold email from Brian Blakeslee at Stephen Gould Corporation (custom packaging/supply chain) to ' + s.fname + ' at ' + s.company + (s.title ? ' (' + s.title + ')' : '') + '. Context: ' + (s.notes||'no extra context') + '. Keep it under 75 words, reference the previous outreach, provide a new value hook around packaging, and end with a soft CTA. No subject line.'
-          : 'Write a short, personalized cold email from Brian Blakeslee at Stephen Gould Corporation (custom packaging and supply chain solutions) to ' + s.fname + ' at ' + s.company + (s.title ? ', ' + s.title : '') + '. Context: ' + (s.notes||'custom packaging prospect') + '. Under 100 words. Hook first line, one value prop, soft CTA. Include a subject line.';
-        try {
-          const apiKey = localStorage.getItem('anthropicKey') || '';
-          const r = await fetch('/ai', {
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:400, system:'You are a concise sales copywriter for Brian Blakeslee, an outside sales rep at Stephen Gould Corporation specializing in custom packaging. Write natural, non-salesy emails that get responses.', messages:[{role:'user',content:prompt}] })
-          });
-          const d = await r.json();
-          const text = d.content?.[0]?.text || d.error || 'Error generating draft';
-          const out = document.getElementById('draft-output-'+id);
-          if (out) { out.style.display='block'; out.textContent = text; }
-        } catch(e) {
-          const out = document.getElementById('draft-output-'+id);
-          if (out) { out.style.display='block'; out.textContent = 'Error: ' + e.message; }
-        }
-        if (btn) { btn.disabled = false; btn.textContent = '🤖 Draft Email'; }
-      }
-
-      async function draftColdEmail() {
-        const fname = document.getElementById('seq-fname').value.trim() || 'the prospect';
-        const company = document.getElementById('seq-company').value.trim() || 'their company';
-        const title = document.getElementById('seq-title').value.trim();
-        const notes = document.getElementById('seq-notes').value.trim();
-        const out = document.getElementById('seq-draft-output');
-        out.style.display='block'; out.textContent='Drafting...';
-        try {
-          const prompt = 'Write a short, personalized cold email from Brian Blakeslee at Stephen Gould Corporation (custom packaging and supply chain) to ' + fname + ' at ' + company + (title?', '+title:'') + '. Context: ' + (notes||'custom packaging prospect') + '. Under 100 words. Strong hook, one value prop, soft CTA. Include a subject line.';
-          const r = await fetch('/ai', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:400, system:'You are a concise sales copywriter for Brian Blakeslee at Stephen Gould Corporation. Write natural emails that get responses.', messages:[{role:'user',content:prompt}] }) });
-          const d = await r.json();
-          out.textContent = d.content?.[0]?.text || 'Error generating draft';
-        } catch(e) { out.textContent = 'Error: ' + e.message; }
-      }
-
-      function seqDaysUntil(iso) {
-        const diff = new Date(iso) - new Date();
-        return Math.ceil(diff / 86400000);
-      }
-
-      function renderSequences() {
-        const filter = document.getElementById('seq-filter')?.value || 'all';
-        let seqs = loadSeqs();
-        if (filter === 'due') seqs = seqs.filter(s => s.status==='active' && seqDaysUntil(s.nextFollowUp) <= 0);
-        else if (filter === 'active') seqs = seqs.filter(s => s.status==='active');
-        else if (filter === 'replied') seqs = seqs.filter(s => s.status==='replied');
-        const body = document.getElementById('seq-table-body');
-        if (!body) return;
-        if (!seqs.length) {
-          body.innerHTML = '<div style="padding:32px;text-align:center;color:var(--text-muted);font-size:13px">' + (filter==='all' ? 'No sequences yet — add your first contact above' : 'No contacts match this filter') + '</div>';
-          return;
-        }
-        body.innerHTML = seqs.map(s => {
-          const daysUntil = seqDaysUntil(s.nextFollowUp);
-          const isDue = s.status==='active' && daysUntil <= 0;
-          const statusBadge = s.status==='replied' ? '<span style="background:#e8f8f0;color:#27ae60;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600">✓ Replied</span>'
-            : s.status==='stopped' ? '<span style="background:#f0f0f0;color:#888;padding:2px 8px;border-radius:10px;font-size:11px">Stopped</span>'
-            : isDue ? '<span style="background:#fff0f0;color:var(--red);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600">Follow-Up Due</span>'
-            : '<span style="background:#fff8e0;color:#d68910;padding:2px 8px;border-radius:10px;font-size:11px">Day ' + [0,1,3,7,14][Math.min(s.step,4)] + ' sent</span>';
-          return `<div style="padding:14px 16px;border-bottom:1px solid #f5f5f5">
-            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
-              <div style="flex:1;min-width:0">
-                <div style="font-size:13px;font-weight:600;margin-bottom:2px">${s.fname} — ${s.company}${s.title?' <span style="color:var(--text-muted);font-weight:400">· ${s.title}</span>':''}</div>
-                <div style="font-size:12px;color:var(--text-muted);margin-bottom:6px">${s.email||'No email'} · Step ${s.step} · ${isDue?'<strong style=color:var(--red)>Follow-up overdue</strong>':daysUntil>0?'Next in '+daysUntil+' days':'Due today'}</div>
-                ${statusBadge}
-              </div>
-              <div style="display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end">
-                ${s.status==='active'?'<button id="draft-btn-'+s.id+'" onclick="draftSeqEmail('+s.id+')" style="padding:5px 10px;font-size:11px;background:var(--gray-bg);border:1px solid var(--border);border-radius:5px;cursor:pointer">🤖 Draft Email</button><button onclick="markSeqStep('+s.id+`,'followup')` style="padding:5px 10px;font-size:11px;background:var(--navy);color:white;border:none;border-radius:5px;cursor:pointer">✉️ Sent</button><button onclick="markSeqStep('+s.id+`,'replied')` style="padding:5px 10px;font-size:11px;background:#27ae60;color:white;border:none;border-radius:5px;cursor:pointer">✓ Replied</button><button onclick="markSeqStep('+s.id+`,'stop')` style="padding:5px 10px;font-size:11px;background:var(--gray-bg);border:1px solid var(--border);border-radius:5px;cursor:pointer">Stop</button>':''}
-              </div>
-            </div>
-            <div id="draft-output-${s.id}" style="display:none;margin-top:10px;background:#f8f8f8;border-radius:6px;padding:12px;font-size:12px;white-space:pre-wrap;line-height:1.5"></div>
-          </div>`;
-        }).join('');
-      }
-
-      function updateSeqStats() {
-        const seqs = loadSeqs();
-        const active = seqs.filter(s=>s.status==='active').length;
-        const due = seqs.filter(s=>s.status==='active' && seqDaysUntil(s.nextFollowUp)<=0).length;
-        const replied = seqs.filter(s=>s.status==='replied').length;
-        const el_a=document.getElementById('seq-stat-active'), el_d=document.getElementById('seq-stat-due'),
-              el_r=document.getElementById('seq-stat-replied'), el_t=document.getElementById('seq-stat-total');
-        if(el_a) el_a.textContent=active;
-        if(el_d) el_d.textContent=due;
-        if(el_r) el_r.textContent=replied;
-        if(el_t) el_t.textContent=seqs.length;
-      }
-
-      // Init sequences tab when shown
-      const _origShowTab = typeof showTab === 'function' ? showTab : null;
 </script>
 
 <!-- Claude Chat Widget -->

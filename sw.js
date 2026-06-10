@@ -1,5 +1,5 @@
-const CACHE = 'sg-sales-v11';
-const STATIC = ['./manifest.json', './icon.svg', './sw.js'];
+const CACHE = 'sg-sales-v13';
+const STATIC = ['./manifest.json', './icon.svg', './sw.js', './assets/sg-logo.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(STATIC)));
