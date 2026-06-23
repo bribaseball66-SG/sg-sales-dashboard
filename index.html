@@ -3038,9 +3038,59 @@ function sgChat(){var input=document.getElementById('sg-chat-in');var msgs=docum
 document.addEventListener('DOMContentLoaded',function(){var msgs=document.getElementById('sg-chat-msgs');if(msgs){var w=document.createElement('div');w.style.cssText='align-self:flex-start;background:#fff;border:1px solid #eef;padding:8px 12px;border-radius:12px 12px 12px 2px;max-width:80%;font-size:13px;color:#333;';w.textContent='Hi Brian! Ask me anything about your pipeline, strategy, or accounts.';msgs.appendChild(w);}});
 
 // ===== NOTES LOG SYSTEM =====
-function renderNotesLog(c){var log=Array.isArray(c.notesLog)?c.notesLog:[];var legacy=(!Array.isArray(c.notesLog)&&c.notes)?[{id:'legacy',text:c.notes,ts:c.lastContact||''}]:[];var all=legacy.concat(log);var listHTML=all.length?all.slice().reverse().map(function(n){return'<div style="padding:10px 0;border-bottom:1px solid var(--border)"><div style="font-size:11px;color:var(--text-muted);margin-bottom:3px">'+(n.ts?new Date(n.ts).toLocaleString():'Earlier')+'</div><div style="font-size:13px;white-space:pre-wrap">'+n.text+'</div></div>';}).join(''):'<p style="font-size:13px;color:var(--text-muted)">No notes yet.</p>';return'<hr class="divider" style="margin:18px 0"><div class="card-header" style="margin-bottom:10px"><h3>📝 Notes Log</h3></div><div id="notes-log-list" style="max-height:220px;overflow-y:auto">'+listHTML+'</div><div style="margin-top:12px;display:flex;gap:8px;align-items:flex-start"><textarea id="new-note-text" class="form-control" placeholder="Add a note..." style="min-height:64px;flex:1;resize:vertical"></textarea><button class="btn btn-primary btn-sm" style="margin-top:2px" onclick="submitContactNote(\''+c.id+'\')">Save Note</button></div>';}
-async function submitContactNote(cid){var inp=document.getElementById('new-note-text');var txt=inp?inp.value.trim():'';if(!txt)return;var c=state.contacts.find(function(x){return x.id===cid;});if(!c)return;if(!Array.isArray(c.notesLog))c.notesLog=[];c.notesLog.push({id:Date.now().toString(36),text:txt,ts:new Date().toISOString()});await saveContact(c);showToast('Note saved ✓');var lst=document.getElementById('notes-log-list');if(lst){lst.innerHTML=c.notesLog.slice().reverse().map(function(n){return'<div style="padding:10px 0;border-bottom:1px solid var(--border)"><div style="font-size:11px;color:var(--text-muted);margin-bottom:3px">'+new Date(n.ts).toLocaleString()+'</div><div style="font-size:13px;white-space:pre-wrap">'+n.text+'</div></div>';}).join('');}if(inp)inp.value='';}
-var _ob=openBrief;openBrief=function(id){_ob(id);var c=state.contacts.find(function(x){return x.id===id;});if(!c)return;var body=document.getElementById('brief-body');if(body){var d=document.createElement('div');d.innerHTML=renderNotesLog(c);body.appendChild(d);}};
+function renderNotesLog(c) {
+  var log = Array.isArray(c.notesLog) ? c.notesLog : [];
+  var legacy = (!Array.isArray(c.notesLog) && c.notes) ? [{id:"legacy",text:c.notes,ts:c.lastContact||""}] : [];
+  var all = legacy.concat(log).slice().reverse();
+  var addBox = "<div style=\"margin-top:12px;display:flex;gap:8px;align-items:flex-start\"><textarea id=\"new-note-text\" class=\"form-control\" placeholder=\"Add a note...\" style=\"min-height:60px;flex:1;resize:vertical\"></textarea><button class=\"btn btn-primary btn-sm\" data-cid=\""+c.id+"\" onclick=\"submitNoteBtn(this)\" style=\"margin-top:2px\">Save</button></div>";
+  var hdr = "<hr class=\"divider\" style=\"margin:18px 0\"><h3 style=\"font-size:14px;font-weight:600;margin-bottom:10px\">📝 Notes</h3>";
+  if (!all.length) return hdr + "<p style=\"font-size:13px;color:var(--text-muted)\">No notes yet.</p>" + addBox;
+  var latest = all[0]; var older = all.slice(1);
+  var latestDate = latest.ts ? new Date(latest.ts).toLocaleString() : "Earlier";
+  var olderLink = older.length ? "&nbsp;&nbsp;<span style=\"color:var(--primary);cursor:pointer;font-size:11px\" onclick=\"toggleNotesHistory()\">"+older.length+" older note"+(older.length>1?"s":"")+" <span id=\"notes-arrow\">&#9660;</span></span>" : "";
+  var histHTML = older.length ? "<div id=\"notes-history\" style=\"display:none;padding-top:4px\">" + older.map(function(n){
+    return "<div style=\"padding:8px 0;border-top:1px solid var(--border)\"><div style=\"font-size:11px;color:var(--text-muted);margin-bottom:3px\">"+(n.ts?new Date(n.ts).toLocaleString():"Earlier")+"</div><div style=\"font-size:13px;white-space:pre-wrap\">"+n.text+"</div></div>";
+  }).join("") + "</div>" : "";
+  return hdr + "<div style=\"background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;padding:10px 12px\"><div style=\"font-size:11px;color:var(--text-muted);margin-bottom:6px\">"+latestDate+olderLink+"</div><div style=\"font-size:13px;white-space:pre-wrap\">"+latest.text+"</div>"+histHTML+"</div>" + addBox;
+}
+function toggleNotesHistory() {
+  var h = document.getElementById("notes-history");
+  var a = document.getElementById("notes-arrow");
+  if (!h) return;
+  var open = h.style.display !== "none";
+  h.style.display = open ? "none" : "block";
+  if (a) a.innerHTML = open ? "&#9660;" : "&#9650;";
+}
+function submitNoteBtn(btn) { submitContactNote(btn.getAttribute("data-cid")); }
+async function submitContactNote(cid) {
+  var inp = document.getElementById("new-note-text");
+  var txt = inp ? inp.value.trim() : "";
+  if (!txt) return;
+  var c = state.contacts.find(function(x){return x.id===cid;});
+  if (!c) return;
+  if (!Array.isArray(c.notesLog)) c.notesLog = [];
+  c.notesLog.push({id:Date.now().toString(36),text:txt,ts:new Date().toISOString()});
+  await saveContact(c);
+  showToast("Note saved ✓");
+  var nd = document.getElementById("brief-notes");
+  if (nd) nd.innerHTML = renderNotesLog(c);
+  if (inp) inp.value = "";
+}
+var _ob = openBrief;
+openBrief = function(id) {
+  _ob(id);
+  var c = state.contacts.find(function(x){return x.id===id;});
+  if (!c) return;
+  var body = document.getElementById("brief-body");
+  if (body) {
+    var existing = document.getElementById("brief-notes");
+    if (existing) existing.remove();
+    var d = document.createElement("div");
+    d.id = "brief-notes";
+    d.innerHTML = renderNotesLog(c);
+    body.appendChild(d);
+  }
+};
 </script>
 </body>
 </html>
