@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -228,18 +228,18 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
   <div class="grid-2">
     <div>
       <div class="card">
-        <div class="card-header"><h3>🎯 Call Priority — Who First</h3></div>
-        <div id="today-priorities"></div>
-      </div>
-    </div>
-    <div>
-      <div class="card">
         <div class="card-header"><h3>📞 Due Today — Follow-Ups & Warm Leads</h3></div>
         <div id="today-due"></div>
       </div>
       <div class="card">
         <div class="card-header"><h3>📬 Overdue Follow-Ups</h3></div>
         <div id="today-overdue"></div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="card-header"><h3>📅 This Week — Coming Up</h3></div>
+        <div id="today-thisweek"></div>
       </div>
       <div class="card">
         <div class="card-header"><h3>⚠️ Needs Your Attention</h3></div>
@@ -1102,14 +1102,6 @@ function refreshBriefing() {
 
   // Call priorities
   const priorities = buildPriorityList();
-  const pd = document.getElementById('today-priorities');
-  if(!priorities.length) { pd.innerHTML = '<div class="empty-state"><div class="ei">🎉</div><p>You\'re all caught up!</p></div>'; }
-  else { pd.innerHTML = priorities.slice(0,8).map((p,i) => `
-    <div class="priority-item" onclick="openBrief('${p.id}')">
-      <div class="pnum ${i>4?'low':i>2?'med':''}">${i+1}</div>
-      <div class="pi-info"><div class="pi-name">${p.name} — ${p.company}</div><div class="pi-reason">${p.reason}</div></div>
-      <div class="pi-meta">${p.meta}</div>
-    </div>`).join(''); }
 
   // Alerts
   const al = document.getElementById('today-alerts');
@@ -1130,22 +1122,12 @@ function refreshBriefing() {
       <div class="pi-meta">${Math.abs(daysUntil(f.dueDate))}d overdue</div>
     </div>`).join(''); }
 }
+  // This Week
+  var thisWeekFUs=state.followups.filter(function(f){return f.status!=='done'&&isThisWeek(f.dueDate)&&!isToday(f.dueDate)&&!isOverdue(f.dueDate);});
+  var twEl=document.getElementById('today-thisweek');
+  if(twEl){if(!thisWeekFUs.length){twEl.innerHTML='<div class="empty-state" style="padding:20px 0"><p>No follow-ups this week</p></div>';}else{twEl.innerHTML=thisWeekFUs.sort(function(a,b){return a.dueDate.localeCompare(b.dueDate);}).map(function(f){return'<div class="priority-item" onclick="openBrief(\''+f.contactId+'\')"><div class="pnum low">'+daysUntil(f.dueDate)+'d</div><div class="pi-info"><div class="pi-name">'+f.contactName+'</div><div class="pi-reason">'+(f.type||'follow-up')+(f.notes?' · '+f.notes:'')+'</div></div></div>';}).join('');}}
 
-function buildPriorityList() {
-  const scored = [];
-  state.contacts.forEach(c => {
-    let score = 0, reason = '', meta = '';
-    const fu = state.followups.find(f=>f.contactId===c.id&&f.status!=='done');
-    if(fu && isOverdue(fu.dueDate)) { score+=100; reason = '🔴 Follow-up overdue'; meta = Math.abs(daysUntil(fu.dueDate))+'d overdue'; }
-    else if(fu && isToday(fu.dueDate)) { score+=80; reason = '📅 Follow-up due today'; meta = 'Due today'; }
-    else if(fu && isThisWeek(fu.dueDate)) { score+=50; reason = '📋 Follow-up this week'; meta = fmtDate(fu.dueDate); }
-    if(c.priority==='warm') score+=30;
-    if(c.priority==='hot') score+=40;
-    if(isStale(c)) { score+=20; reason = reason||`⚠️ Not contacted in ${daysAgo(c.lastContact)} days`; meta = meta||daysAgo(c.lastContact)+'d ago'; }
-    if(score>0) scored.push({ id:c.id, name:`${fName(c)} ${lName(c)}`.trim()||fName(c), company:c.company, reason:reason||'Warm lead — check in', meta:meta||fmtDate(c.lastContact), score });
-  });
-  return scored.sort((a,b)=>b.score-a.score);
-}
+
 
 function buildDayAlerts() {
   const alerts = [];
@@ -1161,9 +1143,7 @@ function buildDayAlerts() {
 // Warm leads that should get a call today: warm priority and either their
 // contact-level next follow-up is today/overdue, or no touch in 3+ days.
 function warmLeadsToCallToday() {
-  return state.contacts.filter(c => c.priority==='warm' && (
-    (c.nextFollowUp && daysUntil(c.nextFollowUp) <= 0) || daysAgo(c.lastContact) >= 3
-  ));
+  return state.contacts.filter(c => c.priority==='warm' && c.nextFollowUp && daysUntil(c.nextFollowUp) <= 0);
 }
 // "Won" in HubSpot → accounts opened
 function isWonContact(c) {
@@ -3056,6 +3036,11 @@ function clearResearch() {
 <script>
 function sgChat(){var input=document.getElementById('sg-chat-in');var msgs=document.getElementById('sg-chat-msgs');var msg=input.value.trim();if(!msg)return;input.value='';var userDiv=document.createElement('div');userDiv.style.cssText='align-self:flex-end;background:linear-gradient(135deg,#5b6cf9,#7c3aed);color:#fff;padding:8px 12px;border-radius:12px 12px 2px 12px;max-width:80%;font-size:13px;';userDiv.textContent=msg;msgs.appendChild(userDiv);msgs.scrollTop=msgs.scrollHeight;var loadDiv=document.createElement('div');loadDiv.style.cssText='align-self:flex-start;background:#fff;border:1px solid #eef;padding:8px 12px;border-radius:12px 12px 12px 2px;max-width:80%;font-size:13px;color:#888;';loadDiv.textContent='Thinking...';msgs.appendChild(loadDiv);fetch('https://sg-hubspot-proxy.bribaseball66sg.workers.dev/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg})}).then(function(r){return r.json();}).then(function(d){loadDiv.textContent=d.response||d.content||d.message||JSON.stringify(d);loadDiv.style.color='#333';msgs.scrollTop=msgs.scrollHeight;}).catch(function(e){loadDiv.textContent='Error: '+e.message;loadDiv.style.color='#c00';});}
 document.addEventListener('DOMContentLoaded',function(){var msgs=document.getElementById('sg-chat-msgs');if(msgs){var w=document.createElement('div');w.style.cssText='align-self:flex-start;background:#fff;border:1px solid #eef;padding:8px 12px;border-radius:12px 12px 12px 2px;max-width:80%;font-size:13px;color:#333;';w.textContent='Hi Brian! Ask me anything about your pipeline, strategy, or accounts.';msgs.appendChild(w);}});
+
+// ===== NOTES LOG SYSTEM =====
+function renderNotesLog(c){var log=Array.isArray(c.notesLog)?c.notesLog:[];var legacy=(!Array.isArray(c.notesLog)&&c.notes)?[{id:'legacy',text:c.notes,ts:c.lastContact||''}]:[];var all=legacy.concat(log);var listHTML=all.length?all.slice().reverse().map(function(n){return'<div style="padding:10px 0;border-bottom:1px solid var(--border)"><div style="font-size:11px;color:var(--text-muted);margin-bottom:3px">'+(n.ts?new Date(n.ts).toLocaleString():'Earlier')+'</div><div style="font-size:13px;white-space:pre-wrap">'+n.text+'</div></div>';}).join(''):'<p style="font-size:13px;color:var(--text-muted)">No notes yet.</p>';return'<hr class="divider" style="margin:18px 0"><div class="card-header" style="margin-bottom:10px"><h3>📝 Notes Log</h3></div><div id="notes-log-list" style="max-height:220px;overflow-y:auto">'+listHTML+'</div><div style="margin-top:12px;display:flex;gap:8px;align-items:flex-start"><textarea id="new-note-text" class="form-control" placeholder="Add a note..." style="min-height:64px;flex:1;resize:vertical"></textarea><button class="btn btn-primary btn-sm" style="margin-top:2px" onclick="submitContactNote(\''+c.id+'\')">Save Note</button></div>';}
+async function submitContactNote(cid){var inp=document.getElementById('new-note-text');var txt=inp?inp.value.trim():'';if(!txt)return;var c=state.contacts.find(function(x){return x.id===cid;});if(!c)return;if(!Array.isArray(c.notesLog))c.notesLog=[];c.notesLog.push({id:Date.now().toString(36),text:txt,ts:new Date().toISOString()});await saveContact(c);showToast('Note saved ✓');var lst=document.getElementById('notes-log-list');if(lst){lst.innerHTML=c.notesLog.slice().reverse().map(function(n){return'<div style="padding:10px 0;border-bottom:1px solid var(--border)"><div style="font-size:11px;color:var(--text-muted);margin-bottom:3px">'+new Date(n.ts).toLocaleString()+'</div><div style="font-size:13px;white-space:pre-wrap">'+n.text+'</div></div>';}).join('');}if(inp)inp.value='';}
+var _ob=openBrief;openBrief=function(id){_ob(id);var c=state.contacts.find(function(x){return x.id===id;});if(!c)return;var body=document.getElementById('brief-body');if(body){var d=document.createElement('div');d.innerHTML=renderNotesLog(c);body.appendChild(d);}};
 </script>
 </body>
 </html>
